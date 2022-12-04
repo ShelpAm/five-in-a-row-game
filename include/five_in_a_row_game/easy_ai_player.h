@@ -16,7 +16,7 @@ class EasyAIPlayer : public AIPlayer {
 
   ~EasyAIPlayer() override;
 
-  const BoardCoordinate Think(const Board &board) const override;
+  const BoardCoordinate Think(const Board *board_ptr) const override;
 };
 
 

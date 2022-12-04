@@ -2,7 +2,7 @@
 // Created by small-sheep on 11/11/22.
 //
 
-#include "player_factory.h"
+#include "five_in_a_row_game/player_factory.h"
 
 PlayerFactory::PlayerFactory() {
 

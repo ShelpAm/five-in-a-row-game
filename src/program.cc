@@ -2,16 +2,12 @@
 // Created by small-sheep on 11/11/22.
 //
 
-#include "program.h"
+#include "five_in_a_row_game/program.h"
 #include <iostream>
-#include "five_in_a_row_game.h"
-#include "player.h"
-#include "human_player.h"
-#include "ai_player.h"
-#include "easy_ai_player.h"
-#include "ai_player_factory.h"
-#include "easy_ai_player_factory.h"
-#include "human_player_factory.h"
+#include "five_in_a_row_game/five_in_a_row_game.h"
+#include "five_in_a_row_game/player.h"
+#include "five_in_a_row_game/easy_ai_player_factory.h"
+#include "five_in_a_row_game/human_player_factory.h"
 
 Program::Program() {
 }

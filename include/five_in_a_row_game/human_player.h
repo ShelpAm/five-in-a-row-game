@@ -15,7 +15,7 @@ class HumanPlayer : public Player {
 
   virtual ~HumanPlayer() override;
 
-  virtual const BoardCoordinate Think(const Board &board) const override;
+  virtual const BoardCoordinate Think(const Board *board_ptr) const override;
 };
 
 

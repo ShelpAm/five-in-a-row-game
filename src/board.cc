@@ -2,7 +2,7 @@
 // Created by small-sheep on 11/11/22.
 //
 
-#include "board.h"
+#include "five_in_a_row_game/board.h"
 #include <exception>
 
 Board::Board(int board_size)

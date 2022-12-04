@@ -2,11 +2,11 @@
 // Created by small-sheep on 11/10/22.
 //
 
-#include "five_in_a_row_game.h"
+#include "five_in_a_row_game/five_in_a_row_game.h"
 #include <iostream>
 #include <sstream>
 #include <string>
-#include "player.h"
+#include "five_in_a_row_game/player.h"
 
 FiveInARowGame::FiveInARowGame() : board_pointer_(std::make_unique<Board>(5)) {
 }
@@ -35,8 +35,6 @@ void FiveInARowGame::ProcessInput() {
 //  std::cout << "Please input your command:\n";
 //  std::cin >> command;
 //  ParseCommand(command);
-  first_hand_player_ptr_->ThinkAndPlaceAStone(*board_pointer_);
-  second_hand_player_ptr_->ThinkAndPlaceAStone(*board_pointer_);
 }
 
 void FiveInARowGame::Update() {
@@ -44,7 +42,8 @@ void FiveInARowGame::Update() {
   current_frame_time_ = clock();
   SetFramePerSecond(current_frame_time_ - last_frame_time_);
 
-
+  first_hand_player_ptr_->ThinkAndPlaceAStone(board_pointer_.get());
+  second_hand_player_ptr_->ThinkAndPlaceAStone(board_pointer_.get());
 }
 
 void FiveInARowGame::Render() const {

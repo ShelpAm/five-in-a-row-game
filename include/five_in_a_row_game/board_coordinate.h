@@ -2,9 +2,8 @@
 // Created by small-sheep on 11/11/22.
 //
 
-#ifndef FIVE_IN_A_ROW_GAME_SRC_BOARD_COORDINATE_H
-#define FIVE_IN_A_ROW_GAME_SRC_BOARD_COORDINATE_H
-
+#ifndef FIVE_IN_A_ROW_GAME_BOARD_COORDINATE_H
+#define FIVE_IN_A_ROW_GAME_BOARD_COORDINATE_H
 
 class BoardCoordinate {
  public:
@@ -19,4 +18,4 @@ class BoardCoordinate {
 };
 
 
-#endif //FIVE_IN_A_ROW_GAME_SRC_BOARD_COORDINATE_H
+#endif //FIVE_IN_A_ROW_GAME_BOARD_COORDINATE_H

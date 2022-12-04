@@ -2,9 +2,9 @@
 // Created by small-sheep on 11/20/22.
 //
 
-#include "human_player_factory.h"
+#include "five_in_a_row_game/human_player_factory.h"
 
-#include "human_player.h"
+#include "five_in_a_row_game/human_player.h"
 
 HumanPlayerFactory::HumanPlayerFactory() {
 
