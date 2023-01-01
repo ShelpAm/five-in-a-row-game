@@ -7,19 +7,18 @@
 
 #include "five_in_a_row_game.h"
 
-class Program {
+class Application {
  public:
-  Program();
+  Application();
 
-  void Run();
+  void MainLoop();
   void ParseCommand();
 
-  bool ProgramIsOn() const;
-  void SetProgramIsOn(bool program_is_on);
+  bool ApplicationIsOn() const;
+  void SetApplicationIsOn(bool application_is_on);
 
  private:
-  bool program_is_on_;
+  bool application_is_on_;
 };
 
-
-#endif //FIVE_IN_A_ROW_GAME_SRC_PROGRAM_H
+#endif  // FIVE_IN_A_ROW_GAME_SRC_PROGRAM_H

@@ -19,5 +19,4 @@ class EasyAIPlayerFactory : public AIPlayerFactory {
   virtual Player *MakePlayer(const StoneType stone_type) const override;
 };
 
-
-#endif //FIVE_IN_A_ROW_GAME_SRC_EASY_AI_PLAYER_FACTORY_H
+#endif  // FIVE_IN_A_ROW_GAME_SRC_EASY_AI_PLAYER_FACTORY_H

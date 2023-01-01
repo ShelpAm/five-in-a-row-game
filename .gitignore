@@ -1,0 +1,8 @@
+**/.idea
+**/*.un~
+**/*.swp
+**/.clangd
+**/.clang-format
+**/.cache/
+**/compile_commands.json
+/build/

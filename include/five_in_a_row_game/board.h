@@ -5,25 +5,19 @@
 #ifndef FIVE_IN_A_ROW_GAME_SRC_BOARD_H
 #define FIVE_IN_A_ROW_GAME_SRC_BOARD_H
 
-#include <vector>
-#include "board_coordinate.h"
+#include <five_in_a_row_game/board_coordinate.h>
+#include <five_in_a_row_game/stone_type.h>
 
-enum class StoneType : int {
-  kStoneTypeEmpty,
-  kStoneTypeBlack,
-  kStoneTypeWhite,
-};
+#include <vector>
 
 class Board {
  public:
   explicit Board(int board_size);
 
-  void PlaceAStone(const BoardCoordinate &board_position,
-                   StoneType stone_type);
+  void PlaceAStone(const BoardCoordinate &board_position, StoneType stone_type);
 
  public:
-  const StoneType StoneTypeInCoordinate(
-      const BoardCoordinate &board_coordinate) const;
+  StoneType StoneTypeInCoordinate(const BoardCoordinate &) const;
 
   int BoardSize() const;
 
@@ -34,5 +28,4 @@ class Board {
   std::vector<std::vector<StoneType>> board_map_;
 };
 
-
-#endif //FIVE_IN_A_ROW_GAME_SRC_BOARD_H
+#endif  // FIVE_IN_A_ROW_GAME_SRC_BOARD_H

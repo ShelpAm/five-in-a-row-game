@@ -5,16 +5,14 @@
 #ifndef FIVE_IN_A_ROW_GAME_SRC_AI_PLAYER_FACTORY_H
 #define FIVE_IN_A_ROW_GAME_SRC_AI_PLAYER_FACTORY_H
 
-#include "ai_player_fwd.h"
-#include "ai_player.h"
-#include "player_factory.h"
+#include <five_in_a_row_game/ai_player.h>
+#include <five_in_a_row_game/player_factory.h>
 
 class AIPlayerFactory : public PlayerFactory {
  public:
   AIPlayerFactory();
 
-  virtual ~AIPlayerFactory() = 0;
+  ~AIPlayerFactory() override;
 };
 
-
-#endif //FIVE_IN_A_ROW_GAME_SRC_AI_PLAYER_FACTORY_H
+#endif  // FIVE_IN_A_ROW_GAME_SRC_AI_PLAYER_FACTORY_H

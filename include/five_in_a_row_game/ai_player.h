@@ -5,8 +5,8 @@
 #ifndef FIVE_IN_A_ROW_GAME_SRC_AI_PLAYER_H
 #define FIVE_IN_A_ROW_GAME_SRC_AI_PLAYER_H
 
-#include "ai_player_fwd.h"
-#include "player.h"
+#include <five_in_a_row_game/player.h>
+#include <five_in_a_row_game/stone_type.h>
 
 class AIPlayer : public Player {
  public:
@@ -17,5 +17,4 @@ class AIPlayer : public Player {
   ~AIPlayer() override;
 };
 
-
-#endif //FIVE_IN_A_ROW_GAME_SRC_AI_PLAYER_H
+#endif  // FIVE_IN_A_ROW_GAME_SRC_AI_PLAYER_H

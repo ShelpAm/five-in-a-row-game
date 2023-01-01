@@ -5,9 +5,8 @@
 #ifndef FIVE_IN_A_ROW_GAME_SRC_PLAYER_H
 #define FIVE_IN_A_ROW_GAME_SRC_PLAYER_H
 
-
-#include "board.h"
-#include "board_coordinate.h"
+#include <five_in_a_row_game/board.h>
+#include <five_in_a_row_game/board_coordinate.h>
 
 class Player {
  public:
@@ -19,8 +18,8 @@ class Player {
 
   virtual const BoardCoordinate Think(const Board *board_ptr) const = 0;
 
-  void PlaceAStone(Board *board_ptr, const BoardCoordinate &board_coordinate)
-  const;
+  void PlaceAStone(Board *board_ptr,
+                   const BoardCoordinate &board_coordinate) const;
 
   void ThinkAndPlaceAStone(Board *board_ptr) const;
 
@@ -32,4 +31,4 @@ class Player {
   StoneType used_stone_type_;
 };
 
-#endif //FIVE_IN_A_ROW_GAME_SRC_PLAYER_H
+#endif  // FIVE_IN_A_ROW_GAME_SRC_PLAYER_H

@@ -7,7 +7,7 @@
 Player::Player(StoneType used_stone_type) : used_stone_type_(used_stone_type) {
 }
 
-Player::~Player() = default;
+Player::~Player() {}
 
 void Player::PlaceAStone(Board *board_ptr,
                          const BoardCoordinate &board_coordinate) const {

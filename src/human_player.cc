@@ -6,14 +6,11 @@
 
 #include <iostream>
 
-HumanPlayer::HumanPlayer(StoneType used_stone_type) : Player(used_stone_type) {
-}
+HumanPlayer::HumanPlayer(StoneType used_stone_type) : Player(used_stone_type) {}
 
-HumanPlayer::HumanPlayer() {
-}
+HumanPlayer::HumanPlayer() {}
 
-HumanPlayer::~HumanPlayer() {
-}
+HumanPlayer::~HumanPlayer() {}
 
 const BoardCoordinate HumanPlayer::Think(const Board *board_ptr) const {
   bool target_move_is_valid = false;
@@ -21,7 +18,7 @@ const BoardCoordinate HumanPlayer::Think(const Board *board_ptr) const {
   do {
     std::cout << "Please input your move(first row and then column; every "
                  "input should be followed by an ENTER):\n";
-    std::cin >> input_board_coordinate.row >> input_board_coordinate.column;
+    std::cin >> input_board_coordinate[1] >> input_board_coordinate[0];
     target_move_is_valid =
         board_ptr->StoneTypeInCoordinate(input_board_coordinate) ==
         StoneType::kStoneTypeEmpty;

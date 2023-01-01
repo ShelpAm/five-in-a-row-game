@@ -5,7 +5,9 @@
 #ifndef FIVE_IN_A_ROW_GAME_BOARD_COORDINATE_H
 #define FIVE_IN_A_ROW_GAME_BOARD_COORDINATE_H
 
-class BoardCoordinate {
+#include "five_in_a_row_game/vector2d.h"
+using BoardCoordinate = Vector2D<int>;
+/*class BoardCoordinate {
  public:
   BoardCoordinate();
 
@@ -15,7 +17,6 @@ class BoardCoordinate {
 
   int row = 0;
   int column = 0;
-};
+};*/
 
-
-#endif //FIVE_IN_A_ROW_GAME_BOARD_COORDINATE_H
+#endif  // FIVE_IN_A_ROW_GAME_BOARD_COORDINATE_H
