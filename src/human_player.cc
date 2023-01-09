@@ -6,26 +6,33 @@
 
 #include <iostream>
 
+#include "five_in_a_row_game/board_coordinate.h"
+#include "five_in_a_row_game/vector2d.h"
+
 HumanPlayer::HumanPlayer(StoneType used_stone_type) : Player(used_stone_type) {}
 
 HumanPlayer::HumanPlayer() {}
 
 HumanPlayer::~HumanPlayer() {}
 
-const BoardCoordinate HumanPlayer::Think(const Board *board_ptr) const {
-  bool target_move_is_valid = false;
+const Vector2D<int> HumanPlayer::Think(const Board *board_ptr) const {
   BoardCoordinate input_board_coordinate;
-  do {
-    std::cout << "Please input your move(first row and then column; every "
-                 "input should be followed by an ENTER):\n";
+  auto TargetMoveIsValid = [board_ptr, &input_board_coordinate]() -> bool {
+    return IsInRangeOf(input_board_coordinate, board_ptr) &&
+           board_ptr->StoneTypeInCoordinate(input_board_coordinate) ==
+               StoneType::kStoneTypeEmpty;
+  };
+
+  std::cout << "Please input your move(first row and then column; every "
+               "input should be followed by an ENTER):\n";
+  while (true) {
     std::cin >> input_board_coordinate[1] >> input_board_coordinate[0];
-    target_move_is_valid =
-        board_ptr->StoneTypeInCoordinate(input_board_coordinate) ==
-        StoneType::kStoneTypeEmpty;
-    if (!target_move_is_valid) {
-      std::cout << "Your target coordinate is invalid, please choose another "
-                   "one!\n";
+    if (TargetMoveIsValid()) {
+      break;
     }
-  } while (!target_move_is_valid);
+    // The move is invalid.
+    std::cout << "Your target coordinate is invalid, please choose another "
+                 "one!\n";
+  }
   return input_board_coordinate;
 }

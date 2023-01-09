@@ -6,9 +6,13 @@
 #define FIVE_IN_A_ROW_GAME_INCLUDE_FIVE_IN_A_ROW_GAME_H
 
 #include <memory>
+#include <stack>
 #include <string>
-#include "player.h"
 
+#include "five_in_a_row_game/move.h"
+#include "five_in_a_row_game/player.h"
+
+/// @brief A particular match.
 class FiveInARowGame {
  public:
   explicit FiveInARowGame();
@@ -20,6 +24,13 @@ class FiveInARowGame {
 
   void Tick();
 
+ public:
+  bool Started() const { return started_; }
+  void SetStarted(bool started) { started_ = started; }
+  bool Over() const { return over_; }
+  void SetOver(bool over) { over_ = over; }
+
+ private:
   void ProcessInput();
 
   /// @brief Updates processes data
@@ -29,21 +40,16 @@ class FiveInARowGame {
 
   void ParseCommand(const std::string &command);
 
- public:
-  bool GameIsOn() const;
+  void CurrentPlayerMove();
 
-  void SetGameIsOn(bool game_is_on);
+  void CheckStatus();
 
-  int FramePerSecond() const;
-
-  void SetFramePerSecond(int frame_per_second);
-
- private:
-  bool game_is_on_ = false;
-  int frame_per_second_ = 0;
-  int last_frame_time_ = 0, current_frame_time_ = 0;
+  bool started_ = false, over_ = false;
+  std::stack<Move> history_moves_;
+  Player *moving_player_, *unmoving_player_;
+  Player *winner_;
   std::unique_ptr<Board> board_pointer_;
-  Player *first_hand_player_ptr_, *second_hand_player_ptr_;
+  Player *players_[2];
 };
 
-#endif //FIVE_IN_A_ROW_GAME_INCLUDE_FIVE_IN_A_ROW_GAME_H
+#endif  // FIVE_IN_A_ROW_GAME_INCLUDE_FIVE_IN_A_ROW_GAME_H

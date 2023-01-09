@@ -6,3 +6,5 @@
 **/.cache/
 **/compile_commands.json
 /build/
+/main
+/core

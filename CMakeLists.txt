@@ -1,20 +1,31 @@
 cmake_minimum_required(VERSION 3.18)
-project(five_in_a_row_game LANGUAGES CXX)
+project(five-in-a-row-game VERSION 0.1 LANGUAGES CXX)
 
+set(CMAKE_BUILD_TYPE "Debug")
 set(CMAKE_CXX_COMPILER "clang++")
-set(CMAKE_CXX_FLAGS "-Werror -Weverything -Wno-c++98-compat \
-  -Wno-c++98-compat-pedantic -Wno-exit-time-destructors -Wno-padded \
-  -Wno-sign-conversion")
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(CMAKE_BUILD_TYPE Debug)
-set(CMAKE_CXX_STANDARD 20)
+if (${CMAKE_CXX_COMPILER} STREQUAL "clang++")
+  set(CMAKE_CXX_FLAGS "-Werror -Weverything \
+  -Wno-c++98-compat -Wno-c++98-compat-pedantic \
+  -Wno-exit-time-destructors -Wno-padded -Wno-sign-conversion")
+elseif(${CMAKE_CXX_COMPILER} STREQUAL "vs2022")
+  set(CMAKE_CXX_FLAGS "")
+endif()
+set(CMAKE_CXX_STANDARD "20")
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-set(include_dir include)
 
-file(GLOB_RECURSE src_file CONFIGURE_DEPENDS src/*.cc include/five_in_a_row_game/*.h)
-add_executable(${PROJECT_NAME} ${src_file})
-target_include_directories(${PROJECT_NAME} PUBLIC ${include_dir})
+set(root_include_directory "include")
+set(source_directory "src")
 
+set(include_directories "${root_include_directory}/${PROJECT_NAME}")
+set(executable_name "${PROJECT_NAME}")
+
+file(GLOB_RECURSE source_files CONFIGURE_DEPENDS ${source_directory}/*.cc ${root_include_directory}/*.h)
+
+add_executable(${executable_name} "")
+target_sources(${executable_name} PRIVATE ${source_files})
+target_include_directories(${executable_name} PRIVATE ${root_include_directory})
 

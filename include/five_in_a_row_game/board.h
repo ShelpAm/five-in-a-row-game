@@ -5,16 +5,17 @@
 #ifndef FIVE_IN_A_ROW_GAME_SRC_BOARD_H
 #define FIVE_IN_A_ROW_GAME_SRC_BOARD_H
 
-#include <five_in_a_row_game/board_coordinate.h>
-#include <five_in_a_row_game/stone_type.h>
-
 #include <vector>
+
+#include "five_in_a_row_game/board_coordinate.h"
+#include "five_in_a_row_game/stone_type.h"
 
 class Board {
  public:
   explicit Board(int board_size);
 
-  void PlaceAStone(const BoardCoordinate &board_position, StoneType stone_type);
+  void PlaceAStone(const BoardCoordinate &board_coordinate,
+                   StoneType stone_type);
 
  public:
   StoneType StoneTypeInCoordinate(const BoardCoordinate &) const;

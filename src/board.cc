@@ -2,25 +2,35 @@
 // Created by small-sheep on 11/11/22.
 //
 
-#include <five_in_a_row_game/board.h>
+#include "five_in_a_row_game/board.h"
 
 #include <exception>
+#include <iostream>
+
+#include "five_in_a_row_game/board_coordinate.h"
 
 Board::Board(int board_size)
     : board_size_(board_size),
       board_map_(board_size, std::vector<StoneType>(
                                  board_size, StoneType::kStoneTypeEmpty)) {}
 
-void Board::PlaceAStone(const BoardCoordinate &board_position,
+void Board::PlaceAStone(const BoardCoordinate &board_coordinate,
                         const StoneType stone_type) {
-  if (board_position.Y() > board_size_ || board_position.X() > board_size_) {
-    throw std::exception();
+  if (!IsInRangeOf(board_coordinate, this)) {
+    throw 2;
   }
-  board_map_[board_position.Y()][board_position.X()] = stone_type;
+  board_map_[board_coordinate.Y()][board_coordinate.X()] = stone_type;
 }
 
 StoneType Board::StoneTypeInCoordinate(
     const BoardCoordinate &board_coordinate) const {
+  if (!IsInRangeOf(board_coordinate, this)) {
+    try {
+      throw 'c';
+    } catch (char c) {
+      std::cout << c;
+    }
+  }
   return board_map_[board_coordinate.Y()][board_coordinate.X()];
 }
 

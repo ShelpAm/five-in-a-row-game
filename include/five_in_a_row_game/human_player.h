@@ -5,6 +5,7 @@
 #ifndef FIVE_IN_A_ROW_GAME_SRC_HUMAN_PLAYER_H
 #define FIVE_IN_A_ROW_GAME_SRC_HUMAN_PLAYER_H
 
+#include "five_in_a_row_game/vector2d.h"
 #include "player.h"
 
 class HumanPlayer : public Player {
@@ -15,8 +16,7 @@ class HumanPlayer : public Player {
 
   virtual ~HumanPlayer() override;
 
-  virtual const BoardCoordinate Think(const Board *board_ptr) const override;
+  virtual const Vector2D<int> Think(const Board *board_ptr) const override;
 };
 
-
-#endif //FIVE_IN_A_ROW_GAME_SRC_HUMAN_PLAYER_H
+#endif  // FIVE_IN_A_ROW_GAME_SRC_HUMAN_PLAYER_H
