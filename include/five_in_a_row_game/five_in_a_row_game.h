@@ -1,7 +1,3 @@
-//
-// Created by small-sheep on 11/10/22.
-//
-
 #ifndef FIVE_IN_A_ROW_GAME_INCLUDE_FIVE_IN_A_ROW_GAME_H
 #define FIVE_IN_A_ROW_GAME_INCLUDE_FIVE_IN_A_ROW_GAME_H
 

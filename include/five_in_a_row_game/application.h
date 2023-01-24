@@ -2,9 +2,8 @@
 // Created by small-sheep on 11/11/22.
 //
 
-#ifndef FIVE_IN_A_ROW_GAME_SRC_PROGRAM_H
-#define FIVE_IN_A_ROW_GAME_SRC_PROGRAM_H
-
+#ifndef FIVE_IN_A_ROW_GAME_APPLICATION_H_
+#define FIVE_IN_A_ROW_GAME_APPLICATION_H_
 #include "five_in_a_row_game/five_in_a_row_game.h"
 
 class Application {
@@ -33,4 +32,4 @@ class Application {
   FiveInARowGame game_;
 };
 
-#endif  // FIVE_IN_A_ROW_GAME_SRC_PROGRAM_H
+#endif  // FIVE_IN_A_ROW_GAME_APPLICATION_H_
