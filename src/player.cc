@@ -24,9 +24,3 @@ void Player::PlaceAStone(Board *board_ptr,
                          const BoardCoordinate &board_coordinate) const {
   board_ptr->PlaceAStone(board_coordinate, used_stone_type_);
 }
-
-void Player::ThinkAndPlaceAStone(Board *board_ptr) const {
-  // Thinking here.
-  BoardCoordinate target_board_coordinate(Think(board_ptr));
-  PlaceAStone(board_ptr, target_board_coordinate);
-}

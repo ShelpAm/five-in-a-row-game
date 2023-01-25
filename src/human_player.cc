@@ -6,16 +6,13 @@
 
 #include <iostream>
 
-#include "five_in_a_row_game/board_coordinate.h"
-#include "five_in_a_row_game/vector2d.h"
-
 HumanPlayer::HumanPlayer(StoneType used_stone_type) : Player(used_stone_type) {}
 
 HumanPlayer::HumanPlayer() {}
 
 HumanPlayer::~HumanPlayer() {}
 
-const Vector2D<int> HumanPlayer::Think(const Board *board_ptr) const {
+const BoardCoordinate HumanPlayer::Think(const Board *board_ptr) const {
   BoardCoordinate input_board_coordinate;
   auto TargetMoveIsValid = [board_ptr, &input_board_coordinate]() -> bool {
     return IsInRangeOf(input_board_coordinate, board_ptr) &&

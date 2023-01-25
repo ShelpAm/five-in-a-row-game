@@ -5,7 +5,6 @@
 #include "five_in_a_row_game/easy_ai_player.h"
 
 #include "five_in_a_row_game/board_coordinate.h"
-#include "five_in_a_row_game/vector2d.h"
 
 EasyAIPlayer::EasyAIPlayer() {}
 
@@ -13,7 +12,7 @@ EasyAIPlayer::EasyAIPlayer(const StoneType stone_type) : AIPlayer(stone_type) {}
 
 EasyAIPlayer::~EasyAIPlayer() {}
 
-const Vector2D<int> EasyAIPlayer::Think(const Board *board_ptr) const {
+const BoardCoordinate EasyAIPlayer::Think(const Board *board_ptr) const {
   //[TODO](small_sheep_): EASY_AI_PLAYER's THINKING PROCEDURE HAS NOT BEEN
   //  COMPLETED.
   // BoardCoordinate target_board_coordinate;

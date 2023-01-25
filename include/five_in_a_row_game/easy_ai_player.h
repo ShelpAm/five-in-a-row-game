@@ -7,7 +7,7 @@
 
 #include "ai_player.h"
 #include "easy_ai_player_fwd.h"
-#include "five_in_a_row_game/vector2d.h"
+#include "five_in_a_row_game/board_coordinate.h"
 
 class EasyAIPlayer : public AIPlayer {
  public:
@@ -17,7 +17,7 @@ class EasyAIPlayer : public AIPlayer {
 
   ~EasyAIPlayer() override;
 
-  const Vector2D<int> Think(const Board *board_ptr) const override;
+  const BoardCoordinate Think(const Board *board_ptr) const override;
 };
 
 #endif  // FIVE_IN_A_ROW_GAME_SRC_EASY_AI_PLAYER_H

@@ -19,19 +19,15 @@ void Board::PlaceAStone(const BoardCoordinate &board_coordinate,
   if (!IsInRangeOf(board_coordinate, this)) {
     throw 2;
   }
-  board_map_[board_coordinate.Y()][board_coordinate.X()] = stone_type;
+  board_map_[board_coordinate.Row()][board_coordinate.Column()] = stone_type;
 }
 
 StoneType Board::StoneTypeInCoordinate(
     const BoardCoordinate &board_coordinate) const {
   if (!IsInRangeOf(board_coordinate, this)) {
-    try {
-      throw 'c';
-    } catch (char c) {
-      std::cout << c;
-    }
+    throw std::exception();
   }
-  return board_map_[board_coordinate.Y()][board_coordinate.X()];
+  return board_map_[board_coordinate.Row()][board_coordinate.Column()];
 }
 
 int Board::BoardSize() const { return board_size_; }

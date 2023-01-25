@@ -17,7 +17,6 @@ class Board {
   void PlaceAStone(const BoardCoordinate &board_coordinate,
                    StoneType stone_type);
 
- public:
   StoneType StoneTypeInCoordinate(const BoardCoordinate &) const;
 
   int BoardSize() const;

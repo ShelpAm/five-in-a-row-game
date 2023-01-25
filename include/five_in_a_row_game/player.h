@@ -8,7 +8,6 @@
 #include "five_in_a_row_game/board.h"
 #include "five_in_a_row_game/board_coordinate.h"
 #include "five_in_a_row_game/move.h"
-#include "five_in_a_row_game/vector2d.h"
 
 class Player {
  public:
@@ -20,12 +19,9 @@ class Player {
 
   const Move Move(Board *board);
 
-  virtual const Vector2D<int> Think(const Board *const board) const = 0;
+  virtual const BoardCoordinate Think(const Board *const board) const = 0;
 
-  void PlaceAStone(Board *board_ptr,
-                   const BoardCoordinate &board_coordinate) const;
-
-  void ThinkAndPlaceAStone(Board *board_ptr) const;
+  void PlaceAStone(Board *board, const BoardCoordinate &board_coordinate) const;
 
   int Identity() const { return identity_; }
   void SetIdentity(int identity) { identity_ = identity; }
