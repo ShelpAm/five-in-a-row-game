@@ -5,6 +5,8 @@
 #ifndef FIVE_IN_A_ROW_GAME_SRC_HUMAN_PLAYER_H
 #define FIVE_IN_A_ROW_GAME_SRC_HUMAN_PLAYER_H
 
+#include <vector>
+
 #include "five_in_a_row_game/board_coordinate.h"
 #include "player.h"
 
@@ -16,7 +18,8 @@ class HumanPlayer : public Player {
 
   virtual ~HumanPlayer() override;
 
-  virtual const BoardCoordinate Think(const Board *board_ptr) const override;
+  const std::vector<BoardCoordinate> Think(
+      const Board *board_ptr) const override;
 };
 
 #endif  // FIVE_IN_A_ROW_GAME_SRC_HUMAN_PLAYER_H

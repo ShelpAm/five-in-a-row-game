@@ -14,13 +14,13 @@ Player::Player(StoneType used_stone_type) : used_stone_type_(used_stone_type) {}
 Player::~Player() {}
 
 const Move Player::Move(Board *board) {
-  BoardCoordinate target_board_coordinate(Think(board));
+  BoardCoordinate target_board_coordinate{Think(board).front()};
   PlaceAStone(board, target_board_coordinate);
   // constructor
-  return ::Move{target_board_coordinate, used_stone_type_};
+  return ::Move{target_board_coordinate, UsedStoneType()};
 }
 
-void Player::PlaceAStone(Board *board_ptr,
-                         const BoardCoordinate &board_coordinate) const {
-  board_ptr->PlaceAStone(board_coordinate, used_stone_type_);
+void Player::PlaceAStone(Board *board,
+                         const BoardCoordinate &coordinate) const {
+  board->PlaceAStone(coordinate, used_stone_type_);
 }

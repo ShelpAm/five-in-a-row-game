@@ -15,9 +15,9 @@ Application::Application() {}
 
 void Application::MainLoop() {
   while (ApplicationIsOn()) {
-    last_frame_time_ = current_frame_time_;
-    current_frame_time_ = static_cast<int>(clock());
-    SetFramePerSecond(current_frame_time_ - last_frame_time_);
+    last_frame_ = current_frame_;
+    current_frame_ = static_cast<int>(clock());
+    SetFramePerSecond(current_frame_ - last_frame_);
 
     if (game_.Started()) {
       game_.Tick();
@@ -25,7 +25,6 @@ void Application::MainLoop() {
     }
     if (game_.Over()) {
       std::cout << "Game over!\n";
-      game_.SetOver(false);
     }
     ParseCommand();
   }
@@ -40,8 +39,6 @@ void Application::ParseCommand() {
   } else if (command == "start-a-local-game" || command == "game") {
     HumanPlayerFactory human_player_factory;
     EasyAIPlayerFactory easy_ai_player_factory;
-    // std::unique_ptr<Player> human_player(human_player_factory.MakePlayer());
-    // std::unique_ptr<Player> ai_player(easy_ai_factory.MakePlayer());
     // TODO(small_sheep_ 1178550325@qq.com): The memory has not been
     //  freed(deleted).
     Player *human_player = human_player_factory.MakePlayer(),

@@ -14,7 +14,8 @@
 #include "five_in_a_row_game/player.h"
 #include "five_in_a_row_game/stone_type.h"
 
-FiveInARowGame::FiveInARowGame() : board_pointer_(std::make_unique<Board>(5)) {}
+FiveInARowGame::FiveInARowGame()
+    : board_pointer_(std::make_unique<Board>(15)) {}
 
 void FiveInARowGame::Start(Player *first_hand_player_ptr,
                            Player *second_hand_player_ptr) {
@@ -27,21 +28,15 @@ void FiveInARowGame::Start(Player *first_hand_player_ptr,
   players_[0]->SetUsedStoneType(StoneType::kStoneTypeBlack);
   players_[1]->SetUsedStoneType(StoneType::kStoneTypeWhite);
 
-  SetStarted(true);
   std::cout << "Game STARTS.\n";
-}
+  SetStarted(true);
 
-void FiveInARowGame::Tick() {
-  // ProcessInput();
-  Update();
   Render();
 }
 
-void FiveInARowGame::ProcessInput() {
-  //  static std::string command;
-  //  std::cout << "Please input your command:\n";
-  //  std::cin >> command;
-  //  ParseCommand(command);
+void FiveInARowGame::Tick() {
+  Update();
+  Render();
 }
 
 void FiveInARowGame::Update() {
@@ -52,7 +47,6 @@ void FiveInARowGame::Update() {
 
 void FiveInARowGame::Render() const {
   // Do some cleaning.
-  std::cout << std::string(50, '\n');
   std::ostringstream buf;
   std::string line(board_pointer_->BoardSize(), '-');
   buf << line << "Map" << line << "\n";
@@ -65,12 +59,6 @@ void FiveInARowGame::Render() const {
   }
   buf << line << line << "---\n";
   std::cout << buf.str();
-}
-
-void FiveInARowGame::ParseCommand(const std::string &command) {
-  if (command == "exit") {
-    SetStarted(false);
-  }
 }
 
 void FiveInARowGame::CheckStatus() {

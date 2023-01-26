@@ -11,7 +11,7 @@
 /// @brief A particular match.
 class FiveInARowGame {
  public:
-  explicit FiveInARowGame();
+  FiveInARowGame();
 
   /// @brief Starts the game and begin the game loop.
   /// @param first_hand_player_ptr - The first player
@@ -27,14 +27,10 @@ class FiveInARowGame {
   void SetOver(bool over) { over_ = over; }
 
  private:
-  void ProcessInput();
-
   /// @brief Updates processes data
   void Update();
 
   void Render() const;
-
-  void ParseCommand(const std::string &command);
 
   void CurrentPlayerMove();
 
