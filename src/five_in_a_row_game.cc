@@ -17,10 +17,10 @@
 FiveInARowGame::FiveInARowGame()
     : board_pointer_(std::make_unique<Board>(15)) {}
 
-void FiveInARowGame::Start(Player *first_hand_player_ptr,
-                           Player *second_hand_player_ptr) {
-  players_[0] = first_hand_player_ptr;
-  players_[1] = second_hand_player_ptr;
+void FiveInARowGame::Start(Player *first_hand_player,
+                           Player *second_hand_player) {
+  players_[0] = first_hand_player;
+  players_[1] = second_hand_player;
 
   moving_player_ = players_[0];
   unmoving_player_ = players_[1];
@@ -41,7 +41,7 @@ void FiveInARowGame::Tick() {
 
 void FiveInARowGame::Update() {
   CurrentPlayerMove();
-  CheckStatus();
+  UpdateStatus();
   std::swap(moving_player_, unmoving_player_);
 }
 
@@ -50,10 +50,13 @@ void FiveInARowGame::Render() const {
   std::ostringstream buf;
   std::string line(board_pointer_->BoardSize(), '-');
   buf << line << "Map" << line << "\n";
-  for (const auto &i : board_pointer_->BoardMap()) {
+  const int end = board_pointer_->BoardSize();
+  for (int row = 0; row != end; ++row) {
     buf << "| ";
-    for (const auto &j : i) {
-      buf << static_cast<int>(j) << " ";
+    for (int column = 0; column != end; ++column) {
+      buf << static_cast<int>(board_pointer_->StoneTypeInCoordinate(
+                 BoardCoordinate{column, row}))
+          << " ";
     }
     buf << "|\n";
   }
@@ -61,92 +64,50 @@ void FiveInARowGame::Render() const {
   std::cout << buf.str();
 }
 
-void FiveInARowGame::CheckStatus() {
-  auto IsRowWon = [](const Board *const board, const Move &move) -> bool {
-    bool is_won = true;  // Go to IsColumnWon to understand why it is set true.
-    for (int i = -4; i != 1; ++i) {
-      if (move.board_coordinate.X() + i < 0 ||
-          move.board_coordinate.X() + i + 4 > board->BoardSize() - 1) {
-        continue;
-      }
-      for (int j = 0; j != 5; ++j) {
-        if (move.stone_type != board->StoneTypeInCoordinate(BoardCoordinate(
-                                   move.board_coordinate.X() + i + j,
-                                   move.board_coordinate.Y()))) {
-          is_won = false;
-          break;
+void FiveInARowGame::UpdateStatus() {
+  auto Winning = [](const Board *board, const Move &last_move) -> bool {
+    // This only need to check the latest move.
+    // Directions: - - -
+    //             - - +
+    //             + + +
+    for (int vertical = 0; vertical != 2; ++vertical) {
+      for (int horizontal = -1; horizontal != 2; ++horizontal) {
+        if (vertical == 0 && horizontal != 1) {
+          continue;
         }
-      }
-      if (is_won) {
-        return true;
+        // for every five stones
+        for (int distance = -4; distance != 1; ++distance) {
+          // for every stone
+          for (int i = 0; i != 5; ++i) {
+            const BoardCoordinate &last_move_coordinate =
+                last_move.board_coordinate;
+            BoardCoordinate c{
+                last_move_coordinate.Column() + horizontal * (distance + i),
+                last_move_coordinate.Row() + vertical * (distance + i)};
+            if (!CoordinateIsInRangeOfBoard(c, board) ||
+                board->StoneTypeInCoordinate(c) != last_move.stone_type) {
+              break;
+            }
+            if (i == 4) {
+              return true;
+            }
+          }
+        }
       }
     }
     return false;
   };
 
-  auto IsColumnWon = [](const Board *const board, const Move &move) -> bool {
-    bool is_won = true;  // First, pretend is_won is true, later we will verify
-                         // its correctness.
-    // 左右都有可能连成五子
-    for (int i = -4; i != 1; ++i) {
-      if (move.board_coordinate.Y() + i < 0 ||
-          move.board_coordinate.Y() + i + 4 > board->BoardSize() - 1) {
-        continue;
-      }
-      for (int j = 0; j != 5; ++j) {
-        if (move.stone_type != board->StoneTypeInCoordinate(BoardCoordinate(
-                                   move.board_coordinate.X(),
-                                   move.board_coordinate.Y() + i + j))) {
-          is_won = false;
-          break;
-        }
-      }
-      if (is_won) {
-        return true;
-      }
-    }
-    return false;
-  };
-
-  auto IsInclinationWon = [](const Board *const board,
-                             const Move &move) -> bool {
-    bool is_won = true;  // Go to IsColumnWon to understand why it is set true.
-    for (int i = -4; i != 1; ++i) {
-      if (move.board_coordinate.X() + i < 0 ||
-          move.board_coordinate.Y() + i < 0 ||
-          move.board_coordinate.X() + i + 4 > board->BoardSize() - 1 ||
-          move.board_coordinate.Y() + i + 4 > board->BoardSize() - 1) {
-        continue;
-      }
-      for (int j = 0; j != 5; ++j) {
-        if (move.stone_type != board->StoneTypeInCoordinate(BoardCoordinate(
-                                   move.board_coordinate.X() + i + j,
-                                   move.board_coordinate.Y() + i + j))) {
-          is_won = false;
-          break;
-        }
-      }
-      if (is_won) {
-        return true;
-      }
-    }
-    return false;
-  };
-
-  // We only need to check the recent move.
+  const Board *const board = board_pointer_.get();
   const Move &last_move = history_moves_.top();
-  if (IsRowWon(board_pointer_.get(), last_move) ||
-      IsColumnWon(board_pointer_.get(), last_move) ||
-      IsInclinationWon(board_pointer_.get(), last_move)) {
+  if (Winning(board, last_move)) {
     winner_ = moving_player_;
     SetStarted(false);
     SetOver(true);
   }
-
-  // BoardCoordinate iterator = last_move.board_coordinate;
-  // Row
 }
 
 void FiveInARowGame::CurrentPlayerMove() {
-  history_moves_.push(moving_player_->Move(board_pointer_.get()));
+  const Move move{moving_player_->Move(board_pointer_.get())};
+  history_moves_.push(move);
 }

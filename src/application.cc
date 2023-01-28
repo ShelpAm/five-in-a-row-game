@@ -24,7 +24,8 @@ void Application::MainLoop() {
       continue;
     }
     if (game_.Over()) {
-      std::cout << "Game over!\n";
+      std::cout << "Game over!\nThe winner is " << game_.Winner()->Name()
+                << '\n';
     }
     ParseCommand();
   }
@@ -43,6 +44,8 @@ void Application::ParseCommand() {
     //  freed(deleted).
     Player *human_player = human_player_factory.MakePlayer(),
            *ai_player = easy_ai_player_factory.MakePlayer();
+    human_player->SetName("small_sheep_");
+    ai_player->SetName("easy_ai_player");
 
     game_.Start(human_player, ai_player);
   }

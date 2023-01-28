@@ -14,18 +14,18 @@ class Board {
  public:
   explicit Board(int board_size);
 
-  void PlaceAStone(const BoardCoordinate &board_coordinate,
-                   StoneType stone_type);
+  void PlaceAStone(const BoardCoordinate &c, const StoneType stone_type);
 
-  StoneType StoneTypeInCoordinate(const BoardCoordinate &) const;
+  StoneType StoneTypeInCoordinate(const BoardCoordinate &c) const;
 
-  int BoardSize() const;
-
-  const std::vector<std::vector<StoneType>> &BoardMap() const;
+  int BoardSize() const { return board_size_; }
+  const std::vector<std::vector<StoneType>> &StoneTypeMap() const {
+    return stone_type_map_;
+  }
 
  private:
   int board_size_;
-  std::vector<std::vector<StoneType>> board_map_;
+  std::vector<std::vector<StoneType>> stone_type_map_;
 };
 
 #endif  // FIVE_IN_A_ROW_GAME_SRC_BOARD_H

@@ -6,6 +6,7 @@
 #define FIVE_IN_A_ROW_GAME_APPLICATION_H_
 
 #include "five_in_a_row_game/five_in_a_row_game.h"
+#include "five_in_a_row_game/player.h"
 
 class Application {
  public:
@@ -16,7 +17,6 @@ class Application {
 
   bool ApplicationIsOn() const { return application_is_on_; }
   void SetApplicationIsOn(bool is_on) { application_is_on_ = is_on; }
-
   int FramePerSecond() const { return frame_per_second_; }
 
  private:

@@ -12,27 +12,33 @@ class BoardCoordinate {
  public:
   BoardCoordinate();
   BoardCoordinate(const Vector2D<int> &vec2i);
-  BoardCoordinate(int column, int row);
+  BoardCoordinate(const int column, const int row);
 
-  int &operator[](int index) { return vec2i_[index]; }
-  const int &operator[](int index) const { return vec2i_[index]; }
+  int &operator[](const int index) { return vec2i_[index]; }
+  const int &operator[](const int index) const { return vec2i_[index]; }
 
   int Column() const { return vec2i_.X(); }
-  void SetColumn(int column) { vec2i_.SetX(column); }
+  void SetColumn(const int column) { vec2i_.SetX(column); }
+  void AddColumn(const int delta) { vec2i_.AddX(delta); }
   int Row() const { return vec2i_.Y(); }
-  void SetRow(int row) { vec2i_.SetY(row); }
+  void SetRow(const int row) { vec2i_.SetY(row); }
+  void AddRow(const int delta) { vec2i_.AddY(delta); }
   int X() const { return vec2i_.X(); }
-  void SetX(int x) { vec2i_.SetX(x); }
+  void SetX(const int x) { vec2i_.SetX(x); }
+  void AddX(const int delta) { vec2i_.AddX(delta); }
   int Y() const { return vec2i_.Y(); }
-  void SetY(int y) { vec2i_.SetY(y); }
+  void SetY(const int y) { vec2i_.SetY(y); }
+  void AddY(const int delta) { vec2i_.AddY(delta); }
 
  private:
-  Vector2D<int> vec2i_;
+  Vector2D<int> vec2i_;  // first column and then row
 };
+
+class CoordinateOutOfRange {};
 
 /// @brief Judges if the board_coordinate is valid in certain board.
 ///         (if board_coordinate.X() < board.size, so as y)
-bool IsInRangeOf(const BoardCoordinate &board_coordinate,
-                 const Board *const board_ptr);
+bool CoordinateIsInRangeOfBoard(const BoardCoordinate &coordinate,
+                                const Board *const board);
 
 #endif  // FIVE_IN_A_ROW_GAME_BOARD_COORDINATE_H

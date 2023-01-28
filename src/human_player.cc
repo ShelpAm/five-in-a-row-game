@@ -9,25 +9,25 @@
 
 #include "five_in_a_row_game/board_coordinate.h"
 
-HumanPlayer::HumanPlayer(StoneType used_stone_type) : Player(used_stone_type) {}
-
 HumanPlayer::HumanPlayer() {}
+
+HumanPlayer::HumanPlayer(StoneType used_stone_type) : Player(used_stone_type) {}
 
 HumanPlayer::~HumanPlayer() {}
 
 const std::vector<BoardCoordinate> HumanPlayer::Think(
-    const Board *board_ptr) const {
-  BoardCoordinate input_board_coordinate;
-  auto TargetMoveIsValid = [board_ptr, &input_board_coordinate]() -> bool {
-    return IsInRangeOf(input_board_coordinate, board_ptr) &&
-           board_ptr->StoneTypeInCoordinate(input_board_coordinate) ==
+    const Board *const board) const {
+  BoardCoordinate input_coordinate;
+  auto TargetMoveIsValid = [board, &input_coordinate]() -> bool {
+    return CoordinateIsInRangeOfBoard(input_coordinate, board) &&
+           board->StoneTypeInCoordinate(input_coordinate) ==
                StoneType::kStoneTypeEmpty;
   };
 
   std::cout << "Please input your move(first column and then row; every "
                "input should be followed by an ENTER):\n";
   while (true) {
-    std::cin >> input_board_coordinate[0] >> input_board_coordinate[1];
+    std::cin >> input_coordinate[0] >> input_coordinate[1];
     if (TargetMoveIsValid()) {
       break;
     }
@@ -35,5 +35,5 @@ const std::vector<BoardCoordinate> HumanPlayer::Think(
     std::cout << "Your target coordinate is invalid, please choose another "
                  "one!\n";
   }
-  return std::vector<BoardCoordinate>{input_board_coordinate};
+  return std::vector<BoardCoordinate>{input_coordinate};
 }

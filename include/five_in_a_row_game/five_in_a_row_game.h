@@ -14,27 +14,25 @@ class FiveInARowGame {
   FiveInARowGame();
 
   /// @brief Starts the game and begin the game loop.
-  /// @param first_hand_player_ptr - The first player
-  /// @param second_hand_player_ptr - The second player
-  void Start(Player *first_hand_player_ptr, Player *second_hand_player_ptr);
+  /// @param first_hand_player - The first player
+  /// @param second_hand_player - The second player
+  void Start(Player *first_hand_player, Player *second_hand_player);
 
   void Tick();
 
- public:
   bool Started() const { return started_; }
   void SetStarted(bool started) { started_ = started; }
   bool Over() const { return over_; }
   void SetOver(bool over) { over_ = over; }
+  const Player *Winner() { return winner_; }
 
  private:
   /// @brief Updates processes data
   void Update();
+  void CurrentPlayerMove();
+  void UpdateStatus();
 
   void Render() const;
-
-  void CurrentPlayerMove();
-
-  void CheckStatus();
 
   bool started_ = false, over_ = false;
   std::stack<Move> history_moves_;

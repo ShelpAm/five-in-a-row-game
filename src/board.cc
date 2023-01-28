@@ -11,27 +11,20 @@
 
 Board::Board(int board_size)
     : board_size_(board_size),
-      board_map_(board_size, std::vector<StoneType>(
-                                 board_size, StoneType::kStoneTypeEmpty)) {}
-
-void Board::PlaceAStone(const BoardCoordinate &board_coordinate,
-                        const StoneType stone_type) {
-  if (!IsInRangeOf(board_coordinate, this)) {
-    throw 2;
-  }
-  board_map_[board_coordinate.Row()][board_coordinate.Column()] = stone_type;
+      stone_type_map_(board_size, std::vector<StoneType>(
+                                      board_size, StoneType::kStoneTypeEmpty)) {
 }
 
-StoneType Board::StoneTypeInCoordinate(
-    const BoardCoordinate &board_coordinate) const {
-  if (!IsInRangeOf(board_coordinate, this)) {
-    throw std::exception();
+void Board::PlaceAStone(const BoardCoordinate &c, const StoneType stone_type) {
+  if (!CoordinateIsInRangeOfBoard(c, this)) {
+    throw CoordinateOutOfRange{};
   }
-  return board_map_[board_coordinate.Row()][board_coordinate.Column()];
+  stone_type_map_[c.Column()][c.Row()] = stone_type;
 }
 
-int Board::BoardSize() const { return board_size_; }
-
-const std::vector<std::vector<StoneType>> &Board::BoardMap() const {
-  return board_map_;
+StoneType Board::StoneTypeInCoordinate(const BoardCoordinate &c) const {
+  if (!CoordinateIsInRangeOfBoard(c, this)) {
+    throw CoordinateOutOfRange{};
+  }
+  return StoneTypeMap()[c.Column()][c.Row()];
 }

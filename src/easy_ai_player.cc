@@ -4,7 +4,6 @@
 
 #include "five_in_a_row_game/easy_ai_player.h"
 
-#include <iterator>
 #include <vector>
 
 #include "five_in_a_row_game/board_coordinate.h"
@@ -20,24 +19,24 @@ const std::vector<BoardCoordinate> EasyAIPlayer::Think(
     const Board *board) const {
   auto score_map{CalculateScore(board)};
   int max_score{0};
-  std::vector<BoardCoordinate> board_coordinates;
+  std::vector<BoardCoordinate> coordinates;
 
   int end = board->BoardSize();
   for (int column = 0; column != end; ++column) {
     for (int row = 0; row != end; ++row) {
-      if (!IsInRangeOf(BoardCoordinate{column, row}, board)) {
+      if (!CoordinateIsInRangeOfBoard(BoardCoordinate{column, row}, board)) {
         continue;
       }
       if (max_score < score_map[column][row]) {
         max_score = score_map[column][row];
-        board_coordinates.clear();
-        board_coordinates.push_back(BoardCoordinate(column, row));
+        coordinates.clear();
+        coordinates.push_back(BoardCoordinate{column, row});
       } else if (max_score == score_map[column][row]) {
-        board_coordinates.push_back(BoardCoordinate(column, row));
+        coordinates.push_back(BoardCoordinate{column, row});
       }
     }
   }
-  return board_coordinates;
+  return coordinates;
 }
 
 const std::vector<std::vector<int>> EasyAIPlayer::CalculateScore(
@@ -59,11 +58,11 @@ const std::vector<std::vector<int>> EasyAIPlayer::CalculateScore(
             continue;
           }
           // Here starting calculating.
-          for (int step = 1; step != 5; ++step) {
-            int current_column{column + horizontal * step},
-                current_row{row + vertical * step};
+          for (int length = 1; length != 5; ++length) {
+            int current_column{column + horizontal * length},
+                current_row{row + vertical * length};
             BoardCoordinate current_coordinate{current_column, current_row};
-            if (!IsInRangeOf(current_coordinate, board)) {
+            if (!CoordinateIsInRangeOfBoard(current_coordinate, board)) {
               break;
             }
             StoneType current_stone_type =

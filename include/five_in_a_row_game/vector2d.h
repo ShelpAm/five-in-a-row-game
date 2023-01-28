@@ -25,11 +25,10 @@ class Vector2D {
 
   value_type X() const { return values_[0]; }
   void SetX(value_type x) { values_[0] = x; }
-  void AddX(value_type x) { values_[0] += x; }
-
+  void AddX(value_type delta) { values_[0] += delta; }
   value_type Y() const { return values_[1]; }
   void SetY(value_type y) { values_[1] = y; }
-  void AddY(value_type y) { values_[1] += y; }
+  void AddY(value_type delta) { values_[1] += delta; }
 
  private:
   static constexpr int length() { return 2; }

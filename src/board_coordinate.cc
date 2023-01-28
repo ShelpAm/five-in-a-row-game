@@ -12,10 +12,8 @@ BoardCoordinate::BoardCoordinate(const Vector2D<int> &vec2i) : vec2i_(vec2i) {}
 
 BoardCoordinate::BoardCoordinate(int column, int row) : vec2i_(column, row) {}
 
-bool IsInRangeOf(const BoardCoordinate &board_coordinate,
-                 const Board *const board_ptr) {
-  return board_coordinate.Row() < board_ptr->BoardSize() &&
-         board_coordinate.Row() >= 0 &&
-         board_coordinate.Column() < board_ptr->BoardSize() &&
-         board_coordinate.Column() >= 0;
+bool CoordinateIsInRangeOfBoard(const BoardCoordinate &coordinate,
+                                const Board *const board) {
+  return coordinate.Row() < board->BoardSize() && coordinate.Row() >= 0 &&
+         coordinate.Column() < board->BoardSize() && coordinate.Column() >= 0;
 }

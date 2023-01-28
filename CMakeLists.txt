@@ -6,7 +6,9 @@ set(CMAKE_CXX_COMPILER "clang++")
 if (${CMAKE_CXX_COMPILER} STREQUAL "clang++")
   set(CMAKE_CXX_FLAGS " \
   -Werror -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic \
-  -Wno-exit-time-destructors -Wno-padded -Wno-sign-conversion")
+  -Wno-exit-time-destructors -Wno-padded -Wno-sign-conversion \
+  -Wno-unused-variable \
+  ")
 elseif(${CMAKE_CXX_COMPILER} STREQUAL "vs2022")
   set(CMAKE_CXX_FLAGS "")
 endif()

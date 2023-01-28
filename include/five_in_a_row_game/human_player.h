@@ -19,7 +19,7 @@ class HumanPlayer : public Player {
   virtual ~HumanPlayer() override;
 
   const std::vector<BoardCoordinate> Think(
-      const Board *board_ptr) const override;
+      const Board *const board) const override;
 };
 
 #endif  // FIVE_IN_A_ROW_GAME_SRC_HUMAN_PLAYER_H
