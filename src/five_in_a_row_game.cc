@@ -7,6 +7,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <vector>
 
 #include "five_in_a_row_game/board.h"
 #include "five_in_a_row_game/board_coordinate.h"
@@ -14,8 +15,7 @@
 #include "five_in_a_row_game/player.h"
 #include "five_in_a_row_game/stone_type.h"
 
-FiveInARowGame::FiveInARowGame()
-    : board_pointer_(std::make_unique<Board>(15)) {}
+FiveInARowGame::FiveInARowGame() : board_pointer_(std::make_unique<Board>(9)) {}
 
 void FiveInARowGame::Start(Player *first_hand_player,
                            Player *second_hand_player) {
@@ -48,19 +48,33 @@ void FiveInARowGame::Update() {
 void FiveInARowGame::Render() const {
   // Do some cleaning.
   std::ostringstream buf;
-  std::string line(board_pointer_->BoardSize(), '-');
-  buf << line << "Map" << line << "\n";
-  const int end = board_pointer_->BoardSize();
-  for (int row = 0; row != end; ++row) {
-    buf << "| ";
-    for (int column = 0; column != end; ++column) {
+
+  buf << "The game map:\n";
+  auto PrintLine1 = [this, &buf]() {
+    buf << "+  " << ' ';
+    for (int i = 0; i != board_pointer_->BoardSize(); ++i) {
+      buf << i << ' ';
+    }
+    buf << "  +";
+    buf << '\n';
+  };
+  auto PrintLine2 = [this, &buf]() {
+    buf << "   " << std::string(board_pointer_->BoardSize() * 2 + 1, '-')
+        << '\n';
+  };
+  PrintLine1();
+  PrintLine2();
+  for (int row = 0; row != board_pointer_->BoardSize(); ++row) {
+    buf << row << " | ";
+    for (int column = 0; column != board_pointer_->BoardSize(); ++column) {
       buf << static_cast<int>(board_pointer_->StoneTypeInCoordinate(
                  BoardCoordinate{column, row}))
           << " ";
     }
-    buf << "|\n";
+    buf << "| " << row << "\n";
   }
-  buf << line << line << "---\n";
+  PrintLine2();
+  PrintLine1();
   std::cout << buf.str();
 }
 
