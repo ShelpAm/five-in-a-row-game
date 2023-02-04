@@ -24,7 +24,7 @@ class Player {
   Player(const Player && player);
   virtual ~Player();
 
-  const Move Move(Board & board) const;
+  const ::Move Move(Board & board) const;
 
  public:
   int Identity() const { return identity_; }

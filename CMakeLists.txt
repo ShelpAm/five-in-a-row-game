@@ -3,14 +3,16 @@ project(five-in-a-row-game VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_BUILD_TYPE "Debug")
 #set(CMAKE_CXX_COMPILER "clang++")
-if (${CMAKE_CXX_COMPILER} STREQUAL "clang++")
-  set(CMAKE_CXX_FLAGS " \
-  -Werror -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic \
-  -Wno-exit-time-destructors -Wno-padded -Wno-sign-conversion \
-  -Wno-unused-variable \
-  ")
-elseif(${CMAKE_CXX_COMPILER} STREQUAL "vs2022")
-  set(CMAKE_CXX_FLAGS "")
+if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Weverything")
+  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-c++98-compat -Wno-c++98-compat-pedantic")
+  #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-exit-time-destructors")
+  #set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-padded")
+  #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-sign-conversion")
+elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
+elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 endif()
 set(CMAKE_CXX_STANDARD "20")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
