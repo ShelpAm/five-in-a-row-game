@@ -94,7 +94,7 @@ void FiveInARowGame::UpdateStatus() {
               break;
             }
           }
-          if (i == 4) {
+          if (i == 5) {
             return true;
           }
         }
