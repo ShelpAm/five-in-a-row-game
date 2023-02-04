@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.18)
 project(five-in-a-row-game VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_BUILD_TYPE "Debug")
-set(CMAKE_CXX_COMPILER "clang++")
+#set(CMAKE_CXX_COMPILER "clang++")
 if (${CMAKE_CXX_COMPILER} STREQUAL "clang++")
   set(CMAKE_CXX_FLAGS " \
   -Werror -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic \
