@@ -11,11 +11,11 @@
 class BoardCoordinate {
  public:
   BoardCoordinate();
-  BoardCoordinate(const Vector2D<int> &vec2i);
+  BoardCoordinate(const Vector2D<int> & vec2i);
   BoardCoordinate(const int column, const int row);
 
-  int &operator[](const int index) { return vec2i_[index]; }
-  const int &operator[](const int index) const { return vec2i_[index]; }
+  int & operator[](const int index) { return vec2i_[index]; }
+  const int & operator[](const int index) const { return vec2i_[index]; }
 
   int Column() const { return vec2i_.X(); }
   void SetColumn(const int column) { vec2i_.SetX(column); }
@@ -38,7 +38,7 @@ class CoordinateOutOfRange {};
 
 /// @brief Judges if the board_coordinate is valid in certain board.
 ///         (if board_coordinate.X() < board.size, so as y)
-bool CoordinateIsInRangeOfBoard(const BoardCoordinate &coordinate,
-                                const Board *const board);
+bool CoordinateIsInRangeOfBoard(const BoardCoordinate & coordinate,
+                                const Board & board);
 
 #endif  // FIVE_IN_A_ROW_GAME_BOARD_COORDINATE_H

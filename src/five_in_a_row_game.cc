@@ -1,38 +1,27 @@
-//
-// Created by small-sheep on 11/10/22.
-//
-
 #include "five_in_a_row_game/five_in_a_row_game.h"
 
-#include <iostream>
 #include <sstream>
-#include <string>
-#include <vector>
 
 #include "five_in_a_row_game/board.h"
 #include "five_in_a_row_game/board_coordinate.h"
 #include "five_in_a_row_game/move.h"
-#include "five_in_a_row_game/player.h"
 #include "five_in_a_row_game/stone_type.h"
 
-FiveInARowGame::FiveInARowGame() : board_pointer_(std::make_unique<Board>(9)) {}
+FiveInARowGame::FiveInARowGame() : board_(Board(9)) {}
 
-void FiveInARowGame::Start(Player *first_hand_player,
-                           Player *second_hand_player) {
-  players_[0] = first_hand_player;
-  players_[1] = second_hand_player;
+/*template <PlayerType T>
+void FiveInARowGame::Start(T & first_player, T & later_player) {
+  moving_player_ = &first_player;
+  unmoving_player_ = &later_player;
 
-  moving_player_ = players_[0];
-  unmoving_player_ = players_[1];
+  moving_player_->SetStoneTypeInUse(StoneType::kStoneTypeBlack);
+  unmoving_player_->SetStoneTypeInUse(StoneType::kStoneTypeWhite);
 
-  players_[0]->SetUsedStoneType(StoneType::kStoneTypeBlack);
-  players_[1]->SetUsedStoneType(StoneType::kStoneTypeWhite);
-
-  std::cout << "Game STARTS.\n";
+  std::cout << "Game starts.\n";
   SetStarted(true);
 
   Render();
-}
+}*/
 
 void FiveInARowGame::Tick() {
   Update();
@@ -52,23 +41,22 @@ void FiveInARowGame::Render() const {
   buf << "The game map:\n";
   auto PrintLine1 = [this, &buf]() {
     buf << "+  " << ' ';
-    for (int i = 0; i != board_pointer_->BoardSize(); ++i) {
+    for (int i = 0; i != board_.BoardSize(); ++i) {
       buf << i << ' ';
     }
     buf << "  +";
     buf << '\n';
   };
   auto PrintLine2 = [this, &buf]() {
-    buf << "   " << std::string(board_pointer_->BoardSize() * 2 + 1, '-')
-        << '\n';
+    buf << "   " << std::string(board_.BoardSize() * 2 + 1, '-') << '\n';
   };
   PrintLine1();
   PrintLine2();
-  for (int row = 0; row != board_pointer_->BoardSize(); ++row) {
+  for (int row = 0; row != board_.BoardSize(); ++row) {
     buf << row << " | ";
-    for (int column = 0; column != board_pointer_->BoardSize(); ++column) {
-      buf << static_cast<int>(board_pointer_->StoneTypeInCoordinate(
-                 BoardCoordinate{column, row}))
+    for (int column = 0; column != board_.BoardSize(); ++column) {
+      buf << static_cast<int>(
+                 board_.StoneTypeInCoordinate(BoardCoordinate{column, row}))
           << " ";
     }
     buf << "| " << row << "\n";
@@ -79,7 +67,7 @@ void FiveInARowGame::Render() const {
 }
 
 void FiveInARowGame::UpdateStatus() {
-  auto Winning = [](const Board *board, const Move &last_move) -> bool {
+  auto Winning = [](const Board & board, const Move & last_move) -> bool {
     // This only need to check the latest move.
     // Directions: - - -
     //             - - +
@@ -92,19 +80,22 @@ void FiveInARowGame::UpdateStatus() {
         // for every five stones
         for (int distance = -4; distance != 1; ++distance) {
           // for every stone
-          for (int i = 0; i != 5; ++i) {
-            const BoardCoordinate &last_move_coordinate =
+          // The definition of i is here, so the "i" can be accessed out of
+          //  the for-block(line109)
+          int i = 0;
+          for (; i != 5; ++i) {
+            const BoardCoordinate & last_move_coordinate =
                 last_move.board_coordinate;
             BoardCoordinate c{
                 last_move_coordinate.Column() + horizontal * (distance + i),
                 last_move_coordinate.Row() + vertical * (distance + i)};
             if (!CoordinateIsInRangeOfBoard(c, board) ||
-                board->StoneTypeInCoordinate(c) != last_move.stone_type) {
+                board.StoneTypeInCoordinate(c) != last_move.stone_type) {
               break;
             }
-            if (i == 4) {
-              return true;
-            }
+          }
+          if (i == 4) {
+            return true;
           }
         }
       }
@@ -112,9 +103,8 @@ void FiveInARowGame::UpdateStatus() {
     return false;
   };
 
-  const Board *const board = board_pointer_.get();
-  const Move &last_move = history_moves_.top();
-  if (Winning(board, last_move)) {
+  const Move & last_move = history_moves_.top();
+  if (Winning(board_, last_move)) {
     winner_ = moving_player_;
     SetStarted(false);
     SetOver(true);
@@ -122,6 +112,6 @@ void FiveInARowGame::UpdateStatus() {
 }
 
 void FiveInARowGame::CurrentPlayerMove() {
-  const Move move{moving_player_->Move(board_pointer_.get())};
+  const Move move{moving_player_->Move(board_)};
   history_moves_.push(move);
 }

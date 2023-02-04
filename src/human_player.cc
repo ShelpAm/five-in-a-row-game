@@ -8,19 +8,20 @@
 #include <vector>
 
 #include "five_in_a_row_game/board_coordinate.h"
+#include "five_in_a_row_game/player.h"
 
 HumanPlayer::HumanPlayer() {}
 
-HumanPlayer::HumanPlayer(StoneType used_stone_type) : Player(used_stone_type) {}
+HumanPlayer::HumanPlayer(const Player * const player) : Player(*player) {}
 
 HumanPlayer::~HumanPlayer() {}
 
 const std::vector<BoardCoordinate> HumanPlayer::Think(
-    const Board *const board) const {
+    const Board & board) const {
   BoardCoordinate input_coordinate;
   auto TargetMoveIsValid = [board, &input_coordinate]() -> bool {
     return CoordinateIsInRangeOfBoard(input_coordinate, board) &&
-           board->StoneTypeInCoordinate(input_coordinate) ==
+           board.StoneTypeInCoordinate(input_coordinate) ==
                StoneType::kStoneTypeEmpty;
   };
 

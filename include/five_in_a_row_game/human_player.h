@@ -14,12 +14,12 @@ class HumanPlayer : public Player {
  public:
   HumanPlayer();
 
-  explicit HumanPlayer(StoneType used_stone_type);
+  explicit HumanPlayer(const Player * const player);
 
   virtual ~HumanPlayer() override;
 
-  const std::vector<BoardCoordinate> Think(
-      const Board *const board) const override;
+ private:
+  const std::vector<BoardCoordinate> Think(const Board & board) const override;
 };
 
 #endif  // FIVE_IN_A_ROW_GAME_SRC_HUMAN_PLAYER_H

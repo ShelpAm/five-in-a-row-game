@@ -17,13 +17,13 @@ class EasyAIPlayer : public AIPlayer {
  public:
   EasyAIPlayer();
 
-  explicit EasyAIPlayer(StoneType stone_type);
+  explicit EasyAIPlayer(const AIPlayer * const ai_player);
 
   ~EasyAIPlayer() override;
 
-  const std::vector<BoardCoordinate> Think(const Board *board) const override;
+  const std::vector<BoardCoordinate> Think(const Board & board) const override;
   const std::vector<std::vector<int>> CalculateScore(
-      const Board *board) const override;
+      const Board & board) const override;
 };
 
 #endif  // FIVE_IN_A_ROW_GAME_SRC_EASY_AI_PLAYER_H

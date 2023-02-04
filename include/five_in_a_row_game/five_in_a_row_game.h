@@ -1,12 +1,15 @@
-#ifndef FIVE_IN_A_ROW_GAME_INCLUDE_FIVE_IN_A_ROW_GAME_H
-#define FIVE_IN_A_ROW_GAME_INCLUDE_FIVE_IN_A_ROW_GAME_H
+#ifndef FIVE_IN_A_ROW_GAME_FIVE_IN_A_ROW_GAME_HPP
+#define FIVE_IN_A_ROW_GAME_FIVE_IN_A_ROW_GAME_HPP
 
+#include <iostream>
 #include <memory>
 #include <stack>
-#include <string>
+#include <type_traits>
 
-#include "five_in_a_row_game/move.h"
 #include "five_in_a_row_game/player.h"
+
+template <typename T>
+concept PlayerType = std::is_same_v<T, Player>;
 
 /// @brief A particular match.
 class FiveInARowGame {
@@ -14,9 +17,21 @@ class FiveInARowGame {
   FiveInARowGame();
 
   /// @brief Starts the game and begin the game loop.
-  /// @param first_hand_player - The first player
-  /// @param second_hand_player - The second player
-  void Start(Player *first_hand_player, Player *second_hand_player);
+  /// @param first_player - The first player
+  /// @param later_player - The second player
+  template <PlayerType T>
+  void Start(T & first_player, T & later_player) {
+    moving_player_ = &first_player;
+    unmoving_player_ = &later_player;
+
+    moving_player_->SetStoneTypeInUse(StoneType::kStoneTypeBlack);
+    unmoving_player_->SetStoneTypeInUse(StoneType::kStoneTypeWhite);
+
+    std::cout << "Game starts.\n";
+    SetStarted(true);
+
+    Render();
+  }
 
   void Tick();
 
@@ -24,7 +39,7 @@ class FiveInARowGame {
   void SetStarted(bool started) { started_ = started; }
   bool Over() const { return over_; }
   void SetOver(bool over) { over_ = over; }
-  const Player *Winner() { return winner_; }
+  const Player * Winner() { return winner_; }
 
  private:
   /// @brief Updates processes data
@@ -37,9 +52,8 @@ class FiveInARowGame {
   bool started_ = false, over_ = false;
   std::stack<Move> history_moves_;
   Player *moving_player_, *unmoving_player_;
-  Player *winner_;
-  std::unique_ptr<Board> board_pointer_;
-  Player *players_[2];
+  Player * winner_;
+  Board board_;
 };
 
-#endif  // FIVE_IN_A_ROW_GAME_INCLUDE_FIVE_IN_A_ROW_GAME_H
+#endif  // FIVE_IN_A_ROW_GAME_FIVE_IN_A_ROW_GAME_HPP

@@ -20,9 +20,10 @@ set(main_executable "${PROJECT_NAME}")
 
 add_executable(${main_executable} "")
 target_sources(${main_executable} PRIVATE src/ai_player.cc
-  src/ai_player_factory.cc src/application.cc src/board.cc
+  src/application.cc src/board.cc
   src/board_coordinate.cc src/easy_ai_player.cc src/easy_ai_player_factory.cc
-  src/five_in_a_row_game.cc src/human_player.cc src/human_player_factory.cc
-  src/main.cc src/player.cc src/player_factory.cc)
-target_include_directories(${main_executable} PRIVATE include)
+  src/five_in_a_row_game.cc
+  src/human_player.cc src/human_player_factory.cc
+  src/main.cc src/player.cc)
+target_include_directories(${main_executable} PRIVATE include src)
 

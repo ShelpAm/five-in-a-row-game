@@ -5,17 +5,15 @@
 #ifndef FIVE_IN_A_ROW_GAME_SRC_HUMAN_PLAYER_FACTORY_H
 #define FIVE_IN_A_ROW_GAME_SRC_HUMAN_PLAYER_FACTORY_H
 
-#include "player_factory.h"
+#include "human_player.h"
 
-class HumanPlayerFactory : public PlayerFactory{
+class HumanPlayerFactory {
  public:
   HumanPlayerFactory();
 
-  ~HumanPlayerFactory() override;
+  ~HumanPlayerFactory();
 
-  virtual Player *MakePlayer() const override;
-  virtual Player *MakePlayer(const StoneType stone_type) const override;
+  HumanPlayer *MakePlayer() const;
 };
 
-
-#endif //FIVE_IN_A_ROW_GAME_SRC_HUMAN_PLAYER_FACTORY_H
+#endif  // FIVE_IN_A_ROW_GAME_SRC_HUMAN_PLAYER_FACTORY_H
