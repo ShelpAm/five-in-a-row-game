@@ -25,8 +25,13 @@ void Application::MainLoop() {
       continue;
     }
     if (game_.Over()) {
-      std::cout << "Game over!\nThe winner is " << game_.Winner()->Name()
-                << '\n';
+      std::cout << "Game over!\n";
+      if (game_.Winner()) {
+        std::cout << "The winner is " << game_.Winner()->Name() << '\n';
+      } else {
+        std::cout << "The game drew! No one wins!\n";
+      }
+      game_.ClearBoard();
     }
     ParseCommand();
   }

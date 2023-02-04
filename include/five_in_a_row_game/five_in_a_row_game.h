@@ -16,6 +16,8 @@ class FiveInARowGame {
  public:
   FiveInARowGame();
 
+  void ClearBoard();
+
   /// @brief Starts the game and begin the game loop.
   /// @param first_player - The first player
   /// @param later_player - The second player

@@ -9,19 +9,7 @@
 
 FiveInARowGame::FiveInARowGame() : board_(Board(9)) {}
 
-/*template <PlayerType T>
-void FiveInARowGame::Start(T & first_player, T & later_player) {
-  moving_player_ = &first_player;
-  unmoving_player_ = &later_player;
-
-  moving_player_->SetStoneTypeInUse(StoneType::kStoneTypeBlack);
-  unmoving_player_->SetStoneTypeInUse(StoneType::kStoneTypeWhite);
-
-  std::cout << "Game starts.\n";
-  SetStarted(true);
-
-  Render();
-}*/
+void FiveInARowGame::ClearBoard() { board_ = Board{9}; }
 
 void FiveInARowGame::Tick() {
   Update();
@@ -103,9 +91,25 @@ void FiveInARowGame::UpdateStatus() {
     return false;
   };
 
+  // two players 平局
+  auto Drawing = [](const Board & board) -> bool {
+    for (const auto & i : board.StoneTypeMap()) {
+      for (const auto & j : i) {
+        if (j == StoneType::kStoneTypeEmpty) {
+          return false;
+        }
+      }
+    }
+    return true;
+  };
+
   const Move & last_move = history_moves_.top();
   if (Winning(board_, last_move)) {
     winner_ = moving_player_;
+    SetStarted(false);
+    SetOver(true);
+  } else if (Drawing(board_)) {
+    winner_ = nullptr;
     SetStarted(false);
     SetOver(true);
   }
