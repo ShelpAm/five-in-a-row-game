@@ -1,1 +1,1 @@
-cmake -S. -Bbuild #-DCMAKE_CXX_COMPILER=clang++
+cmake -S. -Bbuild -G"Unix Makefiles" -DCMAKE_CXX_COMPILER=clang++
