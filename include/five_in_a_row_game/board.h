@@ -14,12 +14,12 @@ class Board {
  public:
   explicit Board(int board_size);
 
-  void PlaceAStone(const BoardCoordinate &c, const StoneType stone_type);
+  void PlaceAStone(const BoardCoordinate & c, const StoneType stone_type);
 
-  StoneType StoneTypeInCoordinate(const BoardCoordinate &c) const;
+  StoneType StoneTypeInCoordinate(const BoardCoordinate & c) const;
 
   int BoardSize() const { return board_size_; }
-  const std::vector<std::vector<StoneType>> &StoneTypeMap() const {
+  const std::vector<std::vector<StoneType>> & GetStoneTypeMap() const {
     return stone_type_map_;
   }
 

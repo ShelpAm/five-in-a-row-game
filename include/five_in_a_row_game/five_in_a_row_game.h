@@ -29,18 +29,17 @@ class FiveInARowGame {
     moving_player_->SetStoneTypeInUse(StoneType::kStoneTypeBlack);
     unmoving_player_->SetStoneTypeInUse(StoneType::kStoneTypeWhite);
 
+    // println("Game starts.");
     std::cout << "Game starts.\n";
-    SetStarted(true);
-
+    is_started_ = true;
+    is_over_ = false;
     Render();
   }
 
   void Tick();
 
-  bool Started() const { return started_; }
-  void SetStarted(bool started) { started_ = started; }
-  bool Over() const { return over_; }
-  void SetOver(bool over) { over_ = over; }
+  bool IsStarted() const { return is_started_; }
+  bool IsOver() const { return is_over_; }
   const Player * Winner() { return winner_; }
 
  private:
@@ -51,11 +50,11 @@ class FiveInARowGame {
 
   void Render() const;
 
-  bool started_ = false, over_ = false;
+  bool is_started_ = false, is_over_ = false;
   std::stack<Move> history_moves_;
   Player *moving_player_, *unmoving_player_;
   Player * winner_;
-  Board board_;
+  Board board_{9};
 };
 
 #endif  // FIVE_IN_A_ROW_GAME_FIVE_IN_A_ROW_GAME_HPP

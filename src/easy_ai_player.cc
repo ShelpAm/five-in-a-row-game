@@ -71,7 +71,7 @@ const std::vector<std::vector<int>> EasyAIPlayer::CalculateScore(
             }
             StoneType current_stone_type =
                 board.StoneTypeInCoordinate(current_coordinate);
-            if (current_stone_type == StoneTypeInUse()) {
+            if (current_stone_type == GetStoneTypeInUse()) {
               ++my_stones;
               score_map[column][row] += 20 / length;
             } else if (current_stone_type == StoneType::kStoneTypeEmpty) {

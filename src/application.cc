@@ -18,16 +18,16 @@ void Application::MainLoop() {
   while (ApplicationIsOn()) {
     last_frame_ = current_frame_;
     current_frame_ = static_cast<int>(clock());
-    SetFramePerSecond(current_frame_ - last_frame_);
+    frame_per_second_ = current_frame_ - last_frame_;
 
-    if (game_.Started()) {
+    if (game_.IsStarted()) {
       game_.Tick();
       continue;
     }
-    if (game_.Over()) {
+    if (game_.IsOver()) {
       std::cout << "Game over!\n";
       if (game_.Winner()) {
-        std::cout << "The winner is " << game_.Winner()->Name() << '\n';
+        std::cout << "The winner is " << game_.Winner()->GetName() << '\n';
       } else {
         std::cout << "The game drew! No one wins!\n";
       }

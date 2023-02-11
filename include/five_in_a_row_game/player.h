@@ -18,8 +18,8 @@ inline namespace five_in_a_row_game {
 class Player {
  public:
   Player();
-  explicit Player(const int identity, const char * const name,
-                  const StoneType stone_type_in_use);
+  Player(const int identity, const char * const name,
+         const StoneType stone_type_in_use);
   Player(const Player & player);
   Player(const Player && player);
   virtual ~Player();
@@ -27,11 +27,11 @@ class Player {
   const ::Move Move(Board & board) const;
 
  public:
-  int Identity() const { return identity_; }
+  int GetIdentity() const { return identity_; }
   void SetIdentity(const int identity) { identity_ = identity; }
-  const char * Name() const { return name_.c_str(); }
+  const char * GetName() const { return name_.c_str(); }
   void SetName(const char * const name) { name_ = name; }
-  StoneType StoneTypeInUse() const { return stone_type_in_use_; }
+  StoneType GetStoneTypeInUse() const { return stone_type_in_use_; }
   void SetStoneTypeInUse(const StoneType st) { stone_type_in_use_ = st; }
 
  private:
@@ -40,9 +40,9 @@ class Player {
 
   void PlaceAStone(Board & board, const BoardCoordinate & bc) const;
 
-  int identity_;
-  std::string name_;
-  StoneType stone_type_in_use_;
+  int identity_{0};
+  std::string name_{"default_name"};
+  StoneType stone_type_in_use_{StoneType::kStoneTypeEmpty};
 };
 
 }  // namespace five_in_a_row_game

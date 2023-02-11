@@ -26,5 +26,5 @@ StoneType Board::StoneTypeInCoordinate(const BoardCoordinate & c) const {
   if (!CoordinateIsInRangeOfBoard(c, *this)) {
     throw CoordinateOutOfRange{};
   }
-  return StoneTypeMap()[c.Column()][c.Row()];
+  return GetStoneTypeMap()[c.Column()][c.Row()];
 }

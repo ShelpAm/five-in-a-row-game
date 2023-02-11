@@ -11,7 +11,7 @@ AIPlayer::AIPlayer() {}
 AIPlayer::AIPlayer(const Player & player) : Player(player) {}
 
 AIPlayer::AIPlayer(const AIPlayer & other)
-    : Player(other.Identity(), other.Name(), other.StoneTypeInUse()) {}
+    : Player(other.GetIdentity(), other.GetName(), other.GetStoneTypeInUse()) {}
 
 AIPlayer::AIPlayer(const AIPlayer && other) : Player(other) {}
 

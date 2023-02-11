@@ -14,7 +14,7 @@ class AIPlayer : public Player {
   explicit AIPlayer(const Player & player);
   AIPlayer(const AIPlayer & other);
   AIPlayer(const AIPlayer && other);
-  ~AIPlayer() override;
+  virtual ~AIPlayer() override;
 
   virtual const std::vector<std::vector<int>> CalculateScore(
       const Board & board) const = 0;

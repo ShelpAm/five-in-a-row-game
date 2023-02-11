@@ -4,6 +4,8 @@
 
 #include "five_in_a_row_game/player.h"
 
+#include <random>
+
 #include "five_in_a_row_game/board_fwd.h"
 #include "five_in_a_row_game/move.h"
 
@@ -22,7 +24,12 @@ Player::Player(const Player & player)
 Player::~Player() {}
 
 const ::Move Player::Move(Board & board) const {
-  BoardCoordinate target_board_coordinate{Think(board).front()};
+  auto container{Think(board)};
+  std::random_device rd;
+  std::mt19937 gen{rd()};
+  std::uniform_int_distribution<int> dist(
+      0, static_cast<int>(container.size()) - 1);
+  const auto & target_board_coordinate{container.at(dist(gen))};
   PlaceAStone(board, target_board_coordinate);
   // constructor
   return ::Move{target_board_coordinate, stone_type_in_use_};

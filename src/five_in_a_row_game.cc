@@ -7,7 +7,7 @@
 #include "five_in_a_row_game/move.h"
 #include "five_in_a_row_game/stone_type.h"
 
-FiveInARowGame::FiveInARowGame() : board_(Board(9)) {}
+FiveInARowGame::FiveInARowGame() {}
 
 void FiveInARowGame::ClearBoard() { board_ = Board{9}; }
 
@@ -93,7 +93,7 @@ void FiveInARowGame::UpdateStatus() {
 
   // two players 平局
   auto Drawing = [](const Board & board) -> bool {
-    for (const auto & i : board.StoneTypeMap()) {
+    for (const auto & i : board.GetStoneTypeMap()) {
       for (const auto & j : i) {
         if (j == StoneType::kStoneTypeEmpty) {
           return false;
@@ -106,16 +106,16 @@ void FiveInARowGame::UpdateStatus() {
   const Move & last_move = history_moves_.top();
   if (Winning(board_, last_move)) {
     winner_ = moving_player_;
-    SetStarted(false);
-    SetOver(true);
+    is_started_ = false;
+    is_over_ = true;
   } else if (Drawing(board_)) {
     winner_ = nullptr;
-    SetStarted(false);
-    SetOver(true);
+    is_started_ = false;
+    is_over_ = true;
   }
 }
 
 void FiveInARowGame::CurrentPlayerMove() {
-  const Move move{moving_player_->Move(board_)};
+  const ::Move move{moving_player_->Move(board_)};
   history_moves_.push(move);
 }
