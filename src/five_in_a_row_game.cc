@@ -78,7 +78,7 @@ void FiveInARowGame::UpdateStatus() {
         for (int distance = -4; distance != 1; ++distance) {
           // for every stone
           // The definition of i is here, so the "i" can be accessed out of
-          //  the for-block(line109)
+          //  the for-block(line94)
           int i = 0;
           for (; i != 5; ++i) {
             const BoardCoordinate & last_move_coordinate =

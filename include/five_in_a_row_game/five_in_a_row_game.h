@@ -52,8 +52,8 @@ class FiveInARowGame {
 
   bool is_started_ = false, is_over_ = false;
   std::stack<Move> move_histories_;
-  Player *moving_player_, *unmoving_player_;
-  Player * winner_;
+  Player *moving_player_{nullptr}, *unmoving_player_{nullptr};
+  Player * winner_{nullptr};
   Board board_{9};
 };
 
