@@ -5,6 +5,7 @@
 #ifndef FIVE_IN_A_ROW_GAME_SRC_BOARD_H
 #define FIVE_IN_A_ROW_GAME_SRC_BOARD_H
 
+#include <cstddef>
 #include <vector>
 
 #include "five_in_a_row_game/board_coordinate.h"
@@ -18,13 +19,13 @@ class Board {
 
   StoneType StoneTypeInCoordinate(const BoardCoordinate & c) const;
 
-  int BoardSize() const { return board_size_; }
+  std::size_t BoardSize() const { return board_size_; }
   const std::vector<std::vector<StoneType>> & GetStoneTypeMap() const {
     return stone_type_map_;
   }
 
  private:
-  int board_size_;
+  std::size_t board_size_;
   std::vector<std::vector<StoneType>> stone_type_map_;
 };
 

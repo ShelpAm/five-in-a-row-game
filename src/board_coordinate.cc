@@ -12,8 +12,16 @@ BoardCoordinate::BoardCoordinate(const Vector2D<int> & vec2i) : vec2i_(vec2i) {}
 
 BoardCoordinate::BoardCoordinate(int column, int row) : vec2i_(column, row) {}
 
+BoardCoordinate::BoardCoordinate(const std::size_t column,
+                                 const std::size_t row)
+    : vec2i_(static_cast<int>(column), static_cast<int>(row)) {}
+
+bool operator==(const BoardCoordinate & lhs, const BoardCoordinate & rhs) {
+  return lhs.Column() == rhs.Column() && lhs.Row() == rhs.Row();
+}
+
 bool CoordinateIsInRangeOfBoard(const BoardCoordinate & c,
                                 const Board & board) {
-  return c.Row() < board.BoardSize() && c.Row() >= 0 &&
-         c.Column() < board.BoardSize() && c.Column() >= 0;
+  return c.Row() < static_cast<int>(board.BoardSize()) && c.Row() >= 0 &&
+         c.Column() < static_cast<int>(board.BoardSize()) && c.Column() >= 0;
 }

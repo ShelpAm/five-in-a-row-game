@@ -5,6 +5,8 @@
 #ifndef FIVE_IN_A_ROW_GAME_BOARD_COORDINATE_H
 #define FIVE_IN_A_ROW_GAME_BOARD_COORDINATE_H
 
+#include <cstddef>
+
 #include "five_in_a_row_game/board_fwd.h"
 #include "five_in_a_row_game/vector2d.h"
 
@@ -13,6 +15,7 @@ class BoardCoordinate {
   BoardCoordinate();
   BoardCoordinate(const Vector2D<int> & vec2i);
   BoardCoordinate(const int column, const int row);
+  BoardCoordinate(const std::size_t column, const std::size_t row);
 
   int & operator[](const int index) { return vec2i_[index]; }
   const int & operator[](const int index) const { return vec2i_[index]; }
@@ -33,6 +36,8 @@ class BoardCoordinate {
  private:
   Vector2D<int> vec2i_;  // first column and then row
 };
+
+bool operator==(const BoardCoordinate & lhs, const BoardCoordinate & rhs);
 
 class CoordinateOutOfRange {};
 

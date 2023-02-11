@@ -5,6 +5,7 @@
 #ifndef FIVE_IN_A_ROW_GAME_SRC_EASY_AI_PLAYER_H
 #define FIVE_IN_A_ROW_GAME_SRC_EASY_AI_PLAYER_H
 
+#include <cstddef>
 #include <vector>
 
 #include "ai_player.h"
@@ -22,7 +23,7 @@ class EasyAIPlayer : public AIPlayer {
   ~EasyAIPlayer() override;
 
   const std::vector<BoardCoordinate> Think(const Board & board) const override;
-  const std::vector<std::vector<int>> CalculateScore(
+  virtual const std::vector<std::vector<std::size_t>> CalculateScore(
       const Board & board) const override;
 };
 

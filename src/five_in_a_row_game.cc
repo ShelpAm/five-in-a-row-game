@@ -1,5 +1,7 @@
 #include "five_in_a_row_game/five_in_a_row_game.h"
 
+#include <cstddef>
+#include <iostream>
 #include <sstream>
 
 #include "five_in_a_row_game/board.h"
@@ -29,7 +31,7 @@ void FiveInARowGame::Render() const {
   buf << "The game map:\n";
   auto PrintLine1 = [this, &buf]() {
     buf << "+  " << ' ';
-    for (int i = 0; i != board_.BoardSize(); ++i) {
+    for (std::size_t i = 0; i != board_.BoardSize(); ++i) {
       buf << i << ' ';
     }
     buf << "  +";
@@ -40,12 +42,19 @@ void FiveInARowGame::Render() const {
   };
   PrintLine1();
   PrintLine2();
-  for (int row = 0; row != board_.BoardSize(); ++row) {
+  for (std::size_t row = 0; row != board_.BoardSize(); ++row) {
     buf << row << " | ";
-    for (int column = 0; column != board_.BoardSize(); ++column) {
-      buf << static_cast<int>(
-                 board_.StoneTypeInCoordinate(BoardCoordinate{column, row}))
-          << " ";
+    for (std::size_t column = 0; column != board_.BoardSize(); ++column) {
+      if (!move_histories_.empty() &&
+          BoardCoordinate{column, row} ==
+              move_histories_.top().board_coordinate) {
+        buf << "L ";
+
+      } else {
+        buf << static_cast<int>(
+                   board_.StoneTypeInCoordinate(BoardCoordinate{column, row}))
+            << " ";
+      }
     }
     buf << "| " << row << "\n";
   }
@@ -103,7 +112,7 @@ void FiveInARowGame::UpdateStatus() {
     return true;
   };
 
-  const Move & last_move = history_moves_.top();
+  const Move & last_move = move_histories_.top();
   if (Winning(board_, last_move)) {
     winner_ = moving_player_;
     is_started_ = false;
@@ -116,6 +125,7 @@ void FiveInARowGame::UpdateStatus() {
 }
 
 void FiveInARowGame::CurrentPlayerMove() {
+  std::cout << "It is the turn of player " << moving_player_->GetName() << "\n";
   const ::Move move{moving_player_->Move(board_)};
-  history_moves_.push(move);
+  move_histories_.push(move);
 }
