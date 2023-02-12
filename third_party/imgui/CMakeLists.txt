@@ -11,8 +11,6 @@ set(CMAKE_DEBUG_POSTFIX d)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED)
 
-#find_package(glfw3 REQUIRED)
-
 set(ROOT ${IMGUI_DIR})
 
 add_library(imgui STATIC
@@ -31,9 +29,12 @@ target_include_directories(imgui PUBLIC
   $<BUILD_INTERFACE:${ROOT}>
   $<INSTALL_INTERFACE:include>)
 
+message(STATUS "LIBOPENGL is ${LIB_OPENGL}")
 add_executable(example1 examples/example_glfw_opengl3/main.cpp)
 target_include_directories(example1 PRIVATE . backends ${GLFW_INCLUDE_DIR})
-target_link_libraries(example1 PRIVATE imgui imgui_impl_glfw imgui_impl_opengl3 GL)
+target_link_libraries(example1 PRIVATE imgui imgui_impl_glfw
+  imgui_impl_opengl3
+  ${LIB_OPENGL})
 
 foreach(BACKEND glfw opengl3)
   set(NAME imgui_impl_${BACKEND})
