@@ -27,5 +27,9 @@ endif()
 set(CMAKE_CXX_STANDARD "23")
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+set(FIVE_IN_A_ROW_GAME_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
+set(IMGUI_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/third_party/imgui")
+set(GLFW_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/third_party/glfw/include")
+
 add_subdirectory(third_party)
 add_subdirectory(src)

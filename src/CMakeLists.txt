@@ -5,8 +5,8 @@ add_executable(${PROJECT_NAME}
   easy_ai_player_factory.cc five_in_a_row_game.cc
   human_player.cc human_player_factory.cc main.cc player.cc)
 target_include_directories(${PROJECT_NAME} PRIVATE
-  ${PROJECT_SOURCE_DIR}/include
-  ${PROJECT_SOURCE_DIR}/third_party/imgui
-  ${PROJECT_SOURCE_DIR}/third_party/glfw/include
+  ${FIVE_IN_A_ROW_GAME_INCLUDE_DIR}
+  ${IMGUI_INCLUDE_DIR}
+  ${GLFW_INCLUDE_DIR}
 )
 target_link_libraries(${PROJECT_NAME} PRIVATE imgui glfw)
