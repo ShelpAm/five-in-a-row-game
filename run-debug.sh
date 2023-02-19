@@ -1,1 +1,1 @@
-gdb ./build/src/five-in-a-row-game
+gdb ./build/Debug/src/five-in-a-row-game

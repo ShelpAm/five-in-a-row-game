@@ -1,5 +1,5 @@
-#ifndef FIVE_IN_A_ROW_GAME_FIVE_IN_A_ROW_GAME_HPP
-#define FIVE_IN_A_ROW_GAME_FIVE_IN_A_ROW_GAME_HPP
+#ifndef FIVE_IN_A_ROW_GAME_FIVE_IN_A_ROW_GAME_H
+#define FIVE_IN_A_ROW_GAME_FIVE_IN_A_ROW_GAME_H
 
 #include <iostream>
 #include <memory>
@@ -57,4 +57,4 @@ class FiveInARowGame {
   Board board_{9};
 };
 
-#endif  // FIVE_IN_A_ROW_GAME_FIVE_IN_A_ROW_GAME_HPP
+#endif  // FIVE_IN_A_ROW_GAME_FIVE_IN_A_ROW_GAME_H
