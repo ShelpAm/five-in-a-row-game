@@ -115,12 +115,10 @@ void FiveInARowGame::UpdateStatus() {
   const Move & last_move = move_histories_.top();
   if (Winning(board_, last_move)) {
     winner_ = moving_player_;
-    is_started_ = false;
-    is_over_ = true;
+    game_state_ = GameState::kStateOver;
   } else if (Drawing(board_)) {
     winner_ = nullptr;
-    is_started_ = false;
-    is_over_ = true;
+    game_state_ = GameState::kStateOver;
   }
 }
 

@@ -15,33 +15,42 @@
 Application::Application() {}
 
 void Application::MainLoop() {
+  auto ProcessGameOver = [this]() -> void {
+    std::cout << "Game over!\n";
+    if (game_.Winner()) {
+      std::cout << "The winner is " << game_.Winner()->GetName() << '\n';
+    } else {
+      std::cout << "The game drew! No one wins!\n";
+    }
+    game_.ClearBoard();
+    ParseCommand();
+  };
+
+  SetApplicationIsOn(true);
   while (ApplicationIsOn()) {
     last_frame_ = current_frame_;
     current_frame_ = static_cast<int>(clock());
     frame_per_second_ = current_frame_ - last_frame_;
 
-    if (game_.IsStarted()) {
-      game_.Tick();
-      continue;
+    switch (game_.GameState()) {
+      case GameState::kStateNotStarted:
+        ParseCommand();
+        break;
+      case GameState::kStateStarted:
+        game_.Tick();
+        continue;
+      case GameState::kStateOver:
+        ProcessGameOver();
+        break;
     }
-    if (game_.IsOver()) {
-      std::cout << "Game over!\n";
-      if (game_.Winner()) {
-        std::cout << "The winner is " << game_.Winner()->GetName() << '\n';
-      } else {
-        std::cout << "The game drew! No one wins!\n";
-      }
-      game_.ClearBoard();
-    }
-    ParseCommand();
   }
 }
 
 void Application::ParseCommand() {
   std::string command;
-  std::cout << "Please input some commands:\n";
+  std::cout << "Please input a command:\n";
   std::cin >> command;
-  if (command == "exit") {
+  if (command == "quit") {
     this->SetApplicationIsOn(false);
   } else if (command == "start-a-local-game" || command == "game") {
     HumanPlayerFactory human_player_factory;

@@ -5,7 +5,6 @@
 
 int main() {
   Application application;
-  application.SetApplicationIsOn(true);
   application.MainLoop();
 
   return 0;

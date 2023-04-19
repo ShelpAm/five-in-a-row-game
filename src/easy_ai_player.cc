@@ -57,6 +57,7 @@ const std::vector<std::vector<std::size_t>> EasyAIPlayer::CalculateScore(
           StoneType::kStoneTypeEmpty) {
         continue;
       }
+      // TODO(small-sheep): what is the intention of the following line?
       std::size_t my_stone_sum = 0, enemy_stone_sum = 0, empty_stone_sum = 0;
       // 8 directions
       for (int horizontal = -1; horizontal != 2; ++horizontal) {
