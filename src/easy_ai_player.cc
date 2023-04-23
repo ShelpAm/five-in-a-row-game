@@ -65,7 +65,7 @@ const std::vector<std::vector<std::size_t>> EasyAIPlayer::CalculateScore(
           if (horizontal == 0 && vertical == 0) {
             continue;
           }
-          // Here starting calculating.
+          // Here starts calculating.
           std::size_t direction_enemy_stone_num{0}, direction_my_stone_num{0};
           std::size_t direction_length_sum{1};
           for (int length = 1; length != 5; ++length) {
@@ -93,7 +93,8 @@ const std::vector<std::vector<std::size_t>> EasyAIPlayer::CalculateScore(
           score_map[column][row] +=
               20 *
               (static_cast<int>(pow(3, direction_enemy_stone_num) +
-                                pow(3, direction_my_stone_num))) /
+                                pow(3.2, direction_my_stone_num))) /
+              // pow(3, direction_my_stone_num))) /
               direction_length_sum;
         }
       }

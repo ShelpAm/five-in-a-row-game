@@ -22,7 +22,8 @@ void Application::MainLoop() {
     } else {
       std::cout << "The game drew! No one wins!\n";
     }
-    game_.ClearBoard();
+    // game_.CleanUp();
+    game_ = FiveInARowGame();
     ParseCommand();
   };
 
@@ -33,13 +34,13 @@ void Application::MainLoop() {
     frame_per_second_ = current_frame_ - last_frame_;
 
     switch (game_.GameState()) {
-      case GameState::kStateNotStarted:
+      case GameState::kGameStateNotStarted:
         ParseCommand();
         break;
-      case GameState::kStateStarted:
+      case GameState::kGameStateStarted:
         game_.Tick();
         continue;
-      case GameState::kStateOver:
+      case GameState::kGameStateOver:
         ProcessGameOver();
         break;
     }

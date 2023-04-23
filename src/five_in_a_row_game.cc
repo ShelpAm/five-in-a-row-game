@@ -1,6 +1,7 @@
 #include "five_in_a_row_game/five_in_a_row_game.h"
 
 #include <cstddef>
+#include <cstdlib>
 #include <iostream>
 #include <sstream>
 
@@ -11,7 +12,27 @@
 
 FiveInARowGame::FiveInARowGame() {}
 
-void FiveInARowGame::ClearBoard() { board_ = Board{9}; }
+FiveInARowGame::FiveInARowGame(const FiveInARowGame & other)
+    : game_state_(other.game_state_),
+      history_moves_(other.history_moves_),
+      num_of_moves_(other.num_of_moves_),
+      moving_player_(other.moving_player_),
+      unmoving_player_(other.unmoving_player_),
+      winner_(other.winner_),
+      board_(other.board_) {}
+
+FiveInARowGame & FiveInARowGame::operator=(const FiveInARowGame & other) {
+  game_state_ = other.game_state_;
+  history_moves_ = other.history_moves_;
+  num_of_moves_ = other.num_of_moves_;
+  moving_player_ = other.moving_player_;
+  unmoving_player_ = other.unmoving_player_;
+  winner_ = other.winner_;
+  board_ = other.board_;
+  return *this;
+}
+
+FiveInARowGame::~FiveInARowGame() {}
 
 void FiveInARowGame::Tick() {
   Update();
@@ -19,8 +40,13 @@ void FiveInARowGame::Tick() {
 }
 
 void FiveInARowGame::Update() {
+  std::cout << "It's the turn of player '" << moving_player_->GetName()
+            << "'.\n"
+            << "Please input your choice of move (first input column and "
+               "then row;\n"
+            << "the minimum of column and row is zero)\n";
   CurrentPlayerMove();
-  UpdateStatus();
+  UpdateGameState();
   std::swap(moving_player_, unmoving_player_);
 }
 
@@ -28,7 +54,15 @@ void FiveInARowGame::Render() const {
   // Do some cleaning.
   std::ostringstream buf;
 
-  buf << "The game map:\n";
+  auto IsOdd = [](std::size_t num) -> bool {
+    return static_cast<bool>(num % 2);
+  };
+
+  if (IsOdd(num_of_moves_)) {
+    buf << "----------------------------------------\n"
+        << "Round " << num_of_moves_ / 2 << "\n";
+  }
+  buf << "-- The game map:\n";
   auto PrintLine1 = [this, &buf]() {
     buf << "+  " << ' ';
     for (std::size_t i = 0; i != board_.BoardSize(); ++i) {
@@ -45,9 +79,9 @@ void FiveInARowGame::Render() const {
   for (std::size_t row = 0; row != board_.BoardSize(); ++row) {
     buf << row << " | ";
     for (std::size_t column = 0; column != board_.BoardSize(); ++column) {
-      if (!move_histories_.empty() &&
+      if (!history_moves_.empty() &&
           BoardCoordinate{column, row} ==
-              move_histories_.top().board_coordinate) {
+              history_moves_.top().board_coordinate) {
         buf << "L ";
 
       } else {
@@ -63,7 +97,7 @@ void FiveInARowGame::Render() const {
   std::cout << buf.str();
 }
 
-void FiveInARowGame::UpdateStatus() {
+void FiveInARowGame::UpdateGameState() {
   auto Winning = [](const Board & board, const Move & last_move) -> bool {
     // This only need to check the latest move.
     // Directions: - - -
@@ -112,18 +146,18 @@ void FiveInARowGame::UpdateStatus() {
     return true;
   };
 
-  const Move & last_move = move_histories_.top();
+  const Move & last_move = history_moves_.top();
   if (Winning(board_, last_move)) {
     winner_ = moving_player_;
-    game_state_ = GameState::kStateOver;
+    game_state_ = GameState::kGameStateOver;
   } else if (Drawing(board_)) {
     winner_ = nullptr;
-    game_state_ = GameState::kStateOver;
+    game_state_ = GameState::kGameStateOver;
   }
 }
 
 void FiveInARowGame::CurrentPlayerMove() {
-  std::cout << "It is the turn of player " << moving_player_->GetName() << "\n";
   const ::Move move{moving_player_->Move(board_)};
-  move_histories_.push(move);
+  history_moves_.push(move);
+  num_of_moves_++;
 }
