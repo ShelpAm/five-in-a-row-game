@@ -36,8 +36,8 @@ class FiveInARowGame {
   void Start(T & first_player, T & later_player) {
     moving_player_ = &first_player;
     unmoving_player_ = &later_player;
-    moving_player_->SetStoneTypeInUse(StoneType::kStoneTypeBlack);
-    unmoving_player_->SetStoneTypeInUse(StoneType::kStoneTypeWhite);
+    moving_player_->set_stone_type_in_use(StoneType::kStoneTypeBlack);
+    unmoving_player_->set_stone_type_in_use(StoneType::kStoneTypeWhite);
     game_state_ = GameState::kGameStateStarted;
     std::cout << "[info] Game started.\n";
     Render();
@@ -45,8 +45,8 @@ class FiveInARowGame {
 
   void Tick();
 
-  ::GameState GameState() const { return game_state_; }
-  const Player * Winner() { return winner_; }
+  GameState game_state() const { return game_state_; }
+  const Player * winner() { return winner_; }
 
  private:
   /// @brief Updates processes data

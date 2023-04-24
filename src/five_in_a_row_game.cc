@@ -40,8 +40,7 @@ void FiveInARowGame::Tick() {
 }
 
 void FiveInARowGame::Update() {
-  std::cout << "It's the turn of player '" << moving_player_->GetName()
-            << "'.\n";
+  std::cout << "It's the turn of player '" << moving_player_->name() << "'.\n";
   CurrentPlayerMove();
   UpdateGameState();
   std::swap(moving_player_, unmoving_player_);

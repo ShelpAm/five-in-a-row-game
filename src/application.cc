@@ -17,8 +17,8 @@ Application::Application() {}
 void Application::MainLoop() {
   auto ProcessGameOver = [this]() -> void {
     std::cout << "Game over!\n";
-    if (game_.Winner()) {
-      std::cout << "The winner is " << game_.Winner()->GetName() << '\n';
+    if (game_.winner()) {
+      std::cout << "The winner is " << game_.winner()->name() << '\n';
     } else {
       std::cout << "The game drew! No one wins!\n";
     }
@@ -33,7 +33,7 @@ void Application::MainLoop() {
     current_frame_ = static_cast<int>(clock());
     frame_per_second_ = current_frame_ - last_frame_;
 
-    switch (game_.GameState()) {
+    switch (game_.game_state()) {
       case GameState::kGameStateNotStarted:
         ParseCommand();
         break;
@@ -61,9 +61,9 @@ void Application::ParseCommand() {
     Player * human_player = human_player_factory.MakePlayer();
     Player * ai_player1 = easy_ai_player_factory.MakePlayer();
     Player * ai_player2 = easy_ai_player_factory.MakePlayer();
-    human_player->SetName("small_sheep_");
-    ai_player1->SetName("easy_ai_player1");
-    ai_player2->SetName("easy_ai_player2");
+    human_player->set_name("small_sheep_");
+    ai_player1->set_name("easy_ai_player1");
+    ai_player2->set_name("easy_ai_player2");
 
     // game_.Start(human_player, ai_player);
     game_.Start(*ai_player1, *ai_player2);

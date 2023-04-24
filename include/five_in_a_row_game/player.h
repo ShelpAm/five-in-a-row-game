@@ -27,12 +27,12 @@ class Player {
   const ::Move Move(Board & board) const;
 
  public:
-  int GetIdentity() const { return identity_; }
-  void SetIdentity(const int identity) { identity_ = identity; }
-  const char * GetName() const { return name_.c_str(); }
-  void SetName(const char * const name) { name_ = name; }
-  StoneType GetStoneTypeInUse() const { return stone_type_in_use_; }
-  void SetStoneTypeInUse(const StoneType st) { stone_type_in_use_ = st; }
+  int identity() const { return identity_; }
+  void set_identity(const int identity) { identity_ = identity; }
+  const char * name() const { return name_.c_str(); }
+  void set_name(const char * const name) { name_ = name; }
+  StoneType stone_type_in_use() const { return stone_type_in_use_; }
+  void set_stone_type_in_use(const StoneType st) { stone_type_in_use_ = st; }
 
  private:
   virtual const std::vector<BoardCoordinate> Think(
