@@ -45,7 +45,7 @@ class FiveInARowGame {
 
   void Tick();
 
-  GameState GameState() const { return game_state_; }
+  ::GameState GameState() const { return game_state_; }
   const Player * Winner() { return winner_; }
 
  private:
