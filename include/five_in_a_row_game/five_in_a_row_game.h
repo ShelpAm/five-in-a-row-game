@@ -36,13 +36,10 @@ class FiveInARowGame {
   void Start(T & first_player, T & later_player) {
     moving_player_ = &first_player;
     unmoving_player_ = &later_player;
-
     moving_player_->SetStoneTypeInUse(StoneType::kStoneTypeBlack);
     unmoving_player_->SetStoneTypeInUse(StoneType::kStoneTypeWhite);
-
-    // println("Game starts.");
-    std::cout << "Game starts.\n";
     game_state_ = GameState::kGameStateStarted;
+    std::cout << "[info] Game started.\n";
     Render();
   }
 

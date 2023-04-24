@@ -6,6 +6,7 @@
 
 #include <math.h>
 
+#include <algorithm>
 #include <cmath>
 #include <cstddef>
 #include <iterator>
@@ -25,25 +26,22 @@ EasyAIPlayer::~EasyAIPlayer() {}
 const std::vector<BoardCoordinate> EasyAIPlayer::Think(
     const Board & board) const {
   auto score_map{CalculateScore(board)};
-  std::size_t max_score{0};
-  std::vector<BoardCoordinate> coordinates;
+  std::size_t current_maximum_score{0};
+  std::vector<BoardCoordinate> coords_of_maximum_score;
 
   int end = static_cast<int>(board.BoardSize());
   for (int column = 0; column != end; ++column) {
     for (int row = 0; row != end; ++row) {
-      if (!CoordinateIsInRangeOfBoard(BoardCoordinate{column, row}, board)) {
-        continue;
-      }
-      if (max_score < score_map[column][row]) {
-        max_score = score_map[column][row];
-        coordinates.clear();
-        coordinates.push_back(BoardCoordinate{column, row});
-      } else if (max_score == score_map[column][row]) {
-        coordinates.push_back(BoardCoordinate{column, row});
+      if (current_maximum_score < score_map[column][row]) {
+        current_maximum_score = score_map[column][row];
+        coords_of_maximum_score.clear();
+        coords_of_maximum_score.push_back(BoardCoordinate(column, row));
+      } else if (current_maximum_score == score_map[column][row]) {
+        coords_of_maximum_score.push_back(BoardCoordinate(column, row));
       }
     }
   }
-  return coordinates;
+  return coords_of_maximum_score;
 }
 
 const std::vector<std::vector<std::size_t>> EasyAIPlayer::CalculateScore(

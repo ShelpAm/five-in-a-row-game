@@ -41,10 +41,7 @@ void FiveInARowGame::Tick() {
 
 void FiveInARowGame::Update() {
   std::cout << "It's the turn of player '" << moving_player_->GetName()
-            << "'.\n"
-            << "Please input your choice of move (first input column and "
-               "then row;\n"
-            << "the minimum of column and row is zero)\n";
+            << "'.\n";
   CurrentPlayerMove();
   UpdateGameState();
   std::swap(moving_player_, unmoving_player_);

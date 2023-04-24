@@ -25,8 +25,10 @@ const std::vector<BoardCoordinate> HumanPlayer::Think(
                StoneType::kStoneTypeEmpty;
   };
 
-  std::cout << "Please input your move(first column and then row; every "
-               "input should be followed by an ENTER):\n";
+  std::cout << "Please input your choice of move:\n"
+               "(Tips: 1.first input column and then row;\n"
+               "       2.every input should be followed by an ENTER;\n"
+               "       3.the minimum of column and row is zero):\n";
   while (true) {
     std::cin >> input_coordinate[0] >> input_coordinate[1];
     if (TargetMoveIsValid()) {
