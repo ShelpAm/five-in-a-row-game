@@ -15,24 +15,9 @@
 Application::Application() {}
 
 void Application::MainLoop() {
-  auto ProcessGameOver = [this]() -> void {
-    std::cout << "Game over!\n";
-    if (game_.winner()) {
-      std::cout << "The winner is " << game_.winner()->name() << '\n';
-    } else {
-      std::cout << "The game drew! No one wins!\n";
-    }
-    // game_.CleanUp();
-    game_ = FiveInARowGame();
-    ParseCommand();
-  };
-
-  SetApplicationIsOn(true);
-  while (ApplicationIsOn()) {
-    last_frame_ = current_frame_;
-    current_frame_ = static_cast<int>(clock());
-    frame_per_second_ = current_frame_ - last_frame_;
-
+  set_state(ApplicationState::kApplicationStateStarted);
+  while (state() == ApplicationState::kApplicationStateStarted) {
+    Update();
     switch (game_.game_state()) {
       case GameState::kGameStateNotStarted:
         ParseCommand();
@@ -40,7 +25,7 @@ void Application::MainLoop() {
       case GameState::kGameStateStarted:
         game_.Tick();
         continue;
-      case GameState::kGameStateOver:
+      case GameState::kGameStateStoped:
         ProcessGameOver();
         break;
     }
@@ -52,7 +37,7 @@ void Application::ParseCommand() {
   std::cout << "Please input a command:\n";
   std::cin >> command;
   if (command == "quit") {
-    this->SetApplicationIsOn(false);
+    this->set_state(ApplicationState::kApplicationStateStoped);
   } else if (command == "start-a-local-game" || command == "game") {
     HumanPlayerFactory human_player_factory;
     EasyAIPlayerFactory easy_ai_player_factory;
@@ -68,4 +53,22 @@ void Application::ParseCommand() {
     // game_.Start(human_player, ai_player);
     game_.Start(*ai_player1, *ai_player2);
   }
+}
+
+void Application::ProcessGameOver() {
+  std::cout << "Game over!\n";
+  if (game_.winner()) {
+    std::cout << "The winner is " << game_.winner()->name() << '\n';
+  } else {
+    std::cout << "The game drew! No one wins!\n";
+  }
+  // game_.CleanUp();
+  game_ = FiveInARowGame();
+  ParseCommand();
+}
+
+void Application::Update() {
+  last_frame_ = current_frame_;
+  current_frame_ = static_cast<int>(clock());
+  frame_per_second_ = current_frame_ - last_frame_;
 }
