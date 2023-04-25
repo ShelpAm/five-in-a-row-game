@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <sstream>
+#include <string>
 
 #include "five_in_a_row_game/board.h"
 #include "five_in_a_row_game/board_coordinate.h"
@@ -43,22 +44,19 @@ void FiveInARowGame::Update() {
   std::cout << "It's the turn of player '" << moving_player_->name() << "'.\n";
   CurrentPlayerMove();
   UpdateGameState();
-  std::swap(moving_player_, unmoving_player_);
 }
 
 void FiveInARowGame::Render() const {
-  // Do some cleaning.
   std::ostringstream buf;
+  static std::map<StoneType, char> stone_code_map{
+      {StoneType::kStoneTypeEmpty, ' '},
+      {StoneType::kStoneTypeBlack, '1'},
+      {StoneType::kStoneTypeWhite, '2'}};
 
   auto IsOdd = [](std::size_t num) -> bool {
     return static_cast<bool>(num % 2);
   };
 
-  if (IsOdd(num_of_moves_)) {
-    buf << "----------------------------------------\n"
-        << "Round " << num_of_moves_ / 2 << "\n";
-  }
-  buf << "-- The game map:\n";
   auto PrintLine1 = [this, &buf]() {
     buf << "+  " << ' ';
     for (std::size_t i = 0; i != board_.BoardSize(); ++i) {
@@ -70,21 +68,27 @@ void FiveInARowGame::Render() const {
   auto PrintLine2 = [this, &buf]() {
     buf << "   " << std::string(board_.BoardSize() * 2 + 1, '-') << '\n';
   };
+
+  if (IsOdd(num_of_moves_)) {
+    buf << "----------------------------------------\n"
+        << "Round " << num_of_moves_ / 2 << "\n";
+  }
+  buf << "-- The game map:\n";
   PrintLine1();
   PrintLine2();
   for (std::size_t row = 0; row != board_.BoardSize(); ++row) {
     buf << row << " | ";
     for (std::size_t column = 0; column != board_.BoardSize(); ++column) {
+      char stone_code;
       if (!history_moves_.empty() &&
           BoardCoordinate{column, row} ==
               history_moves_.top().board_coordinate) {
-        buf << "L ";
-
+        stone_code = 'L';
       } else {
-        buf << static_cast<int>(
-                   board_.StoneTypeInCoordinate(BoardCoordinate{column, row}))
-            << " ";
+        stone_code = stone_code_map[board_.StoneTypeInCoordinate(
+            BoardCoordinate(column, row))];
       }
+      buf << stone_code << " ";
     }
     buf << "| " << row << "\n";
   }
@@ -145,11 +149,12 @@ void FiveInARowGame::UpdateGameState() {
   const Move & last_move = history_moves_.top();
   if (Winning(board_, last_move)) {
     winner_ = moving_player_;
-    game_state_ = GameState::kGameStateOver;
+    game_state_ = GameState::kGameStateStoped;
   } else if (Drawing(board_)) {
     winner_ = nullptr;
-    game_state_ = GameState::kGameStateOver;
+    game_state_ = GameState::kGameStateStoped;
   }
+  std::swap(moving_player_, unmoving_player_);
 }
 
 void FiveInARowGame::CurrentPlayerMove() {

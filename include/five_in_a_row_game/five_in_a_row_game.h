@@ -3,16 +3,17 @@
 
 #include <cstddef>
 #include <iostream>
+#include <map>
 #include <memory>
 #include <stack>
 #include <type_traits>
 
 #include "five_in_a_row_game/player.h"
 
-enum class GameState : unsigned int {
+enum class GameState : std::size_t {
   kGameStateNotStarted,
   kGameStateStarted,
-  kGameStateOver
+  kGameStateStoped
 };
 
 template <typename T>
