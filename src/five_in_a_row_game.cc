@@ -59,14 +59,14 @@ void FiveInARowGame::Render() const {
 
   auto PrintLine1 = [this, &buf]() {
     buf << "+  " << ' ';
-    for (std::size_t i = 0; i != board_.BoardSize(); ++i) {
+    for (std::size_t i = 0; i != board_.board_size(); ++i) {
       buf << i << ' ';
     }
     buf << "  +";
     buf << '\n';
   };
   auto PrintLine2 = [this, &buf]() {
-    buf << "   " << std::string(board_.BoardSize() * 2 + 1, '-') << '\n';
+    buf << "   " << std::string(board_.board_size() * 2 + 1, '-') << '\n';
   };
 
   if (IsOdd(num_of_moves_)) {
@@ -76,17 +76,17 @@ void FiveInARowGame::Render() const {
   buf << "-- The game map:\n";
   PrintLine1();
   PrintLine2();
-  for (std::size_t row = 0; row != board_.BoardSize(); ++row) {
+  for (std::size_t row = 0; row != board_.board_size(); ++row) {
     buf << row << " | ";
-    for (std::size_t column = 0; column != board_.BoardSize(); ++column) {
+    for (std::size_t column = 0; column != board_.board_size(); ++column) {
       char stone_code;
       if (!history_moves_.empty() &&
           BoardCoordinate{column, row} ==
               history_moves_.top().board_coordinate) {
         stone_code = 'L';
       } else {
-        stone_code = stone_code_map[board_.StoneTypeInCoordinate(
-            BoardCoordinate(column, row))];
+        stone_code = stone_code_map.at(
+            board_.GetStoneTypeInCoordinate(BoardCoordinate(column, row)));
       }
       buf << stone_code << " ";
     }
@@ -98,59 +98,10 @@ void FiveInARowGame::Render() const {
 }
 
 void FiveInARowGame::UpdateGameState() {
-  auto Winning = [](const Board & board, const Move & last_move) -> bool {
-    // This only need to check the latest move.
-    // Directions: - - -
-    //             - - +
-    //             + + +
-    for (int vertical = 0; vertical != 2; ++vertical) {
-      for (int horizontal = -1; horizontal != 2; ++horizontal) {
-        if (vertical == 0 && horizontal != 1) {
-          continue;
-        }
-        // for every five stones
-        for (int distance = -4; distance != 1; ++distance) {
-          // for every stone
-          // The definition of i is here, so the "i" can be accessed out of
-          //  the for-block(line94)
-          int i = 0;
-          for (; i != 5; ++i) {
-            const BoardCoordinate & last_move_coordinate =
-                last_move.board_coordinate;
-            BoardCoordinate c{
-                last_move_coordinate.Column() + horizontal * (distance + i),
-                last_move_coordinate.Row() + vertical * (distance + i)};
-            if (!CoordinateIsInRangeOfBoard(c, board) ||
-                board.StoneTypeInCoordinate(c) != last_move.stone_type) {
-              break;
-            }
-          }
-          if (i == 5) {
-            return true;
-          }
-        }
-      }
-    }
-    return false;
-  };
-
-  // two players 平局
-  auto Drawing = [](const Board & board) -> bool {
-    for (const auto & i : board.GetStoneTypeMap()) {
-      for (const auto & j : i) {
-        if (j == StoneType::kStoneTypeEmpty) {
-          return false;
-        }
-      }
-    }
-    return true;
-  };
-
-  const Move & last_move = history_moves_.top();
-  if (Winning(board_, last_move)) {
+  if (IsWinning()) {
     winner_ = moving_player_;
     game_state_ = GameState::kGameStateStoped;
-  } else if (Drawing(board_)) {
+  } else if (IsDrawing()) {
     winner_ = nullptr;
     game_state_ = GameState::kGameStateStoped;
   }
@@ -161,4 +112,44 @@ void FiveInARowGame::CurrentPlayerMove() {
   const ::Move move{moving_player_->Move(board_)};
   history_moves_.push(move);
   num_of_moves_++;
+}
+
+bool FiveInARowGame::IsWinning() const {
+  // This fucntion needs only to check the latest move.
+  const Move & last_move{history_moves_.top()};
+  for (int vertical = 0; vertical != 2; ++vertical) {
+    for (int horizontal = -1; horizontal != 2; ++horizontal) {
+      // filter directions
+      // all directions that should be checked:
+      //   - - -
+      //   - - +
+      //   + + +
+      if (vertical == 0 && horizontal != 1) {
+        continue;
+      }
+      // for every group of five stones
+      for (int offset = -4; offset != 1; ++offset) {
+        int i = 0;
+        // for every stone in the group
+        for (; i != 5; ++i) {
+          const auto & last_move_coordinate = last_move.board_coordinate;
+          BoardCoordinate coord{
+              last_move_coordinate.column() + horizontal * (offset + i),
+              last_move_coordinate.row() + vertical * (offset + i)};
+          if (!IsCoordinateInRangeOfBoard(coord, board_) ||
+              board_.GetStoneTypeInCoordinate(coord) != last_move.stone_type) {
+            break;
+          }
+        }
+        if (i == 5) {
+          return true;
+        }
+      }
+    }
+  }
+  return false;
+}
+
+bool FiveInARowGame::IsDrawing() const {
+  return num_of_moves_ == board_.board_size() * board_.board_size();
 }

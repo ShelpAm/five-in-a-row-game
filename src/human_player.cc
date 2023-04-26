@@ -20,8 +20,8 @@ const std::vector<BoardCoordinate> HumanPlayer::Think(
     const Board & board) const {
   BoardCoordinate input_coordinate;
   auto TargetMoveIsValid = [board, &input_coordinate]() -> bool {
-    return CoordinateIsInRangeOfBoard(input_coordinate, board) &&
-           board.StoneTypeInCoordinate(input_coordinate) ==
+    return IsCoordinateInRangeOfBoard(input_coordinate, board) &&
+           board.GetStoneTypeInCoordinate(input_coordinate) ==
                StoneType::kStoneTypeEmpty;
   };
 

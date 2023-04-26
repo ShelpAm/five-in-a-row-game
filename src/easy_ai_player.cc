@@ -29,7 +29,7 @@ const std::vector<BoardCoordinate> EasyAIPlayer::Think(
   std::size_t current_maximum_score{0};
   std::vector<BoardCoordinate> coords_of_maximum_score;
 
-  int end = static_cast<int>(board.BoardSize());
+  int end = static_cast<int>(board.board_size());
   for (int column = 0; column != end; ++column) {
     for (int row = 0; row != end; ++row) {
       if (current_maximum_score < score_map[column][row]) {
@@ -47,11 +47,11 @@ const std::vector<BoardCoordinate> EasyAIPlayer::Think(
 const std::vector<std::vector<std::size_t>> EasyAIPlayer::CalculateScore(
     const Board & board) const {
   std::vector<std::vector<std::size_t>> score_map{
-      board.BoardSize(), std::vector<size_t>(board.BoardSize(), 0)};
-  int end = static_cast<int>(board.BoardSize());
+      board.board_size(), std::vector<size_t>(board.board_size(), 0)};
+  int end = static_cast<int>(board.board_size());
   for (int column = 0; column != end; ++column) {
     for (int row = 0; row != end; ++row) {
-      if (board.StoneTypeInCoordinate(BoardCoordinate{column, row}) !=
+      if (board.GetStoneTypeInCoordinate(BoardCoordinate{column, row}) !=
           StoneType::kStoneTypeEmpty) {
         continue;
       }
@@ -71,11 +71,11 @@ const std::vector<std::vector<std::size_t>> EasyAIPlayer::CalculateScore(
                 current_row{row + vertical * length};
             const BoardCoordinate current_coordinate{current_column,
                                                      current_row};
-            if (!CoordinateIsInRangeOfBoard(current_coordinate, board)) {
+            if (!IsCoordinateInRangeOfBoard(current_coordinate, board)) {
               break;
             }
             StoneType current_stone_type =
-                board.StoneTypeInCoordinate(current_coordinate);
+                board.GetStoneTypeInCoordinate(current_coordinate);
             if (current_stone_type == stone_type_in_use()) {
               ++direction_my_stone_num;
               ++my_stone_sum;

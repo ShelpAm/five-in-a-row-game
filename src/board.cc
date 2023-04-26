@@ -16,15 +16,15 @@ Board::Board(int board_size)
 }
 
 void Board::PlaceAStone(const BoardCoordinate & c, const StoneType stone_type) {
-  if (!CoordinateIsInRangeOfBoard(c, *this)) {
+  if (!IsCoordinateInRangeOfBoard(c, *this)) {
     throw CoordinateOutOfRange{};
   }
-  stone_type_map_[c.Column()][c.Row()] = stone_type;
+  stone_type_map_[c.column()][c.row()] = stone_type;
 }
 
-StoneType Board::StoneTypeInCoordinate(const BoardCoordinate & c) const {
-  if (!CoordinateIsInRangeOfBoard(c, *this)) {
+StoneType Board::GetStoneTypeInCoordinate(const BoardCoordinate & c) const {
+  if (!IsCoordinateInRangeOfBoard(c, *this)) {
     throw CoordinateOutOfRange{};
   }
-  return GetStoneTypeMap()[c.Column()][c.Row()];
+  return stone_type_map()[c.column()][c.row()];
 }

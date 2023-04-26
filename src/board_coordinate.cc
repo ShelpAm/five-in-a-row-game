@@ -17,11 +17,11 @@ BoardCoordinate::BoardCoordinate(const std::size_t column,
     : vec2i_(static_cast<int>(column), static_cast<int>(row)) {}
 
 bool operator==(const BoardCoordinate & lhs, const BoardCoordinate & rhs) {
-  return lhs.Column() == rhs.Column() && lhs.Row() == rhs.Row();
+  return lhs.column() == rhs.column() && lhs.row() == rhs.row();
 }
 
-bool CoordinateIsInRangeOfBoard(const BoardCoordinate & c,
+bool IsCoordinateInRangeOfBoard(const BoardCoordinate & c,
                                 const Board & board) {
-  return c.Row() < static_cast<int>(board.BoardSize()) && c.Row() >= 0 &&
-         c.Column() < static_cast<int>(board.BoardSize()) && c.Column() >= 0;
+  return c.row() < static_cast<int>(board.board_size()) && c.row() >= 0 &&
+         c.column() < static_cast<int>(board.board_size()) && c.column() >= 0;
 }

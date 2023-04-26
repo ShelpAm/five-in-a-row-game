@@ -17,10 +17,10 @@ class Board {
 
   void PlaceAStone(const BoardCoordinate & c, const StoneType stone_type);
 
-  StoneType StoneTypeInCoordinate(const BoardCoordinate & c) const;
+  StoneType GetStoneTypeInCoordinate(const BoardCoordinate & c) const;
 
-  std::size_t BoardSize() const { return board_size_; }
-  const std::vector<std::vector<StoneType>> & GetStoneTypeMap() const {
+  std::size_t board_size() const { return board_size_; }
+  const std::vector<std::vector<StoneType>> & stone_type_map() const {
     return stone_type_map_;
   }
 

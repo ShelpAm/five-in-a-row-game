@@ -20,10 +20,10 @@ class BoardCoordinate {
   int & operator[](const int index) { return vec2i_[index]; }
   const int & operator[](const int index) const { return vec2i_[index]; }
 
-  int Column() const { return vec2i_.X(); }
+  int column() const { return vec2i_.X(); }
   void SetColumn(const int column) { vec2i_.SetX(column); }
   void AddColumn(const int delta) { vec2i_.AddX(delta); }
-  int Row() const { return vec2i_.Y(); }
+  int row() const { return vec2i_.Y(); }
   void SetRow(const int row) { vec2i_.SetY(row); }
   void AddRow(const int delta) { vec2i_.AddY(delta); }
   int X() const { return vec2i_.X(); }
@@ -43,7 +43,7 @@ class CoordinateOutOfRange {};
 
 /// @brief Judges if the board_coordinate is valid in certain board.
 ///         (if board_coordinate.X() < board.size, so as y)
-bool CoordinateIsInRangeOfBoard(const BoardCoordinate & coordinate,
+bool IsCoordinateInRangeOfBoard(const BoardCoordinate & coordinate,
                                 const Board & board);
 
 #endif  // FIVE_IN_A_ROW_GAME_BOARD_COORDINATE_H

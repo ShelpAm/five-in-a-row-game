@@ -47,22 +47,24 @@ class FiveInARowGame {
   void Tick();
 
   GameState game_state() const { return game_state_; }
-  const Player * winner() { return winner_; }
+  const Player * winner() const { return winner_; }
 
  private:
   /// @brief Updates processes data
   void Update();
   void CurrentPlayerMove();
   void UpdateGameState();
+  bool IsWinning() const;
+  bool IsDrawing() const;
 
   void Render() const;
 
-  enum GameState game_state_ { GameState::kGameStateNotStarted };
-  std::stack<Move> history_moves_;
+  GameState game_state_{GameState::kGameStateNotStarted};
+  std::stack<Move> history_moves_{};
   std::size_t num_of_moves_{0};
   Player *moving_player_{nullptr}, *unmoving_player_{nullptr};
   Player * winner_{nullptr};
-  Board board_{9};
+  Board board_{6};
 };
 
 #endif  // FIVE_IN_A_ROW_GAME_FIVE_IN_A_ROW_GAME_H
