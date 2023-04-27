@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <cstdlib>
 #include <iostream>
+#include <ostream>
 #include <sstream>
 #include <string>
 
@@ -16,7 +17,7 @@ FiveInARowGame::FiveInARowGame() {}
 FiveInARowGame::FiveInARowGame(const FiveInARowGame & other)
     : game_state_(other.game_state_),
       history_moves_(other.history_moves_),
-      num_of_moves_(other.num_of_moves_),
+      num_moves_(other.num_moves_),
       moving_player_(other.moving_player_),
       unmoving_player_(other.unmoving_player_),
       winner_(other.winner_),
@@ -25,7 +26,7 @@ FiveInARowGame::FiveInARowGame(const FiveInARowGame & other)
 FiveInARowGame & FiveInARowGame::operator=(const FiveInARowGame & other) {
   game_state_ = other.game_state_;
   history_moves_ = other.history_moves_;
-  num_of_moves_ = other.num_of_moves_;
+  num_moves_ = other.num_moves_;
   moving_player_ = other.moving_player_;
   unmoving_player_ = other.unmoving_player_;
   winner_ = other.winner_;
@@ -47,15 +48,16 @@ void FiveInARowGame::Update() {
 }
 
 void FiveInARowGame::Render() const {
-  std::ostringstream buf;
-  static std::map<StoneType, char> stone_code_map{
-      {StoneType::kStoneTypeEmpty, ' '},
-      {StoneType::kStoneTypeBlack, '1'},
-      {StoneType::kStoneTypeWhite, '2'}};
-
   auto IsOdd = [](std::size_t num) -> bool {
     return static_cast<bool>(num % 2);
   };
+  if (IsOdd(num_moves_)) {
+    std::cout << "----------------------------------------\n"
+              << "Round " << num_moves_ / 2 << "\n";
+  }
+  // Following is for debugging, which cannot be used for this scenario.
+  // std::cout << *this;
+  std::ostringstream buf;
 
   auto PrintLine1 = [this, &buf]() {
     buf << "+  " << ' ';
@@ -69,10 +71,6 @@ void FiveInARowGame::Render() const {
     buf << "   " << std::string(board_.board_size() * 2 + 1, '-') << '\n';
   };
 
-  if (IsOdd(num_of_moves_)) {
-    buf << "----------------------------------------\n"
-        << "Round " << num_of_moves_ / 2 << "\n";
-  }
   buf << "-- The game map:\n";
   PrintLine1();
   PrintLine2();
@@ -82,10 +80,10 @@ void FiveInARowGame::Render() const {
       char stone_code;
       if (!history_moves_.empty() &&
           BoardCoordinate{column, row} ==
-              history_moves_.top().board_coordinate) {
+              history_moves_.back().board_coordinate) {
         stone_code = 'L';
       } else {
-        stone_code = stone_code_map.at(
+        stone_code = stone_code_map().at(
             board_.GetStoneTypeInCoordinate(BoardCoordinate(column, row)));
       }
       buf << stone_code << " ";
@@ -110,13 +108,13 @@ void FiveInARowGame::UpdateGameState() {
 
 void FiveInARowGame::CurrentPlayerMove() {
   const ::Move move{moving_player_->Move(board_)};
-  history_moves_.push(move);
-  num_of_moves_++;
+  history_moves_.push_back(move);
+  num_moves_++;
 }
 
 bool FiveInARowGame::IsWinning() const {
   // This fucntion needs only to check the latest move.
-  const Move & last_move{history_moves_.top()};
+  const Move & last_move{history_moves_.back()};
   for (int vertical = 0; vertical != 2; ++vertical) {
     for (int horizontal = -1; horizontal != 2; ++horizontal) {
       // filter directions
@@ -151,5 +149,22 @@ bool FiveInARowGame::IsWinning() const {
 }
 
 bool FiveInARowGame::IsDrawing() const {
-  return num_of_moves_ == board_.board_size() * board_.board_size();
+  return num_moves_ == board_.board_size() * board_.board_size();
+}
+
+std::ostream & operator<<(std::ostream & os, const FiveInARowGame & game) {
+  std::stringstream buf;
+  buf << "FiveInARowGame {"
+      << "\n  game_state_:" << game_state_string_map().at(game.game_state())
+      << "\n  history_moves_:\n";
+  for (const auto & move : game.history_moves()) {
+    buf << move;
+  }
+  buf << "\n  num_moves_:" << game.num_moves()
+      << "\n  moving_player_:" << game.moving_player()->name()
+      << "\n  unmoving_player_:" << game.unmoving_player()->name()
+      << "\n  board_:\n"
+      << game.board() << "}\n";
+  os << buf.str();
+  return os;
 }

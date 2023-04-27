@@ -6,8 +6,11 @@
 #include <map>
 #include <memory>
 #include <stack>
-#include <type_traits>
+#include <string>
+#include <vector>
 
+#include "five_in_a_row_game/board_fwd.h"
+#include "five_in_a_row_game/move.h"
 #include "five_in_a_row_game/player.h"
 
 enum class GameState : std::size_t {
@@ -16,10 +19,20 @@ enum class GameState : std::size_t {
   kGameStateStoped
 };
 
+inline const auto & game_state_string_map() {
+  static std::map<GameState, std::string> game_state_string_map{
+      {GameState::kGameStateNotStarted, "kGameStateNotStarted"},
+      {GameState::kGameStateStarted, "kGameStateStarted"},
+      {GameState::kGameStateStoped, "kGameStateStoped"}};
+  return game_state_string_map;
+}
+
 template <typename T>
 concept PlayerType = std::is_same_v<T, Player>;
 
-/// @brief A particular match.
+/// @brief FiveInARowGame defines a particular match between two players, which
+/// contains game state, winner, etc. . It can be in any state, ranging from
+/// going on to having been over.
 class FiveInARowGame {
  public:
   FiveInARowGame();
@@ -47,7 +60,12 @@ class FiveInARowGame {
   void Tick();
 
   GameState game_state() const { return game_state_; }
+  const std::vector<Move> & history_moves() const { return history_moves_; }
+  std::size_t num_moves() const { return num_moves_; }
+  const Player * moving_player() const { return moving_player_; }
+  const Player * unmoving_player() const { return unmoving_player_; }
   const Player * winner() const { return winner_; }
+  const Board & board() const { return board_; }
 
  private:
   /// @brief Updates processes data
@@ -60,11 +78,14 @@ class FiveInARowGame {
   void Render() const;
 
   GameState game_state_{GameState::kGameStateNotStarted};
-  std::stack<Move> history_moves_{};
-  std::size_t num_of_moves_{0};
-  Player *moving_player_{nullptr}, *unmoving_player_{nullptr};
+  std::vector<Move> history_moves_{};
+  std::size_t num_moves_{0};
+  Player * moving_player_{nullptr};
+  Player * unmoving_player_{nullptr};
   Player * winner_{nullptr};
   Board board_{6};
 };
+
+std::ostream & operator<<(std::ostream & os, const FiveInARowGame & game);
 
 #endif  // FIVE_IN_A_ROW_GAME_FIVE_IN_A_ROW_GAME_H

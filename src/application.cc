@@ -62,7 +62,7 @@ void Application::ProcessGameOver() {
   } else {
     std::cout << "The game drew! No one wins!\n";
   }
-  // game_.CleanUp();
+  history_games_.push_back(game_);
   game_ = FiveInARowGame();
   ParseCommand();
 }
