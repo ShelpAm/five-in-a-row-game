@@ -1,0 +1,6 @@
+cmake -S. -Bbuild/Debug \
+  -G"Unix Makefiles" \
+  -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+  -DCMAKE_VERBOSE_MAKEFILE=OFF \
+  -DCMAKE_CXX_COMPILER=g++ \
+  -DCMAKE_BUILD_TYPE=Debug

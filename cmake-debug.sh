@@ -1,2 +1,2 @@
-./cmake-generate-debug.sh
+./cmake-configure-debug.sh
 ./cmake-build-debug.sh

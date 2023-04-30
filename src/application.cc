@@ -49,6 +49,7 @@ void Application::Render() const {
     case State::kStateStoped:
       break;
     case State::kStateEnded:
+      break;
   }
   game_.Render();
 }

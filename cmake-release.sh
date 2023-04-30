@@ -1,2 +1,2 @@
-./cmake-generate-release.sh
+./cmake-configure-release.sh
 ./cmake-build-release.sh
