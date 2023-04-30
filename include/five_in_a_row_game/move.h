@@ -9,6 +9,10 @@
 
 class Move {
  public:
+  Move(const BoardCoordinate & bc, const StoneType st) {
+    board_coordinate = bc;
+    stone_type = st;
+  }
   BoardCoordinate board_coordinate;
   StoneType stone_type;
 };

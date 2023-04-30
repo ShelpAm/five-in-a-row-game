@@ -2,8 +2,8 @@
 // Created by small-sheep on 11/10/22.
 //
 
-#ifndef FIVE_IN_A_ROW_GAME_SRC_PLAYER_H
-#define FIVE_IN_A_ROW_GAME_SRC_PLAYER_H
+#ifndef FIVE_IN_A_ROW_GAME_PLAYER_H
+#define FIVE_IN_A_ROW_GAME_PLAYER_H
 
 #include <string>
 #include <vector>
@@ -47,4 +47,4 @@ class Player {
 
 }  // namespace five_in_a_row_game
 
-#endif  // FIVE_IN_A_ROW_GAME_SRC_PLAYER_H
+#endif  // FIVE_IN_A_ROW_GAME_PLAYER_H

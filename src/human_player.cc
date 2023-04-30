@@ -35,8 +35,8 @@ const std::vector<BoardCoordinate> HumanPlayer::Think(
       break;
     }
     // The move is invalid.
-    std::cout << "Your target coordinate is invalid, please choose another "
-                 "one!\n";
+    std::cout
+        << "The input coordinate is invalid, please choose another one!\n";
   }
   return std::vector<BoardCoordinate>{input_coordinate};
 }

@@ -6,6 +6,5 @@
 int main() {
   Application application;
   application.MainLoop();
-
   return 0;
 }

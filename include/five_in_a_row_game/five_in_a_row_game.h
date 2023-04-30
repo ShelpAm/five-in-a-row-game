@@ -12,20 +12,13 @@
 #include "five_in_a_row_game/board_fwd.h"
 #include "five_in_a_row_game/move.h"
 #include "five_in_a_row_game/player.h"
+#include "five_in_a_row_game/state.h"
 
 enum class GameState : std::size_t {
   kGameStateNotStarted,
   kGameStateStarted,
   kGameStateStoped
 };
-
-inline const auto & game_state_string_map() {
-  static std::map<GameState, std::string> game_state_string_map{
-      {GameState::kGameStateNotStarted, "kGameStateNotStarted"},
-      {GameState::kGameStateStarted, "kGameStateStarted"},
-      {GameState::kGameStateStoped, "kGameStateStoped"}};
-  return game_state_string_map;
-}
 
 template <typename T>
 concept PlayerType = std::is_same_v<T, Player>;
@@ -34,6 +27,9 @@ concept PlayerType = std::is_same_v<T, Player>;
 /// contains game state, winner, etc. . It can be in any state, ranging from
 /// going on to having been over.
 class FiveInARowGame {
+  friend std::ostream & operator<<(std::ostream & os,
+                                   const FiveInARowGame & game);
+
  public:
   FiveInARowGame();
 
@@ -52,34 +48,26 @@ class FiveInARowGame {
     unmoving_player_ = &later_player;
     moving_player_->set_stone_type_in_use(StoneType::kStoneTypeBlack);
     unmoving_player_->set_stone_type_in_use(StoneType::kStoneTypeWhite);
-    game_state_ = GameState::kGameStateStarted;
-    std::cout << "[info] Game started.\n";
+    state_ = State::kStateStarted;
+    std::cout << "[Info] Game started.\n";
     Render();
   }
 
-  void Tick();
+  /// @brief Updates processes data
+  void Update();
 
-  GameState game_state() const { return game_state_; }
-  const std::vector<Move> & history_moves() const { return history_moves_; }
-  std::size_t num_moves() const { return num_moves_; }
+  void Render() const;
+
   const Player * moving_player() const { return moving_player_; }
   const Player * unmoving_player() const { return unmoving_player_; }
   const Player * winner() const { return winner_; }
   const Board & board() const { return board_; }
 
  private:
-  /// @brief Updates processes data
-  void Update();
   void CurrentPlayerMove();
   void UpdateGameState();
-  bool IsWinning() const;
-  bool IsDrawing() const;
 
-  void Render() const;
-
-  GameState game_state_{GameState::kGameStateNotStarted};
-  std::vector<Move> history_moves_{};
-  std::size_t num_moves_{0};
+  State state_{State::kStateNotStarted};
   Player * moving_player_{nullptr};
   Player * unmoving_player_{nullptr};
   Player * winner_{nullptr};
