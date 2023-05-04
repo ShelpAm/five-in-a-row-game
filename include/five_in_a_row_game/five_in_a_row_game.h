@@ -14,12 +14,6 @@
 #include "five_in_a_row_game/player.h"
 #include "five_in_a_row_game/state.h"
 
-enum class GameState : std::size_t {
-  kGameStateNotStarted,
-  kGameStateStarted,
-  kGameStateStoped
-};
-
 template <typename T>
 concept PlayerType = std::is_same_v<T, Player>;
 
@@ -31,47 +25,37 @@ class FiveInARowGame {
                                    const FiveInARowGame & game);
 
  public:
-  FiveInARowGame();
-
+  // template <PlayerType T>
+  FiveInARowGame(Player * black_player, Player * white_player) {
+    black_player_ = moving_player_ = black_player;
+    white_player_ = unmoving_player_ = white_player;
+    moving_player_->set_stone_type_in_use(StoneType::kStoneTypeBlack);
+    unmoving_player_->set_stone_type_in_use(StoneType::kStoneTypeWhite);
+  }
   FiveInARowGame(const FiveInARowGame & other);
-
   FiveInARowGame & operator=(const FiveInARowGame & other);
-
   ~FiveInARowGame();
 
   /// @brief Starts the game and begin the game loop.
   /// @param first_player - The first player
   /// @param later_player - The second player
-  template <PlayerType T>
-  void Start(T & first_player, T & later_player) {
-    moving_player_ = &first_player;
-    unmoving_player_ = &later_player;
-    moving_player_->set_stone_type_in_use(StoneType::kStoneTypeBlack);
-    unmoving_player_->set_stone_type_in_use(StoneType::kStoneTypeWhite);
+  void Start() {
     state_ = State::kStateStarted;
-    std::cout << "[Info] Game started.\n";
-    Render();
+    // std::cout << "[Info] Game started.\n";
+    // Render();
   }
-
   /// @brief Updates processes data
   void Update();
-
   void Render() const;
 
-  const Player * moving_player() const { return moving_player_; }
-  const Player * unmoving_player() const { return unmoving_player_; }
-  const Player * winner() const { return winner_; }
-  const Board & board() const { return board_; }
-
  private:
-  void CurrentPlayerMove();
-  void UpdateGameState();
-
   State state_{State::kStateNotStarted};
-  Player * moving_player_{nullptr};
-  Player * unmoving_player_{nullptr};
+  Player * moving_player_;
+  Player * unmoving_player_;
+  Player * black_player_;
+  Player * white_player_;
   Player * winner_{nullptr};
-  Board board_{6};
+  Board board_{9};
 };
 
 std::ostream & operator<<(std::ostream & os, const FiveInARowGame & game);

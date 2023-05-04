@@ -6,7 +6,6 @@
 #define FIVE_IN_A_ROW_GAME_APPLICATION_H_
 
 #include <cstddef>
-#include <type_traits>
 #include <vector>
 
 #include "five_in_a_row_game/five_in_a_row_game.h"
@@ -17,23 +16,21 @@ class Application {
  public:
   Application();
   ~Application();
-
-  void MainLoop();
+  void Run();
 
  private:
+  friend class ApplicationState;
   void ProcessInput();
-
-  void Update();
-
+  void Update(const std::size_t delta_tick);
   void Render() const;
-
   void ParseCommand();
 
+ private:
+  bool should_terminate_{false};
+  std::size_t previous_frame_clock_{0}, current_frame_clock_{0};
   std::size_t frame_per_second_{0};
-  std::size_t last_frame_{0}, current_frame_{0};
-  State state_;
-  std::vector<FiveInARowGame> history_games_;
-  FiveInARowGame game_{};
+  std::vector<FiveInARowGame *> history_games_{};
+  FiveInARowGame * game_{nullptr};
   std::vector<Player *> players_{};
 };
 

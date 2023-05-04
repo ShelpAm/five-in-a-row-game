@@ -28,9 +28,9 @@ void Board::PlaceAStone(const BoardCoordinate & c, const StoneType stone_type) {
 
 StoneType Board::GetStoneTypeInCoordinate(const BoardCoordinate & c) const {
   if (!IsCoordinateInRangeOfBoard(c, *this)) {
-    throw CoordinateOutOfRange{};
+    throw CoordinateOutOfRange();
   }
-  return stone_type_map()[c.column()][c.row()];
+  return stone_type_map_[c.column()][c.row()];
 }
 
 BoardState Board::GetBoardState() const {
@@ -44,35 +44,29 @@ BoardState Board::GetBoardState() const {
 }
 
 bool Board::IsWinning() const {
-  // This fucntion needs only to check the latest move.
+  // This function needs only to check the latest move.
   const Move & last_move{history_moves_.back()};
-  for (int vertical = 0; vertical != 2; ++vertical) {
-    for (int horizontal = -1; horizontal != 2; ++horizontal) {
-      // filter directions
-      // all directions that should be checked:
-      //   - - -
-      //   - - +
-      //   + + +
-      if (vertical == 0 && horizontal != 1) {
-        continue;
+  const auto & last_move_coordinate = last_move.board_coordinate;
+  int directions[4][2] = {{1, 0}, {-1, 1}, {0, 1}, {1, 1}};
+  for (auto direction : directions) {
+    int horizontal = direction[0];
+    int vertical = direction[1];
+    for (int offset = -4; offset != 1; ++offset) {
+      int i = 0;
+      // for every stone in the group
+      for (; i != 5; ++i) {
+        BoardCoordinate coord{
+            last_move_coordinate.column() + horizontal * (offset + i),
+            last_move_coordinate.row() + vertical * (offset + i)};
+        if (!IsCoordinateInRangeOfBoard(coord, *this)) {
+          break;
+        }
+        if (GetStoneTypeInCoordinate(coord) != last_move.stone_type) {
+          break;
+        }
       }
-      // for every group of five stones
-      for (int offset = -4; offset != 1; ++offset) {
-        int i = 0;
-        // for every stone in the group
-        for (; i != 5; ++i) {
-          const auto & last_move_coordinate = last_move.board_coordinate;
-          BoardCoordinate coord{
-              last_move_coordinate.column() + horizontal * (offset + i),
-              last_move_coordinate.row() + vertical * (offset + i)};
-          if (!IsCoordinateInRangeOfBoard(coord, *this) ||
-              GetStoneTypeInCoordinate(coord) != last_move.stone_type) {
-            break;
-          }
-        }
-        if (i == 5) {
-          return true;
-        }
+      if (i == 5) {
+        return true;
       }
     }
   }

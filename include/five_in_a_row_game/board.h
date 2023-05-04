@@ -28,11 +28,7 @@ class Board {
   void PlaceAStone(const BoardCoordinate & c, const StoneType stone_type);
 
   StoneType GetStoneTypeInCoordinate(const BoardCoordinate & c) const;
-
   std::size_t board_size() const { return board_size_; }
-  const std::vector<std::vector<StoneType>> & stone_type_map() const {
-    return stone_type_map_;
-  }
   std::size_t num_moves() const { return history_moves_.size(); }
 
   BoardState GetBoardState() const;

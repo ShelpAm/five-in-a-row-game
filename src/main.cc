@@ -5,6 +5,6 @@
 
 int main() {
   Application application;
-  application.MainLoop();
+  application.Run();
   return 0;
 }

@@ -13,8 +13,6 @@
 #include "five_in_a_row_game/state.h"
 #include "five_in_a_row_game/stone_type.h"
 
-FiveInARowGame::FiveInARowGame() {}
-
 FiveInARowGame::FiveInARowGame(const FiveInARowGame & other)
     : state_(other.state_),
       moving_player_(other.moving_player_),
@@ -38,10 +36,21 @@ void FiveInARowGame::Update() {
     case State::kStateNotStarted:
       break;
     case State::kStateStarted:
-      std::cout << "It's the turn of player '" << moving_player_->name()
-                << "'.\n";
-      CurrentPlayerMove();
-      UpdateGameState();
+      moving_player_->Move(board_);
+      switch (board_.GetBoardState()) {
+        case BoardState::kBoardStateWinning:
+          winner_ = moving_player_;
+          state_ = State::kStateEnded;
+          break;
+        case BoardState::kBoardStateDrawing:
+          winner_ = nullptr;
+          state_ = State::kStateEnded;
+          break;
+        case BoardState::kBoardStateStarted:
+          state_ = State::kStateStarted;
+          break;
+      }
+      std::swap(moving_player_, unmoving_player_);
       break;
     case State::kStateStoped:
       break;
@@ -51,27 +60,18 @@ void FiveInARowGame::Update() {
 }
 
 void FiveInARowGame::Render() const {
-  auto IsOdd = [](std::size_t num) -> bool {
-    return static_cast<bool>(num % 2);
-  };
   switch (state_) {
     case State::kStateNotStarted:
       break;
     case State::kStateStarted:
-      if (IsOdd(board_.num_moves())) {
-        std::cout << "----------------------------------------\n"
-                  << "Round " << board_.num_moves() / 2 << "\n";
-      }
-      std::cout << "The game board:\n" << board_;
+      std::cout << "------- The " << board_.num_moves() << " move -------\n"
+                << board_;
       break;
     case State::kStateStoped:
       break;
     case State::kStateEnded:
-      if (IsOdd(board_.num_moves())) {
-        std::cout << "----------------------------------------\n"
-                  << "Round " << board_.num_moves() / 2 << "\n";
-      }
-      std::cout << "The game board:\n" << board_;
+      std::cout << "------- The " << board_.num_moves() << " move -------\n"
+                << board_;
       if (winner_) {
         std::cout << "Game over! The winner is " << winner_->name() << '\n';
       } else {
@@ -81,25 +81,6 @@ void FiveInARowGame::Render() const {
   }
 }
 
-void FiveInARowGame::UpdateGameState() {
-  switch (board_.GetBoardState()) {
-    case BoardState::kBoardStateWinning:
-      winner_ = moving_player_;
-      state_ = State::kStateEnded;
-      break;
-    case BoardState::kBoardStateDrawing:
-      winner_ = nullptr;
-      state_ = State::kStateEnded;
-      break;
-    case BoardState::kBoardStateStarted:
-      state_ = State::kStateStarted;
-      break;
-  }
-  std::swap(moving_player_, unmoving_player_);
-}
-
-void FiveInARowGame::CurrentPlayerMove() { moving_player_->Move(board_); }
-
 std::ostream & operator<<(std::ostream & os, const FiveInARowGame & game) {
   std::stringstream buf;
   buf << "FiveInARowGame {"
@@ -108,7 +89,7 @@ std::ostream & operator<<(std::ostream & os, const FiveInARowGame & game) {
       << "\n  moving_player_:" << game.moving_player_->name()
       << "\n  unmoving_player_:" << game.unmoving_player_->name()
       << "\n  board_:\n"
-      << game.board() << "}\n";
+      << game.board_ << "}\n";
   os << buf.str();
   return os;
 }
