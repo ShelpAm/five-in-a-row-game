@@ -12,6 +12,7 @@
 #include "five_in_a_row_game/board_fwd.h"
 #include "five_in_a_row_game/move.h"
 #include "five_in_a_row_game/player.h"
+#include "five_in_a_row_game/shader.h"
 #include "five_in_a_row_game/state.h"
 
 template <typename T>
@@ -46,7 +47,7 @@ class FiveInARowGame {
   }
   /// @brief Updates processes data
   void Update();
-  void Render() const;
+  void Render(const Shader &) const;
 
  private:
   State state_{State::kStateNotStarted};

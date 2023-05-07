@@ -10,8 +10,12 @@
 #include "five_in_a_row_game/board.h"
 #include "five_in_a_row_game/board_coordinate.h"
 #include "five_in_a_row_game/move.h"
+#include "five_in_a_row_game/shader.h"
 #include "five_in_a_row_game/state.h"
 #include "five_in_a_row_game/stone_type.h"
+#include "glad/glad.h"
+#include "glm/ext/matrix_transform.hpp"
+#include "glm/glm.hpp"
 
 FiveInARowGame::FiveInARowGame(const FiveInARowGame & other)
     : state_(other.state_),
@@ -59,19 +63,40 @@ void FiveInARowGame::Update() {
   }
 }
 
-void FiveInARowGame::Render() const {
+void FiveInARowGame::Render(const Shader & shader) const {
+  for (std::size_t i = 0; i != board_.board_size(); i++) {
+    for (std::size_t j = 0; j != board_.board_size(); j++) {
+      glm::mat4 model(1.0f);
+      model = glm::translate(model, glm::vec3(i, j, 0.0f));
+      model = glm::rotate(model, glm::radians(-15.0f),
+                          glm::vec3(1.0f, -0.0f, 0.0f));
+      shader.UniformMatrix4fv("model", model);
+      if (board_.GetStoneTypeInCoordinate(BoardCoordinate(i, j)) ==
+          StoneType::kStoneTypeBlack) {
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+      }
+      if (board_.GetStoneTypeInCoordinate(BoardCoordinate(i, j)) ==
+          StoneType::kStoneTypeWhite) {
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, 1);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+      }
+    }
+  }
   switch (state_) {
     case State::kStateNotStarted:
       break;
     case State::kStateStarted:
-      std::cout << "------- The " << board_.num_moves() << " move -------\n"
-                << board_;
+      // std::cout << "------- The " << board_.num_moves() << " move -------\n"
+      //           << board_;
       break;
     case State::kStateStoped:
       break;
     case State::kStateEnded:
-      std::cout << "------- The " << board_.num_moves() << " move -------\n"
-                << board_;
+      // std::cout << "------- The " << board_.num_moves() << " move -------\n"
+      //           << board_;
       if (winner_) {
         std::cout << "Game over! The winner is " << winner_->name() << '\n';
       } else {

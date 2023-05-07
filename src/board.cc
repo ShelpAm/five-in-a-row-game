@@ -46,7 +46,7 @@ BoardState Board::GetBoardState() const {
 bool Board::IsWinning() const {
   // This function needs only to check the latest move.
   const Move & last_move{history_moves_.back()};
-  const auto & last_move_coordinate = last_move.board_coordinate;
+  const auto & last_move_coordinate = last_move.coordinate;
   int directions[4][2] = {{1, 0}, {-1, 1}, {0, 1}, {1, 1}};
   for (auto direction : directions) {
     int horizontal = direction[0];
@@ -98,7 +98,7 @@ std::ostream & operator<<(std::ostream & os, const Board & board) {
       char stone_code;
       if (!board.history_moves_.empty() &&
           BoardCoordinate{column, row} ==
-              board.history_moves_.back().board_coordinate) {
+              board.history_moves_.back().coordinate) {
         stone_code = 'L';
       } else {
         stone_code = stone_code_map().at(

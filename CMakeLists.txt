@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.18)
-project(five-in-a-row-game VERSION 0.1 LANGUAGES CXX)
+project(five-in-a-row-game VERSION 0.1 LANGUAGES CXX C)
 
 set(CMAKE_DEBUG_POSTFIX "d")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -38,9 +38,12 @@ elseif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 else()
   message(ERROR "This platform is not supported.")
 endif()
+
 set(FIVE_IN_A_ROW_GAME_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
-set(IMGUI_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/third_party/imgui")
+set(GLAD_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/third_party/glad/include")
 set(GLFW_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/third_party/glfw/include")
+set(GLM_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/third_party/glm/")
+set(STB_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/third_party/stb/include")
 
 add_subdirectory(src)
 add_subdirectory(third_party)
