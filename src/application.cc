@@ -64,11 +64,19 @@ Application::Application(const std::size_t window_width,
     std::stringstream vertex_buf, fragment_buf;
     vertex_buf << vertex_file.rdbuf();
     fragment_buf << fragment_file.rdbuf();
-
     shader_ = std::make_unique<Shader>(vertex_buf.str().c_str(),
                                        fragment_buf.str().c_str());
     glViewport(0, 0, 800, 600);
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glEnable(GL_DEPTH_TEST);
+    // TODO: `xpos` and `ypos` won't work normally sometimes.
+    glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    // glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    // glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+    // glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_CAPTURED);
+    if (glfwRawMouseMotionSupported()) {
+      glfwSetInputMode(window_, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+    }
   } catch (const GlfwWindowNotCreated &) {
     glfwTerminate();
     throw;
@@ -167,17 +175,10 @@ void Application::Run() {
     glBindVertexArray(vao);
     Render();
 
-    glm::mat4 model(1.0f);
-    glm::mat4 view(1.0f);
-    glm::mat4 projection(1.0f);
-    model =
-        glm::rotate(model, glm::radians(-15.0f), glm::vec3(1.0f, -0.0f, 0.0f));
-    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -20.0f));
-    projection = glm::perspective(glm::radians(45.0f),
-                                  (float)window_width_ / (float)window_height_,
-                                  0.1f, 100.0f);
-
-    shader_->UniformMatrix4fv("model", model);
+    glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+    glm::mat4 projection = glm::perspective(
+        glm::radians(45.0f), (float)window_width_ / (float)window_height_, 0.1f,
+        100.0f);
     shader_->UniformMatrix4fv("view", view);
     shader_->UniformMatrix4fv("projection", projection);
     shader_->Use();
@@ -194,11 +195,53 @@ void Application::Run() {
 }
 
 void Application::ProcessInput() {
+  ProcessCursor();
+  ProcessKeyBoard();
+}
+
+void Application::ProcessCursor() {
+  double xpos, ypos;
+  glfwGetCursorPos(window_, &xpos, &ypos);
+  // std::cout << "xpos:" << xpos << " ypos:" << ypos << "\n";
+
+  static float prev_xpos = float(window_width_) / 2,
+               prev_ypos = float(window_height_) / 2;
+  float delta_x = xpos - prev_xpos, delta_y = -(ypos - prev_ypos);
+  prev_xpos = xpos, prev_ypos = ypos;
+  if (delta_x || delta_y) {
+    std::cout << "Cursor position: " << xpos << ", " << ypos << " (" << delta_x
+              << " " << delta_y << ")\n";
+  }
+
+  float sensitivity = 0.05f;
+  yaw += delta_x * sensitivity;
+  pitch += delta_y * sensitivity;
+  if (pitch > 89.0f) pitch = 89.0f;
+  if (pitch < -89.0f) pitch = -89.0f;
+  glm::vec3 front;
+  front.x = cos(glm::radians(pitch)) * cos(glm::radians(yaw));
+  front.y = sin(glm::radians(pitch));
+  front.z = cos(glm::radians(pitch)) * sin(glm::radians(yaw));
+  cameraFront = glm::normalize(front);
+}
+void Application::ProcessKeyBoard() {
   if (glfwGetKey(window_, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
     glfwSetWindowShouldClose(window_, GLFW_TRUE);
   }
+  auto delta_time = current_frame_time_ - previous_frame_time_;
+  float cameraSpeed = 7.5f * delta_time;
+  if (glfwGetKey(window_, GLFW_KEY_W) == GLFW_PRESS)
+    cameraPos += cameraSpeed * cameraFront;
+  if (glfwGetKey(window_, GLFW_KEY_S) == GLFW_PRESS)
+    cameraPos -= cameraSpeed * cameraFront;
+  if (glfwGetKey(window_, GLFW_KEY_A) == GLFW_PRESS)
+    cameraPos -=
+        glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+  if (glfwGetKey(window_, GLFW_KEY_D) == GLFW_PRESS)
+    cameraPos +=
+        glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+
   if (glfwGetKey(window_, GLFW_KEY_G) == GLFW_PRESS) {
-    // TODO: These lead to memory leaks.
     auto human_player = HumanPlayerFactory::Instance().MakePlayer();
     auto ai_player1 = EasyAIPlayerFactory::Instance().MakePlayer();
     auto ai_player2 = EasyAIPlayerFactory::Instance().MakePlayer();
@@ -213,7 +256,7 @@ void Application::ProcessInput() {
     game_ = new FiveInARowGame(ai_player1.get(), ai_player2.get());
     game_->Start();
   }
-  if (glfwGetKey(window_, GLFW_KEY_D) == GLFW_PRESS) {
+  if (glfwGetKey(window_, GLFW_KEY_F) == GLFW_PRESS) {
     std::cout << "shader_program_:" << shader_->shader_program_ << "\n";
     if (game_) {
       std::cout << *game_;
@@ -228,7 +271,7 @@ void Application::Update(const std::size_t delta_tick) {
 }
 
 void Application::Render() const {
-  glClear(GL_COLOR_BUFFER_BIT);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   // ClearScreen();
 
   if (game_) {

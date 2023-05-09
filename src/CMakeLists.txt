@@ -27,11 +27,11 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
   glad
   glfw
   stb
-  X11
-  pthread
-  Xrandr
-  Xi
-  dl
+  # X11
+  # pthread
+  # Xrandr
+  # Xi
+  # dl
 )
 
 add_definitions(-DGLFW_INCLUDE_NONE)

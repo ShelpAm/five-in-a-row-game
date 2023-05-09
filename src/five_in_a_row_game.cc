@@ -7,6 +7,7 @@
 #include <sstream>
 #include <string>
 
+#include "GLFW/glfw3.h"
 #include "five_in_a_row_game/board.h"
 #include "five_in_a_row_game/board_coordinate.h"
 #include "five_in_a_row_game/move.h"
@@ -67,7 +68,8 @@ void FiveInARowGame::Render(const Shader & shader) const {
   for (std::size_t i = 0; i != board_.board_size(); i++) {
     for (std::size_t j = 0; j != board_.board_size(); j++) {
       glm::mat4 model(1.0f);
-      model = glm::translate(model, glm::vec3(i, j, 0.0f));
+      model = glm::translate(
+          model, glm::vec3(i, j, 20 * sin(glfwGetTime() + i + j)) - 5.0f);
       model = glm::rotate(model, glm::radians(-15.0f),
                           glm::vec3(1.0f, -0.0f, 0.0f));
       shader.UniformMatrix4fv("model", model);
