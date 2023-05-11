@@ -69,20 +69,20 @@ void FiveInARowGame::Render(const Shader & shader) const {
     for (std::size_t j = 0; j != board_.board_size(); j++) {
       glm::mat4 model(1.0f);
       model = glm::translate(
-          model, glm::vec3(i, j, 20 * sin(glfwGetTime() + i + j)) - 5.0f);
+          model, glm::vec3(i, j, 3 * sin(glfwGetTime() + i + j)) - 5.0f);
       model = glm::rotate(model, glm::radians(-15.0f),
                           glm::vec3(1.0f, -0.0f, 0.0f));
       shader.UniformMatrix4fv("model", model);
       if (board_.GetStoneTypeInCoordinate(BoardCoordinate(i, j)) ==
           StoneType::kStoneTypeBlack) {
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, 0);
+        glBindTexture(GL_TEXTURE_2D, 1);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
       }
       if (board_.GetStoneTypeInCoordinate(BoardCoordinate(i, j)) ==
           StoneType::kStoneTypeWhite) {
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, 1);
+        glBindTexture(GL_TEXTURE_2D, 2);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
       }
     }
@@ -99,11 +99,11 @@ void FiveInARowGame::Render(const Shader & shader) const {
     case State::kStateEnded:
       // std::cout << "------- The " << board_.num_moves() << " move -------\n"
       //           << board_;
-      if (winner_) {
-        std::cout << "Game over! The winner is " << winner_->name() << '\n';
-      } else {
-        std::cout << "Game draws! No one wins!\n";
-      }
+      // if (winner_) {
+      //   std::cout << "Game over! The winner is " << winner_->name() << '\n';
+      // } else {
+      //   std::cout << "Game draws! No one wins!\n";
+      // }
       break;
   }
 }

@@ -37,6 +37,12 @@ Shader::~Shader() {
 
 void Shader::Use() const { glUseProgram(shader_program_); }
 
+void Shader::Uniform3f(const char * name, const float value1,
+                       const float value2, const float value3) const {
+  Use();
+  glUniform3f(GetUniformLocation(name), value1, value2, value3);
+}
+
 void Shader::Uniform4f(const char * name, const float value1,
                        const float value2, const float value3,
                        const float value4) const {

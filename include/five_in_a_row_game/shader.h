@@ -8,6 +8,8 @@ class Shader {
          const char * fragment_shader_source);
   ~Shader();
   void Use() const;
+  void Uniform3f(const char * name, const float, const float,
+                 const float) const;
   void Uniform4f(const char * name, const float, const float, const float,
                  const float) const;
   void Uniform1i(const char * name, const int) const;

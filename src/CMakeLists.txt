@@ -4,6 +4,7 @@ add_executable(${PROJECT_NAME}
   # application_state.cc
   board.cc
   board_coordinate.cc
+  camera.cc
   easy_ai_player.cc
   easy_ai_player_factory.cc
   five_in_a_row_game.cc
