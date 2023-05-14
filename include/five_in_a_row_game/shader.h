@@ -8,11 +8,13 @@ class Shader {
          const char * fragment_shader_source);
   ~Shader();
   void Use() const;
+  void Uniform1f(const char * name, const float) const;
   void Uniform3f(const char * name, const float, const float,
                  const float) const;
   void Uniform4f(const char * name, const float, const float, const float,
                  const float) const;
   void Uniform1i(const char * name, const int) const;
+  void UniformVector3f(const char * name, const glm::vec3 & vec3);
   void UniformMatrix4fv(const char * name, const glm::mat4 & mat4) const;
 
  private:
@@ -22,7 +24,8 @@ class Shader {
   void CheckShaderProgramErrors() const;
 
  private:
-  unsigned shader_program_{};
+  static unsigned being_used_shader_;
+  unsigned shader_program_;
 };
 
 #endif  // FIVE_IN_A_ROW_GAME_SHADER_H_

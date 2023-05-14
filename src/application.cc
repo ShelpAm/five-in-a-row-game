@@ -22,6 +22,7 @@
 #include "five_in_a_row_game/player.h"
 #include "five_in_a_row_game/shader.h"
 #include "five_in_a_row_game/state.h"
+#include "five_in_a_row_game/texture.h"
 #include "glad/glad.h"
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/ext/matrix_float4x4.hpp"
@@ -79,10 +80,19 @@ Application::Application(const std::size_t window_width,
     shader_ = std::make_unique<Shader>(vertex_buf.str().c_str(),
                                        fragment_buf.str().c_str());
     glViewport(0, 0, 800, 600);
-    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                    GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    stbi_set_flip_vertically_on_load(true);
+
   } catch (const GlfwWindowNotCreated &) {
     glfwTerminate();
     throw;
@@ -174,12 +184,42 @@ void Application::ScrollCallback(double xoffset, double yoffset) {
 
 void Application::Run() {
   float vertices[] = {
-      //     ---- 位置 ----       ---- 颜色 ----     - 纹理坐标 -
-      0.5f,  0.5f,  0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,  // 右上
-      0.5f,  -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,  // 右下
-      -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,  // 左下
-      -0.5f, 0.5f,  0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f   // 左上
-  };
+      // positions          // normals           // texture coords
+      -0.5f, -0.5f, -0.5f, 0.0f,  0.0f,  -1.0f, 0.0f,  0.0f,  0.5f,  -0.5f,
+      -0.5f, 0.0f,  0.0f,  -1.0f, 1.0f,  0.0f,  0.5f,  0.5f,  -0.5f, 0.0f,
+      0.0f,  -1.0f, 1.0f,  1.0f,  0.5f,  0.5f,  -0.5f, 0.0f,  0.0f,  -1.0f,
+      1.0f,  1.0f,  -0.5f, 0.5f,  -0.5f, 0.0f,  0.0f,  -1.0f, 0.0f,  1.0f,
+      -0.5f, -0.5f, -0.5f, 0.0f,  0.0f,  -1.0f, 0.0f,  0.0f,
+
+      -0.5f, -0.5f, 0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,  0.5f,  -0.5f,
+      0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,  0.5f,  0.5f,  0.5f,  0.0f,
+      0.0f,  1.0f,  1.0f,  1.0f,  0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+      1.0f,  1.0f,  -0.5f, 0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,
+      -0.5f, -0.5f, 0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
+
+      -0.5f, 0.5f,  0.5f,  -1.0f, 0.0f,  0.0f,  1.0f,  0.0f,  -0.5f, 0.5f,
+      -0.5f, -1.0f, 0.0f,  0.0f,  1.0f,  1.0f,  -0.5f, -0.5f, -0.5f, -1.0f,
+      0.0f,  0.0f,  0.0f,  1.0f,  -0.5f, -0.5f, -0.5f, -1.0f, 0.0f,  0.0f,
+      0.0f,  1.0f,  -0.5f, -0.5f, 0.5f,  -1.0f, 0.0f,  0.0f,  0.0f,  0.0f,
+      -0.5f, 0.5f,  0.5f,  -1.0f, 0.0f,  0.0f,  1.0f,  0.0f,
+
+      0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,  0.5f,  0.5f,
+      -0.5f, 1.0f,  0.0f,  0.0f,  1.0f,  1.0f,  0.5f,  -0.5f, -0.5f, 1.0f,
+      0.0f,  0.0f,  0.0f,  1.0f,  0.5f,  -0.5f, -0.5f, 1.0f,  0.0f,  0.0f,
+      0.0f,  1.0f,  0.5f,  -0.5f, 0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
+      0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+
+      -0.5f, -0.5f, -0.5f, 0.0f,  -1.0f, 0.0f,  0.0f,  1.0f,  0.5f,  -0.5f,
+      -0.5f, 0.0f,  -1.0f, 0.0f,  1.0f,  1.0f,  0.5f,  -0.5f, 0.5f,  0.0f,
+      -1.0f, 0.0f,  1.0f,  0.0f,  0.5f,  -0.5f, 0.5f,  0.0f,  -1.0f, 0.0f,
+      1.0f,  0.0f,  -0.5f, -0.5f, 0.5f,  0.0f,  -1.0f, 0.0f,  0.0f,  0.0f,
+      -0.5f, -0.5f, -0.5f, 0.0f,  -1.0f, 0.0f,  0.0f,  1.0f,
+
+      -0.5f, 0.5f,  -0.5f, 0.0f,  1.0f,  0.0f,  0.0f,  1.0f,  0.5f,  0.5f,
+      -0.5f, 0.0f,  1.0f,  0.0f,  1.0f,  1.0f,  0.5f,  0.5f,  0.5f,  0.0f,
+      1.0f,  0.0f,  1.0f,  0.0f,  0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+      1.0f,  0.0f,  -0.5f, 0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  0.0f,
+      -0.5f, 0.5f,  -0.5f, 0.0f,  1.0f,  0.0f,  0.0f,  1.0f};
   unsigned int indices[] = {
       0, 1, 2,  // first Triangle
       0, 2, 3,
@@ -201,52 +241,12 @@ void Application::Run() {
                         (void *)(6 * sizeof(float)));
   glEnableVertexAttribArray(0);
   glEnableVertexAttribArray(1);
-  void CursorPosCallback(double xpos, double ypos);
   glEnableVertexAttribArray(2);
   glBindVertexArray(0);
 
-  float texCoords[] = {
-      0.0f, 0.0f,  // 左下角
-      1.0f, 0.0f,  // 右下角
-      0.5f, 1.0f   // 上中
-  };
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-                  GL_LINEAR_MIPMAP_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-  stbi_set_flip_vertically_on_load(true);
-  int width, height, nrChannels;
-  unsigned char * data =
-      stbi_load("black.png", &width, &height, &nrChannels, 0);
-  if (!data) {
-    std::cout << "ERROR::STB::LOAD failed to load image\n";
-    return;
-  }
-  unsigned tex0;
-  glGenTextures(1, &tex0);
-  glBindTexture(GL_TEXTURE_2D, tex0);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA,
-               GL_UNSIGNED_BYTE, data);
-  glGenerateMipmap(GL_TEXTURE_2D);
-  stbi_image_free(data);
-
-  data = stbi_load("white.png", &width, &height, &nrChannels, 0);
-  if (!data) {
-    std::cout << "ERROR::STB::LOAD failed to load image\n";
-    return;
-  }
-  unsigned tex1;
-  glGenTextures(1, &tex1);
-  glBindTexture(GL_TEXTURE_2D, tex1);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA,
-               GL_UNSIGNED_BYTE, data);
-  glGenerateMipmap(GL_TEXTURE_2D);
-  stbi_image_free(data);
-
-  shader_->Uniform1i("tex0", 0);
-  printf("tex0, tex1: %d, %d", tex0, tex1);
+  shader_->Uniform1i("material.diffuse_map", 0);
+  shader_->Uniform1i("material.specular_map", 1);
+  shader_->Uniform1f("material.shininess", 32.0f);
 
   while (!glfwWindowShouldClose(window_)) {
     previous_frame_time_ = current_frame_time_;
@@ -259,16 +259,16 @@ void Application::Run() {
     // std::cout << "Delta time: " << delta_time << "\n";
 
     Update(delta_time);
+    shader_->Uniform3f("directional_light.direction", 0.1, -0.4, -1);
+    shader_->Uniform3f("directional_light.ambient", 0.1f, 0.1f, 0.1f);
+    shader_->Uniform3f("directional_light.diffuse", 0.7f, 0.7f, 0.7f);
+    shader_->Uniform3f("directional_light.specular", 0.1f, 0.1f, 0.1f);
+    shader_->Uniform1f("light.constant", 1.0f);
+    shader_->Uniform1f("light.linear", 0.09f);
+    shader_->Uniform1f("light.quadratic", 0.032f);
+    shader_->Use();
     glBindVertexArray(vao);
     Render();
-
-    shader_->Use();
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, tex0);
-    glActiveTexture(GL_TEXTURE0 + 1);
-    glBindTexture(GL_TEXTURE_2D, tex1);
-    glBindVertexArray(vao);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
     glfwSwapBuffers(window_);
     glfwPollEvents();
@@ -285,7 +285,7 @@ void Application::Update(const float delta_time) {
       glm::radians(camera_.fov()), (float)window_width_ / (float)window_height_,
       0.1f, 100.0f);
   shader_->UniformMatrix4fv("projection", projection);
-  shader_->Uniform3f("light_position", 0, 4, 5);
+  shader_->Uniform3f("world_light_pos", 0, 4, 5);
 }
 
 void Application::Render() const {

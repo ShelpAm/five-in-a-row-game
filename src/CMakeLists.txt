@@ -13,6 +13,7 @@ add_executable(${PROJECT_NAME}
   main.cc
   player.cc
   shader.cc
+  texture.cc
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE

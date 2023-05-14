@@ -14,6 +14,7 @@
 #include "five_in_a_row_game/player.h"
 #include "five_in_a_row_game/shader.h"
 #include "five_in_a_row_game/state.h"
+#include "five_in_a_row_game/texture.h"
 
 template <typename T>
 concept PlayerType = std::is_same_v<T, Player>;
@@ -50,6 +51,8 @@ class FiveInARowGame {
   void Render(const Shader &) const;
 
  private:
+  Texture2D diffuse_{"container2.png"};
+  Texture2D specular_{"container2_specular.png"};
   State state_{State::kStateNotStarted};
   Player * moving_player_;
   Player * unmoving_player_;

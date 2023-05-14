@@ -16,6 +16,7 @@
 #include "five_in_a_row_game/stone_type.h"
 #include "glad/glad.h"
 #include "glm/ext/matrix_transform.hpp"
+#include "glm/fwd.hpp"
 #include "glm/glm.hpp"
 
 FiveInARowGame::FiveInARowGame(const FiveInARowGame & other)
@@ -70,20 +71,21 @@ void FiveInARowGame::Render(const Shader & shader) const {
       glm::mat4 model(1.0f);
       model = glm::translate(
           model, glm::vec3(i, j, 3 * sin(glfwGetTime() + i + j)) - 5.0f);
-      model = glm::rotate(model, glm::radians(-15.0f),
-                          glm::vec3(1.0f, -0.0f, 0.0f));
+      model = glm::rotate(model, float(i + glfwGetTime()),
+                          glm::vec3(i + glfwGetTime(), -glfwGetTime() + j,
+                                    glfwGetTime() + i - j));
       shader.UniformMatrix4fv("model", model);
       if (board_.GetStoneTypeInCoordinate(BoardCoordinate(i, j)) ==
           StoneType::kStoneTypeBlack) {
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, 1);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        diffuse_.Bind(0);
+        // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
       }
       if (board_.GetStoneTypeInCoordinate(BoardCoordinate(i, j)) ==
           StoneType::kStoneTypeWhite) {
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, 2);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        specular_.Bind(1);
+        // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
       }
     }
   }

@@ -30,12 +30,19 @@ Shader::Shader(const char * vertex_shader_source,
   glDeleteShader(fragment_shader);
 }
 
-Shader::~Shader() {
-  Use();
-  glDeleteProgram(shader_program_);
+Shader::~Shader() { glDeleteProgram(shader_program_); }
+
+void Shader::Use() const {
+  if (being_used_shader_ != shader_program_) {
+    glUseProgram(shader_program_);
+    being_used_shader_ = shader_program_;
+  }
 }
 
-void Shader::Use() const { glUseProgram(shader_program_); }
+void Shader::Uniform1f(const char * name, const float value) const {
+  Use();
+  glUniform1f(GetUniformLocation(name), value);
+}
 
 void Shader::Uniform3f(const char * name, const float value1,
                        const float value2, const float value3) const {
@@ -53,6 +60,11 @@ void Shader::Uniform4f(const char * name, const float value1,
 void Shader::Uniform1i(const char * name, const int value1) const {
   Use();
   glUniform1i(GetUniformLocation(name), value1);
+}
+
+void Shader::UniformVector3f(const char * name, const glm::vec3 & vec3) {
+  Use();
+  glUniform3fv(GetUniformLocation(name), 1, glm::value_ptr(vec3));
 }
 
 void Shader::UniformMatrix4fv(const char * name, const glm::mat4 & mat4) const {
@@ -95,3 +107,5 @@ void Shader::CheckShaderProgramErrors() const {
               << infoLog << std::endl;
   }
 }
+
+unsigned Shader::being_used_shader_(-1);
