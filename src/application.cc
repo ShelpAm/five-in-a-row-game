@@ -46,8 +46,7 @@ void Application::Initialize() {
 
 void Application::Terminate() { glfwTerminate(); }
 
-Application::Application(const std::size_t window_width,
-                         const std::size_t window_height,
+Application::Application(const int window_width, const int window_height,
                          const char * window_title)
     : window_width_(window_width), window_height_(window_height) {
   try {
@@ -117,7 +116,8 @@ void Application::CursorPosCallback(double xpos, double ypos) {
   static float prev_xpos = float(window_width_) / 2,
                prev_ypos = float(window_height_) / 2;
   float delta_x = xpos - prev_xpos, delta_y = -(ypos - prev_ypos);
-  prev_xpos = xpos, prev_ypos = ypos;
+  prev_xpos = xpos;
+  prev_ypos = ypos;
   if (delta_x || delta_y) {
     std::cout << "Cursor position: " << xpos << ", " << ypos << " (" << delta_x
               << " " << delta_y << ")\n";

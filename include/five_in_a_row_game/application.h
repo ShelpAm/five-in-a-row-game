@@ -28,7 +28,7 @@ class Application {
   }
 
  public:
-  Application(const std::size_t window_width, const std::size_t window_height,
+  Application(const int window_width, const int window_height,
               const char * window_title);
   ~Application();
   void AttachThis();
