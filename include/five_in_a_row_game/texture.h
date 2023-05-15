@@ -4,6 +4,7 @@
 class Texture2D {
  public:
   Texture2D(const char * file_name);
+  ~Texture2D();
   void Bind(const unsigned which) const;
 
  private:

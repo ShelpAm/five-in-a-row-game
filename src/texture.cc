@@ -22,6 +22,8 @@ Texture2D::Texture2D(const char * file_name) {
   stbi_image_free(data);
 }
 
+Texture2D::~Texture2D() { glDeleteTextures(1, &texture_id_); }
+
 void Texture2D::Bind(const unsigned which) const {
   glActiveTexture(GL_TEXTURE0 + which);
   glBindTexture(GL_TEXTURE_2D, texture_id_);

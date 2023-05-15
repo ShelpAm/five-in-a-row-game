@@ -70,10 +70,10 @@ void FiveInARowGame::Render(const Shader & shader) const {
     for (std::size_t j = 0; j != board_.board_size(); j++) {
       glm::mat4 model(1.0f);
       model = glm::translate(
-          model, glm::vec3(i, j, 3 * sin(glfwGetTime() + i + j)) - 5.0f);
-      model = glm::rotate(model, float(i + glfwGetTime()),
-                          glm::vec3(i + glfwGetTime(), -glfwGetTime() + j,
-                                    glfwGetTime() + i - j));
+          model, glm::vec3(i, j, 5 * sin(glfwGetTime() + i + j)) - 5.0f);
+      // model = glm::rotate(model, float(i + glfwGetTime()),
+      //                     glm::vec3(i + glfwGetTime(), -glfwGetTime() + j,
+      //                               glfwGetTime() + i - j));
       shader.UniformMatrix4fv("model", model);
       if (board_.GetStoneTypeInCoordinate(BoardCoordinate(i, j)) ==
           StoneType::kStoneTypeBlack) {

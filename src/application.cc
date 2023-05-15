@@ -246,7 +246,11 @@ void Application::Run() {
 
   shader_->Uniform1i("material.diffuse_map", 0);
   shader_->Uniform1i("material.specular_map", 1);
-  shader_->Uniform1f("material.shininess", 32.0f);
+  shader_->Uniform1f("material.shininess", 64.0f);
+
+  Texture2D tex("awesomeface.png");
+  tex.Bind(2);
+  shader_->Uniform1i("tex", 2);
 
   while (!glfwWindowShouldClose(window_)) {
     previous_frame_time_ = current_frame_time_;
@@ -259,13 +263,21 @@ void Application::Run() {
     // std::cout << "Delta time: " << delta_time << "\n";
 
     Update(delta_time);
-    shader_->Uniform3f("directional_light.direction", 0.1, -0.4, -1);
-    shader_->Uniform3f("directional_light.ambient", 0.1f, 0.1f, 0.1f);
-    shader_->Uniform3f("directional_light.diffuse", 0.7f, 0.7f, 0.7f);
-    shader_->Uniform3f("directional_light.specular", 0.1f, 0.1f, 0.1f);
-    shader_->Uniform1f("light.constant", 1.0f);
-    shader_->Uniform1f("light.linear", 0.09f);
-    shader_->Uniform1f("light.quadratic", 0.032f);
+    shader_->UniformVector3f("camera_pos", camera_.position());
+    constexpr glm::vec3 ambient(0.1f);
+    constexpr glm::vec3 diffuse(0.5f);
+    constexpr glm::vec3 specular(0.3f);
+    shader_->Uniform3f("dir_light.direction", 0, 0, -1);
+    shader_->UniformVector3f("dir_light.light.ambient", ambient);
+    shader_->UniformVector3f("dir_light.light.diffuse", diffuse);
+    shader_->UniformVector3f("dir_light.light.specular", specular);
+    shader_->UniformVector3f("point_light.light.ambient", ambient);
+    shader_->UniformVector3f("point_light.light.diffuse", diffuse);
+    shader_->UniformVector3f("point_light.light.specular", specular);
+    shader_->UniformVector3f("point_light.position", glm::vec3(0, 0, -3));
+    shader_->Uniform1f("point_light.constant", 1.0f);
+    shader_->Uniform1f("point_light.linear", 0.09f);
+    shader_->Uniform1f("point_light.quadratic", 0.032f);
     shader_->Use();
     glBindVertexArray(vao);
     Render();
