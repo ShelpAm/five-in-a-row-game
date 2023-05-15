@@ -59,39 +59,6 @@ Application::Application(const int window_width, const int window_height,
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
       throw GladUninitialized();
     }
-    glfwSetCursorPosCallback(window_, &cursor_pos_callback);
-    glfwSetKeyCallback(window_, &key_callback);
-    glfwSetScrollCallback(window_, &scroll_callback);
-    // `xpos` and `ypos` doesn't work properly with `GLFW_CURSOR_DISABLED` (only
-    // in VMWARE). So here we use `GLFW_CURSOR_NORMAL` to avoid that problem.
-    // glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-    if (glfwRawMouseMotionSupported()) {
-      glfwSetInputMode(window_, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
-    }
-    AttachThis();
-
-    std::ifstream vertex_file("shader/vertex.glsl");
-    std::ifstream fragment_file("shader/fragment.glsl");
-    std::stringstream vertex_buf, fragment_buf;
-    vertex_buf << vertex_file.rdbuf();
-    fragment_buf << fragment_file.rdbuf();
-    shader_ = std::make_unique<Shader>(vertex_buf.str().c_str(),
-                                       fragment_buf.str().c_str());
-    glViewport(0, 0, 800, 600);
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-                    GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    stbi_set_flip_vertically_on_load(true);
-
   } catch (const GlfwWindowNotCreated &) {
     glfwTerminate();
     throw;
@@ -99,6 +66,39 @@ Application::Application(const int window_width, const int window_height,
     glfwTerminate();
     throw;
   }
+
+  glfwSetCursorPosCallback(window_, &cursor_pos_callback);
+  glfwSetKeyCallback(window_, &key_callback);
+  glfwSetScrollCallback(window_, &scroll_callback);
+  // `xpos` and `ypos` doesn't work properly with `GLFW_CURSOR_DISABLED` (only
+  // in VMWARE). So here we use `GLFW_CURSOR_NORMAL` to avoid that problem.
+  // glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+  glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+  if (glfwRawMouseMotionSupported()) {
+    glfwSetInputMode(window_, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+  }
+  AttachThis();
+
+  std::ifstream vertex_file("shader/vertex.glsl");
+  std::ifstream fragment_file("shader/fragment.glsl");
+  std::stringstream vertex_buf, fragment_buf;
+  vertex_buf << vertex_file.rdbuf();
+  fragment_buf << fragment_file.rdbuf();
+  shader_ = std::make_unique<Shader>(vertex_buf.str().c_str(),
+                                     fragment_buf.str().c_str());
+  glViewport(0, 0, 800, 600);
+  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+  glEnable(GL_DEPTH_TEST);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                  GL_LINEAR_MIPMAP_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+  stbi_set_flip_vertically_on_load(true);
 }
 
 Application::~Application() { DetachThis(); }
