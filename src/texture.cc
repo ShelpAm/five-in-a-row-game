@@ -35,8 +35,9 @@ Texture2D::~Texture2D() { glDeleteTextures(1, &id_); }
 void Texture2D::Bind(const ShaderProgram & shader_program,
                      const unsigned which) const {
   shader_program.Use();
-  glActiveTexture(GL_TEXTURE0 + which);
-  glBindTexture(GL_TEXTURE_2D, id_);
+  /* glActiveTexture(GL_TEXTURE0 + which);
+  glBindTexture(GL_TEXTURE_2D, id_); */
+  glBindTextureUnit(which, id_);
 }
 
 void Texture2D::Render(const ShaderProgram & shader_program,
