@@ -7,6 +7,7 @@
 #include <cmath>
 #include <cstddef>
 #include <cstdio>
+#include <exception>
 #include <fstream>
 #include <iostream>
 #include <iterator>
@@ -15,14 +16,18 @@
 #include <string>
 
 #include "GLFW/glfw3.h"
+#include "five_in_a_row_game/callbacks.h"
 #include "five_in_a_row_game/easy_ai_player.h"
 #include "five_in_a_row_game/easy_ai_player_factory.h"
+#include "five_in_a_row_game/fragment_shader.h"
 #include "five_in_a_row_game/human_player_factory.h"
 #include "five_in_a_row_game/main.h"
 #include "five_in_a_row_game/player.h"
-#include "five_in_a_row_game/shader.h"
+#include "five_in_a_row_game/shader_program.h"
 #include "five_in_a_row_game/state.h"
 #include "five_in_a_row_game/texture.h"
+#include "five_in_a_row_game/vertex_shader.h"
+#include "five_in_a_row_game/window.h"
 #include "glad/glad.h"
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/ext/matrix_float4x4.hpp"
@@ -30,15 +35,20 @@
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/fwd.hpp"
 #include "glm/glm.hpp"
+#include "glm/trigonometric.hpp"
 #include "stb/stb_image.h"
 
 void Application::Initialize() {
+  glfwSetErrorCallback(&error_callback);
   if (!glfwInit()) {
     throw GlfwUninitialized();
   }
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+#ifdef DEBUG
+  glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+#endif  // DEBUG
 #ifdef __APPLE__
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
@@ -46,81 +56,29 @@ void Application::Initialize() {
 
 void Application::Terminate() { glfwTerminate(); }
 
-Application::Application(const int window_width, const int window_height,
-                         const char * window_title)
-    : window_width_(window_width), window_height_(window_height) {
-  try {
-    window_ =
-        glfwCreateWindow(window_width, window_height, window_title, NULL, NULL);
-    if (!window_) {
-      throw GlfwWindowNotCreated();
-    }
-    glfwMakeContextCurrent(window_);
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-      throw GladUninitialized();
-    }
-  } catch (const GlfwWindowNotCreated &) {
-    glfwTerminate();
-    throw;
-  } catch (const GladUninitialized &) {
-    glfwTerminate();
-    throw;
-  }
+Application::Application() : Application("untitled window", 800, 600) {}
 
-  glfwSetCursorPosCallback(window_, &cursor_pos_callback);
-  glfwSetKeyCallback(window_, &key_callback);
-  glfwSetScrollCallback(window_, &scroll_callback);
-  // `xpos` and `ypos` doesn't work properly with `GLFW_CURSOR_DISABLED` (only
-  // in VMWARE). So here we use `GLFW_CURSOR_NORMAL` to avoid that problem.
-  // glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-  glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-  if (glfwRawMouseMotionSupported()) {
-    glfwSetInputMode(window_, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
-  }
-  AttachThis();
-
-  std::ifstream vertex_file("shader/vertex.glsl");
-  std::ifstream fragment_file("shader/fragment.glsl");
-  std::stringstream vertex_buf, fragment_buf;
-  vertex_buf << vertex_file.rdbuf();
-  fragment_buf << fragment_file.rdbuf();
-  shader_ = std::make_unique<Shader>(vertex_buf.str().c_str(),
-                                     fragment_buf.str().c_str());
-  glViewport(0, 0, 800, 600);
-  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-  glEnable(GL_DEPTH_TEST);
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-                  GL_LINEAR_MIPMAP_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-  stbi_set_flip_vertically_on_load(true);
+Application::Application(const char * window_title, const int window_width,
+                         const int window_height)
+    : window_(this, window_title, window_width, window_height),
+      shader_(VertexShader(0, "shader/vertex.vert"),
+              FragmentShader(0, "shader/fragment.frag")),
+      simple_shader_(VertexShader(0, "shader/simple.vert"),
+                     FragmentShader(0, "shader/simple.frag")) {
+  window_.set_depth_test_enabled(true);
 }
 
-Application::~Application() { DetachThis(); }
+Application::~Application() {}
 
-void Application::AttachThis() { window_application_map_[window_] = this; }
-
-void Application::DetachThis() const {
-  if (!window_application_map_.contains(window_)) {
-    return;
-  }
-  window_application_map_.erase(window_application_map_.find(window_));
-}
-
-void Application::CursorPosCallback(double xpos, double ypos) {
-  static float prev_xpos = float(window_width_) / 2,
-               prev_ypos = float(window_height_) / 2;
-  float delta_x = xpos - prev_xpos, delta_y = -(ypos - prev_ypos);
-  prev_xpos = xpos;
-  prev_ypos = ypos;
+void Application::CursorPosCallback(double x_pos, double y_pos) {
+  static float prev_x_pos = float(window_.width()) / 2,
+               prev_y_pos = float(window_.height()) / 2;
+  float delta_x = x_pos - prev_x_pos, delta_y = -(y_pos - prev_y_pos);
+  prev_x_pos = x_pos;
+  prev_y_pos = y_pos;
   if (delta_x || delta_y) {
-    std::cout << "Cursor position: " << xpos << ", " << ypos << " (" << delta_x
-              << " " << delta_y << ")\n";
+    // std::cout << "Cursor position: " << x_pos << ", " << y_pos << " ("
+    // << delta_x << " " << delta_y << ")\n";
   }
 
   float sensitivity = 0.05f;
@@ -160,14 +118,13 @@ void Application::KeyCallback(int key, int scancode, int action, int mods) {
         break;
       }
       case GLFW_KEY_ESCAPE:
-        glfwSetWindowShouldClose(window_, GLFW_TRUE);
+        window_.set_should_close(true);
         break;
       case GLFW_KEY_UNKNOWN:
       default:
         break;
     }
-  }
-  if (action == GLFW_RELEASE) {
+  } else if (action == GLFW_RELEASE) {
     switch (key) {
       case GLFW_KEY_UNKNOWN:
       default:
@@ -176,83 +133,80 @@ void Application::KeyCallback(int key, int scancode, int action, int mods) {
   }
 }
 
-void Application::ScrollCallback(double xoffset, double yoffset) {
-  std::cout << "Scrolling: " << xoffset << ", " << yoffset << "\n";
-  yoffset *= 3;
-  camera_.add_fov(-yoffset);
+void Application::ScrollCallback(double x_offset, double y_offset) {
+  std::cout << "Scrolling: " << x_offset << ", " << y_offset << "\n";
+  y_offset *= 3;
+  camera_.add_fov(-y_offset);
 }
 
 void Application::Run() {
-  float vertices[] = {
+  float vertices[]{
       // positions          // normals           // texture coords
       -0.5f, -0.5f, -0.5f, 0.0f,  0.0f,  -1.0f, 0.0f,  0.0f,  0.5f,  -0.5f,
       -0.5f, 0.0f,  0.0f,  -1.0f, 1.0f,  0.0f,  0.5f,  0.5f,  -0.5f, 0.0f,
       0.0f,  -1.0f, 1.0f,  1.0f,  0.5f,  0.5f,  -0.5f, 0.0f,  0.0f,  -1.0f,
       1.0f,  1.0f,  -0.5f, 0.5f,  -0.5f, 0.0f,  0.0f,  -1.0f, 0.0f,  1.0f,
-      -0.5f, -0.5f, -0.5f, 0.0f,  0.0f,  -1.0f, 0.0f,  0.0f,
-
-      -0.5f, -0.5f, 0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,  0.5f,  -0.5f,
-      0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,  0.5f,  0.5f,  0.5f,  0.0f,
-      0.0f,  1.0f,  1.0f,  1.0f,  0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-      1.0f,  1.0f,  -0.5f, 0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,
-      -0.5f, -0.5f, 0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
-
-      -0.5f, 0.5f,  0.5f,  -1.0f, 0.0f,  0.0f,  1.0f,  0.0f,  -0.5f, 0.5f,
-      -0.5f, -1.0f, 0.0f,  0.0f,  1.0f,  1.0f,  -0.5f, -0.5f, -0.5f, -1.0f,
-      0.0f,  0.0f,  0.0f,  1.0f,  -0.5f, -0.5f, -0.5f, -1.0f, 0.0f,  0.0f,
-      0.0f,  1.0f,  -0.5f, -0.5f, 0.5f,  -1.0f, 0.0f,  0.0f,  0.0f,  0.0f,
-      -0.5f, 0.5f,  0.5f,  -1.0f, 0.0f,  0.0f,  1.0f,  0.0f,
-
-      0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,  0.5f,  0.5f,
-      -0.5f, 1.0f,  0.0f,  0.0f,  1.0f,  1.0f,  0.5f,  -0.5f, -0.5f, 1.0f,
-      0.0f,  0.0f,  0.0f,  1.0f,  0.5f,  -0.5f, -0.5f, 1.0f,  0.0f,  0.0f,
-      0.0f,  1.0f,  0.5f,  -0.5f, 0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
-      0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-
-      -0.5f, -0.5f, -0.5f, 0.0f,  -1.0f, 0.0f,  0.0f,  1.0f,  0.5f,  -0.5f,
-      -0.5f, 0.0f,  -1.0f, 0.0f,  1.0f,  1.0f,  0.5f,  -0.5f, 0.5f,  0.0f,
-      -1.0f, 0.0f,  1.0f,  0.0f,  0.5f,  -0.5f, 0.5f,  0.0f,  -1.0f, 0.0f,
-      1.0f,  0.0f,  -0.5f, -0.5f, 0.5f,  0.0f,  -1.0f, 0.0f,  0.0f,  0.0f,
-      -0.5f, -0.5f, -0.5f, 0.0f,  -1.0f, 0.0f,  0.0f,  1.0f,
-
+      -0.5f, -0.5f, -0.5f, 0.0f,  0.0f,  -1.0f, 0.0f,  0.0f,  -0.5f, -0.5f,
+      0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,  0.5f,  -0.5f, 0.5f,  0.0f,
+      0.0f,  1.0f,  1.0f,  0.0f,  0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+      1.0f,  1.0f,  0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
+      -0.5f, 0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,  -0.5f, -0.5f,
+      0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,  -0.5f, 0.5f,  0.5f,  -1.0f,
+      0.0f,  0.0f,  1.0f,  0.0f,  -0.5f, 0.5f,  -0.5f, -1.0f, 0.0f,  0.0f,
+      1.0f,  1.0f,  -0.5f, -0.5f, -0.5f, -1.0f, 0.0f,  0.0f,  0.0f,  1.0f,
+      -0.5f, -0.5f, -0.5f, -1.0f, 0.0f,  0.0f,  0.0f,  1.0f,  -0.5f, -0.5f,
+      0.5f,  -1.0f, 0.0f,  0.0f,  0.0f,  0.0f,  -0.5f, 0.5f,  0.5f,  -1.0f,
+      0.0f,  0.0f,  1.0f,  0.0f,  0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+      1.0f,  0.0f,  0.5f,  0.5f,  -0.5f, 1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
+      0.5f,  -0.5f, -0.5f, 1.0f,  0.0f,  0.0f,  0.0f,  1.0f,  0.5f,  -0.5f,
+      -0.5f, 1.0f,  0.0f,  0.0f,  0.0f,  1.0f,  0.5f,  -0.5f, 0.5f,  1.0f,
+      0.0f,  0.0f,  0.0f,  0.0f,  0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+      1.0f,  0.0f,  -0.5f, -0.5f, -0.5f, 0.0f,  -1.0f, 0.0f,  0.0f,  1.0f,
+      0.5f,  -0.5f, -0.5f, 0.0f,  -1.0f, 0.0f,  1.0f,  1.0f,  0.5f,  -0.5f,
+      0.5f,  0.0f,  -1.0f, 0.0f,  1.0f,  0.0f,  0.5f,  -0.5f, 0.5f,  0.0f,
+      -1.0f, 0.0f,  1.0f,  0.0f,  -0.5f, -0.5f, 0.5f,  0.0f,  -1.0f, 0.0f,
+      0.0f,  0.0f,  -0.5f, -0.5f, -0.5f, 0.0f,  -1.0f, 0.0f,  0.0f,  1.0f,
       -0.5f, 0.5f,  -0.5f, 0.0f,  1.0f,  0.0f,  0.0f,  1.0f,  0.5f,  0.5f,
       -0.5f, 0.0f,  1.0f,  0.0f,  1.0f,  1.0f,  0.5f,  0.5f,  0.5f,  0.0f,
       1.0f,  0.0f,  1.0f,  0.0f,  0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
       1.0f,  0.0f,  -0.5f, 0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  0.0f,
       -0.5f, 0.5f,  -0.5f, 0.0f,  1.0f,  0.0f,  0.0f,  1.0f};
   unsigned int indices[] = {
-      0, 1, 2,  // first Triangle
-      0, 2, 3,
+      0, 1, 2, 0, 2, 3,
   };
-  unsigned vbo, ebo, vao;
+  unsigned vao;
+  unsigned vbo;
+  unsigned ebo;
   glGenVertexArrays(1, &vao);
   glGenBuffers(1, &vbo);
   glGenBuffers(1, &ebo);
+
   glBindVertexArray(vao);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices,
                GL_DYNAMIC_DRAW);
+  glEnableVertexAttribArray(0);
+  glEnableVertexAttribArray(1);
+  glEnableVertexAttribArray(2);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
   glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
                         (void *)(3 * sizeof(float)));
   glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
                         (void *)(6 * sizeof(float)));
-  glEnableVertexAttribArray(0);
-  glEnableVertexAttribArray(1);
-  glEnableVertexAttribArray(2);
+
   glBindVertexArray(0);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-  shader_->Uniform1i("material.diffuse_map", 0);
-  shader_->Uniform1i("material.specular_map", 1);
-  shader_->Uniform1f("material.shininess", 64.0f);
+  shader_.SetInt("material.diffuse_sampler", 0);
+  shader_.SetInt("material.specular_sampler", 1);
+  shader_.SetFloat("material.shininess", 64.0f);
 
-  Texture2D tex("awesomeface.png");
-  tex.Bind(2);
-  shader_->Uniform1i("tex", 2);
+  Texture2D tex("awesome_face.png");
 
-  while (!glfwWindowShouldClose(window_)) {
+  while (!window_.should_close()) {
     previous_frame_time_ = current_frame_time_;
     current_frame_time_ = glfwGetTime();
     auto delta_time = current_frame_time_ - previous_frame_time_;
@@ -263,27 +217,16 @@ void Application::Run() {
     // std::cout << "Delta time: " << delta_time << "\n";
 
     Update(delta_time);
-    shader_->UniformVector3f("camera_pos", camera_.position());
-    constexpr glm::vec3 ambient(0.1f);
-    constexpr glm::vec3 diffuse(0.5f);
-    constexpr glm::vec3 specular(0.3f);
-    shader_->Uniform3f("dir_light.direction", 0, 0, -1);
-    shader_->UniformVector3f("dir_light.light.ambient", ambient);
-    shader_->UniformVector3f("dir_light.light.diffuse", diffuse);
-    shader_->UniformVector3f("dir_light.light.specular", specular);
-    shader_->UniformVector3f("point_light.light.ambient", ambient);
-    shader_->UniformVector3f("point_light.light.diffuse", diffuse);
-    shader_->UniformVector3f("point_light.light.specular", specular);
-    shader_->UniformVector3f("point_light.position", glm::vec3(0, 0, -3));
-    shader_->Uniform1f("point_light.constant", 1.0f);
-    shader_->Uniform1f("point_light.linear", 0.09f);
-    shader_->Uniform1f("point_light.quadratic", 0.032f);
-    shader_->Use();
-    glBindVertexArray(vao);
-    Render();
 
-    glfwSwapBuffers(window_);
-    glfwPollEvents();
+    window_.Clear();
+    glBindVertexArray(vao);
+    shader_.Use();
+    Render();
+    tex.Render(simple_shader_, glm::vec3(0, 0, 0), glm::vec3(0.3f),
+               glm::vec3(1.0f));
+
+    window_.SwapBuffers();
+    Window::PollEvents();
   }
 }
 
@@ -292,22 +235,44 @@ void Application::Update(const float delta_time) {
     game_->Update();
   }
   camera_.Update(delta_time, keys_);
-  shader_->UniformMatrix4fv("view", camera_.look_at());
-  glm::mat4 projection = glm::perspective(
-      glm::radians(camera_.fov()), (float)window_width_ / (float)window_height_,
-      0.1f, 100.0f);
-  shader_->UniformMatrix4fv("projection", projection);
-  shader_->Uniform3f("world_light_pos", 0, 4, 5);
+
+  shader_.SetVector3("camera_pos", camera_.position());
+  constexpr glm::vec3 ambient(0.4f);
+  constexpr glm::vec3 diffuse(0.4f);
+  constexpr glm::vec3 specular(0.2f);
+  glm::vec3 light_dir(0.0f, -0.3f, -1.0f);
+  shader_.SetVector3("dir_light.light.ambient", ambient);
+  shader_.SetVector3("dir_light.light.diffuse", diffuse);
+  shader_.SetVector3("dir_light.light.specular", specular);
+  shader_.SetVector3("dir_light.direction", light_dir);
+  shader_.SetVector3("point_lights[0].light.ambient", ambient);
+  shader_.SetVector3("point_lights[0].light.diffuse", diffuse);
+  shader_.SetVector3("point_lights[0].light.specular", specular);
+  shader_.SetVector3("point_lights[0].position", glm::vec3(0, 0, -3));
+  shader_.SetFloat("point_lights[0].attenuation.constant", 1.0f);
+  shader_.SetFloat("point_lights[0].attenuation.linear", 0.09f);
+  shader_.SetFloat("point_lights[0].attenuation.quadratic", 0.032f);
+  shader_.SetVector3("spot_light.light.ambient", ambient);
+  shader_.SetVector3("spot_light.light.diffuse", diffuse);
+  shader_.SetVector3("spot_light.light.specular", specular);
+  shader_.SetVector3("spot_light.position", camera_.position());
+  shader_.SetVector3("spot_light.direction", camera_.front());
+  shader_.SetFloat("spot_light.attenuation.constant", 1.0f);
+  shader_.SetFloat("spot_light.attenuation.linear", 0.045f);
+  shader_.SetFloat("spot_light.attenuation.quadratic", 0.0075f);
+  shader_.SetFloat("spot_light.cos_phi", glm::cos(glm::radians(12.5f)));
+  shader_.SetFloat("spot_light.cos_gamma", glm::cos(glm::radians(17.5f)));
+
+  shader_.SetMatrix4("model", glm::mat4(1.0f));
+  shader_.SetMatrix4("view", camera_.look_at());
+  glm::mat4 projection{glm::perspective(
+      glm::radians(camera_.fov()), (float)window_.width() / window_.height(),
+      0.1f, 100.0f)};
+  shader_.SetMatrix4("projection", projection);
 }
 
 void Application::Render() const {
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  // ClearScreen();
-
   if (game_) {
-    game_->Render(*shader_);
+    game_->Render(shader_);
   }
 }
-
-std::map<const GLFWwindow *, Application *>
-    Application::window_application_map_{};

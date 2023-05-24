@@ -4,16 +4,20 @@ add_executable(${PROJECT_NAME}
   # application_state.cc
   board.cc
   board_coordinate.cc
+  callbacks.cc
   camera.cc
   easy_ai_player.cc
   easy_ai_player_factory.cc
   five_in_a_row_game.cc
+  fragment_shader.cc
   human_player.cc
   human_player_factory.cc
   main.cc
   player.cc
-  shader.cc
+  shader_program.cc
   texture.cc
+  vertex_shader.cc
+  window.cc
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE

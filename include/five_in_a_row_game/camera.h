@@ -1,10 +1,10 @@
 #ifndef FIVE_IN_A_ROW_GAME_CAMERA_H_
 #define FIVE_IN_A_ROW_GAME_CAMERA_H_
 
-#include "five_in_a_row_game/shader.h"
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/fwd.hpp"
 #include "glm/glm.hpp"
+#include "shader_program.h"
 
 class Camera {
  public:

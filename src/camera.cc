@@ -3,7 +3,7 @@
 #include <iostream>
 
 #include "GLFW/glfw3.h"
-#include "five_in_a_row_game/shader.h"
+#include "five_in_a_row_game/shader_program.h"
 #include "glm/geometric.hpp"
 
 Camera::Camera() {}
@@ -24,7 +24,7 @@ void Camera::Update(const float delta_time, const bool keys[256]) {
   velocity_ *= speed;
   // std::cout << "Camera position: " << position_.x << " " << position_.y << "
   // "
-  //           << position_.z << "\n";
+  // << position_.z << "\n";
   // std::cout << "Camera velocity: " << velocity_.x << " " << velocity_.y << "
   // "
   //           << velocity_.z << "\n";

@@ -2,10 +2,11 @@
 // Created by small-sheep on 11/11/22.
 //
 
-#ifndef FIVE_IN_A_ROW_GAME_APPLICATION_H_
-#define FIVE_IN_A_ROW_GAME_APPLICATION_H_
+#ifndef FIVE_IN_A_ROW_GAME_APPLICATION_H
+#define FIVE_IN_A_ROW_GAME_APPLICATION_H
 
 #include <cstddef>
+#include <exception>
 #include <map>
 #include <memory>
 #include <vector>
@@ -14,8 +15,10 @@
 #include "five_in_a_row_game/camera.h"
 #include "five_in_a_row_game/five_in_a_row_game.h"
 #include "five_in_a_row_game/player.h"
-#include "five_in_a_row_game/shader.h"
+#include "five_in_a_row_game/shader_program.h"
 #include "five_in_a_row_game/state.h"
+#include "five_in_a_row_game/texture.h"
+#include "five_in_a_row_game/window.h"
 #include "glm/fwd.hpp"
 #include "glm/glm.hpp"
 
@@ -23,34 +26,36 @@ class Application {
  public:
   static void Initialize();
   static void Terminate();
-  static Application * Get(GLFWwindow * window) {
-    return window_application_map_.at(window);
-  }
 
  public:
-  Application(const int window_width, const int window_height,
-              const char * window_title);
+  Application();
+  Application(const char * window_title, const int window_width,
+              const int window_height);
+  Application(const Application &) = delete;
+  Application(Application &&) = delete;
+  Application & operator=(const Application &) = delete;
+  Application & operator=(Application &&) = delete;
   ~Application();
-  void AttachThis();
-  void DetachThis() const;
+
   void Run();
-  void CursorPosCallback(double xpos, double ypos);
+  void CursorPosCallback(double x_pos, double y_pos);
   void KeyCallback(int key, int scancode, int action, int mods);
-  void ScrollCallback(double xoffset, double yoffset);
+  void ScrollCallback(double x_offset, double y_offset);
+
+  const Window & window() const { return window_; }
 
  private:
-  friend class ApplicationState;
   void Update(const float delta_time);
   void Render() const;
 
  private:
-  // TODO: to be refactored
-  static std::map<const GLFWwindow *, Application *> window_application_map_;
-  GLFWwindow * window_{};
+  // TODO: to be added to `Window` class
   bool keys_[512]{false};
+
+  Window window_;
   Camera camera_;
-  const std::size_t window_width_, window_height_;
-  std::unique_ptr<Shader> shader_;
+  ShaderProgram shader_;
+  ShaderProgram simple_shader_;
   double previous_frame_time_{0}, current_frame_time_{0};
   std::size_t frame_per_second_{0};
   std::vector<FiveInARowGame *> history_games_{};
@@ -58,9 +63,12 @@ class Application {
   std::vector<std::shared_ptr<Player>> players_{};
 };
 
-class ApplicationUninitialized {};
+class ApplicationUninitialized : public std::exception {};
+
 class GladUninitialized : public ApplicationUninitialized {};
+
 class GlfwUninitialized : public ApplicationUninitialized {};
+
 class GlfwWindowNotCreated : public ApplicationUninitialized {};
 
-#endif  // FIVE_IN_A_ROW_GAME_APPLICATION_H_
+#endif  // FIVE_IN_A_ROW_GAME_APPLICATION_H

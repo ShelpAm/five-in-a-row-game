@@ -3,29 +3,34 @@
 //
 #include "five_in_a_row_game/main.h"
 
+#include <exception>
+#include <fstream>
+#include <iostream>
 #include <memory>
 
 #include "GLFW/glfw3.h"
 #include "five_in_a_row_game/application.h"
 
-void cursor_pos_callback(GLFWwindow * window, double xpos, double ypos) {
-  Application::Get(window)->CursorPosCallback(xpos, ypos);
-}
-
-void key_callback(GLFWwindow * window, int key, int scancode, int action,
-                  int mods) {
-  Application::Get(window)->KeyCallback(key, scancode, action, mods);
-}
-
-void scroll_callback(GLFWwindow * window, double xoffset, double yoffset) {
-  Application::Get(window)->ScrollCallback(xoffset, yoffset);
+std::string GetFileContents(const char * filename) {
+  std::ifstream file(filename);
+  if (!file.is_open()) {
+    throw std::runtime_error("Failed to open file");
+  }
+  std::string contents((std::istreambuf_iterator<char>(file)),
+                       std::istreambuf_iterator<char>());
+  return contents;
 }
 
 int main() {
-  Application::Initialize();
-  auto application = std::make_unique<Application>(800, 600, "application");
-  application->Run();
-  application.reset();
-  Application::Terminate();
-  return 0;
+  try {
+    Application::Initialize();
+    auto application = std::make_unique<Application>("application", 800, 660);
+    application->Run();
+    application.reset();
+    Application::Terminate();
+    return 0;
+  } catch (std::exception & e) {
+    std::cout << e.what();
+    throw;
+  }
 }

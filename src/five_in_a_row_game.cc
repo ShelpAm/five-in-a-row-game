@@ -11,13 +11,15 @@
 #include "five_in_a_row_game/board.h"
 #include "five_in_a_row_game/board_coordinate.h"
 #include "five_in_a_row_game/move.h"
-#include "five_in_a_row_game/shader.h"
+#include "five_in_a_row_game/shader_program.h"
 #include "five_in_a_row_game/state.h"
 #include "five_in_a_row_game/stone_type.h"
 #include "glad/glad.h"
 #include "glm/ext/matrix_transform.hpp"
+#include "glm/ext/vector_float4.hpp"
 #include "glm/fwd.hpp"
 #include "glm/glm.hpp"
+#include "glm/matrix.hpp"
 
 FiveInARowGame::FiveInARowGame(const FiveInARowGame & other)
     : state_(other.state_),
@@ -65,26 +67,34 @@ void FiveInARowGame::Update() {
   }
 }
 
-void FiveInARowGame::Render(const Shader & shader) const {
+void FiveInARowGame::Render(const ShaderProgram & shader_program) const {
   for (std::size_t i = 0; i != board_.board_size(); i++) {
     for (std::size_t j = 0; j != board_.board_size(); j++) {
-      glm::mat4 model(1.0f);
-      model = glm::translate(
-          model, glm::vec3(i, j, 5 * sin(glfwGetTime() + i + j)) - 5.0f);
+      glm::mat4 model = glm::translate(
+          glm::mat4(1.0f), glm::vec3(i, j, sin(glfwGetTime() + i + j)) - 1.0f);
+      // model = glm::scale(model, glm::vec3(0.5f));
       // model = glm::rotate(model, float(i + glfwGetTime()),
       //                     glm::vec3(i + glfwGetTime(), -glfwGetTime() + j,
       //                               glfwGetTime() + i - j));
-      shader.UniformMatrix4fv("model", model);
+      shader_program.SetMatrix4("model", model);
+      shader_program.SetMatrix4("transposed_and_inverse_model",
+                                glm::transpose(glm::inverse(model)));
       if (board_.GetStoneTypeInCoordinate(BoardCoordinate(i, j)) ==
           StoneType::kStoneTypeBlack) {
-        diffuse_.Bind(0);
+        diffuse_map_black.Bind(shader_program, 0);
+        specular_map.Bind(shader_program, 1);
+        // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+      } else if (board_.GetStoneTypeInCoordinate(BoardCoordinate(i, j)) ==
+                 StoneType::kStoneTypeWhite) {
+        diffuse_map_white.Bind(shader_program, 0);
+        specular_map.Bind(shader_program, 1);
         // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         glDrawArrays(GL_TRIANGLES, 0, 36);
       }
-      if (board_.GetStoneTypeInCoordinate(BoardCoordinate(i, j)) ==
-          StoneType::kStoneTypeWhite) {
-        specular_.Bind(1);
-        // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+      if (i == (board_.board_size() + 1) / 2 &&
+          j == (board_.board_size() + 1) / 2) {
+        diffuse_map.Bind(shader_program, 0);
         glDrawArrays(GL_TRIANGLES, 0, 36);
       }
     }

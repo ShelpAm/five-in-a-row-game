@@ -27,10 +27,12 @@ class Board {
 
   void PlaceAStone(const BoardCoordinate & c, const StoneType stone_type);
 
+  BoardCoordinate center() const {
+    return BoardCoordinate((board_size_ + 1) / 2, (board_size_ + 1) / 2);
+  }
   StoneType GetStoneTypeInCoordinate(const BoardCoordinate & c) const;
   std::size_t board_size() const { return board_size_; }
   std::size_t num_moves() const { return history_moves_.size(); }
-
   BoardState GetBoardState() const;
 
  private:

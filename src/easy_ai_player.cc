@@ -15,6 +15,8 @@
 #include "five_in_a_row_game/ai_player.h"
 #include "five_in_a_row_game/board_coordinate.h"
 #include "five_in_a_row_game/stone_type.h"
+#include "glm/geometric.hpp"
+#include "glm/glm.hpp"
 
 EasyAIPlayer::EasyAIPlayer() {}
 
@@ -90,14 +92,13 @@ const std::vector<std::vector<std::size_t>> EasyAIPlayer::CalculateScore(
           }
           score_map[column][row] +=
               20 *
-              (static_cast<int>(pow(3, direction_enemy_stone_num) +
-                                pow(3.3, direction_my_stone_num))) /
+              (static_cast<int>(pow(3.5, direction_enemy_stone_num) +
+                                pow(3.1, direction_my_stone_num))) /
               // pow(3, direction_my_stone_num))) /
               direction_length_sum;
-          score_map[column][row] -= (column - board.board_size() / 2) *
-                                    (column - board.board_size() / 2);
           score_map[column][row] -=
-              (row - board.board_size() / 2) * (row - board.board_size() / 2);
+              glm::distance(glm::vec2(column, row),
+                            glm::vec2(board.center().X(), board.center().Y()));
         }
       }
     }
