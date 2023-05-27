@@ -1,6 +1,9 @@
 #ifndef FIVE_IN_A_ROW_GAME_SHADER_PROGRAM_H
 #define FIVE_IN_A_ROW_GAME_SHADER_PROGRAM_H
 
+#include <map>
+#include <string>
+
 #include "five_in_a_row_game/fragment_shader.h"
 #include "five_in_a_row_game/vertex_shader.h"
 #include "glm/fwd.hpp"
@@ -22,17 +25,19 @@ class ShaderProgram {
   void Set4Float(const char * name, const float, const float, const float,
                  const float) const;
   void SetInt(const char * name, const int &) const;
-  void SetVector3(const char * name, const glm::vec3 & vec3);
+  void SetVector3(const char * name, const glm::vec3 & vec3) const;
   void SetMatrix4(const char * name, const glm::mat4 & mat4) const;
 
   unsigned id() const { return id_; }
 
  private:
   int GetUniformLocation(const char * name) const;
+  int GetInfoLogLength() const;
   void CheckErrors() const;
 
  private:
   static unsigned being_used_shader_program_id_;
+  static std::map<std::string, int> name_uniform_location_map_;
   unsigned id_;
 };
 

@@ -27,22 +27,22 @@ class Player {
   const ::Move Move(Board & board) const;
 
  public:
-  int identity() const { return identity_; }
-  void set_identity(const int identity) { identity_ = identity; }
+  int id() const { return id_; }
+  void set_id(const int id) { id_ = id; }
   const char * name() const { return name_.c_str(); }
   void set_name(const char * const name) { name_ = name; }
-  StoneType stone_type_in_use() const { return stone_type_in_use_; }
-  void set_stone_type_in_use(const StoneType st) { stone_type_in_use_ = st; }
+  StoneType stone_type() const { return stone_type_; }
+  void set_stone_type(const StoneType st) { stone_type_ = st; }
 
- private:
+ protected:
   virtual const std::vector<BoardCoordinate> Think(
       const Board & board) const = 0;
 
   void PlaceAStone(Board & board, const BoardCoordinate & bc) const;
 
-  int identity_{0};
+  int id_{0};
   std::string name_{"default_name"};
-  StoneType stone_type_in_use_{StoneType::kStoneTypeEmpty};
+  StoneType stone_type_{StoneType::kStoneTypeEmpty};
 };
 
 }  // namespace five_in_a_row_game

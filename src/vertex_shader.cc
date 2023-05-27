@@ -30,9 +30,9 @@ void VertexShader::DetachFrom(const ShaderProgram & shader_program) const {
 }
 
 void VertexShader::CheckErrors() const {
-  int success;
-  glGetShaderiv(id_, GL_COMPILE_STATUS, &success);
-  if (!success) {
+  int successful;
+  glGetShaderiv(id_, GL_COMPILE_STATUS, &successful);
+  if (!successful) {
     int length;
     glGetShaderiv(id_, GL_INFO_LOG_LENGTH, &length);
     std::vector<char> info_log(length);

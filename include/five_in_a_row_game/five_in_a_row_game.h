@@ -31,8 +31,8 @@ class FiveInARowGame {
   FiveInARowGame(Player * black_player, Player * white_player) {
     black_player_ = moving_player_ = black_player;
     white_player_ = unmoving_player_ = white_player;
-    moving_player_->set_stone_type_in_use(StoneType::kStoneTypeBlack);
-    unmoving_player_->set_stone_type_in_use(StoneType::kStoneTypeWhite);
+    moving_player_->set_stone_type(StoneType::kStoneTypeBlack);
+    unmoving_player_->set_stone_type(StoneType::kStoneTypeWhite);
   }
   FiveInARowGame(const FiveInARowGame & other);
   FiveInARowGame & operator=(const FiveInARowGame & other);
@@ -61,7 +61,7 @@ class FiveInARowGame {
   Player * black_player_;
   Player * white_player_;
   Player * winner_{nullptr};
-  Board board_{35};
+  Board board_{9};
 };
 
 std::ostream & operator<<(std::ostream & os, const FiveInARowGame & game);

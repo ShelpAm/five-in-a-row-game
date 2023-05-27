@@ -71,7 +71,8 @@ void FiveInARowGame::Render(const ShaderProgram & shader_program) const {
   for (std::size_t i = 0; i != board_.board_size(); i++) {
     for (std::size_t j = 0; j != board_.board_size(); j++) {
       glm::mat4 model = glm::translate(
-          glm::mat4(1.0f), glm::vec3(i, j, sin(glfwGetTime() + i + j)) - 1.0f);
+          glm::mat4(1.0f),
+          glm::vec3(i, j, /* sin(glfwGetTime() + i + j */ 0.0f) - 1.0f);
       // model = glm::scale(model, glm::vec3(0.5f));
       // model = glm::rotate(model, float(i + glfwGetTime()),
       //                     glm::vec3(i + glfwGetTime(), -glfwGetTime() + j,
@@ -81,20 +82,15 @@ void FiveInARowGame::Render(const ShaderProgram & shader_program) const {
                                 glm::transpose(glm::inverse(model)));
       if (board_.GetStoneTypeInCoordinate(BoardCoordinate(i, j)) ==
           StoneType::kStoneTypeBlack) {
-        diffuse_map_black.Bind(shader_program, 0);
-        specular_map.Bind(shader_program, 1);
+        diffuse_map_black.Bind(shader_program, "material.diffuse_sampler", 0);
+        specular_map.Bind(shader_program, "material.specular_sampler", 1);
         // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         glDrawArrays(GL_TRIANGLES, 0, 36);
       } else if (board_.GetStoneTypeInCoordinate(BoardCoordinate(i, j)) ==
                  StoneType::kStoneTypeWhite) {
-        diffuse_map_white.Bind(shader_program, 0);
-        specular_map.Bind(shader_program, 1);
+        diffuse_map_white.Bind(shader_program, "material.diffuse_sampler", 0);
+        specular_map.Bind(shader_program, "material.specular_sampler", 1);
         // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-      }
-      if (i == (board_.board_size() + 1) / 2 &&
-          j == (board_.board_size() + 1) / 2) {
-        diffuse_map.Bind(shader_program, 0);
         glDrawArrays(GL_TRIANGLES, 0, 36);
       }
     }

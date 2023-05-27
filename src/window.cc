@@ -42,14 +42,7 @@ Window::Window(Application * parent, const char * title, const int width,
   }
 
   glViewport(0, 0, width_, height_);
-  depth_test_enabled_ = true;
-  if (depth_test_enabled_) {
-    glEnable(GL_DEPTH_TEST);
-  } else {
-    glDisable(GL_DEPTH_TEST);
-  }
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  UpdateGLStates();
 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
@@ -91,11 +84,12 @@ void Window::ScrollCallback(double x_offset, double yoffset) const {
 }
 
 void Window::Clear() const {
-  glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
-  glClear(GL_COLOR_BUFFER_BIT);
+  glClearColor(clear_color_.x, clear_color_.y, clear_color_.z, clear_color_.w);
+  int used_buffer_bit = GL_COLOR_BUFFER_BIT;
   if (depth_test_enabled_) {
-    glClear(GL_DEPTH_BUFFER_BIT);
+    used_buffer_bit |= GL_DEPTH_BUFFER_BIT;
   }
+  glClear(used_buffer_bit);
 }
 
 void Window::SwapBuffers() const { glfwSwapBuffers(window_); }
@@ -107,6 +101,28 @@ void Window::MakeContextCurrent() const {
   if (!gladLoadGLLoader(GLADloadproc(glfwGetProcAddress))) {
     glfwTerminate();
     throw GladUninitialized();
+  }
+}
+
+void Window::UpdateGLStates() const {
+  UpdateDepthTestState();
+  UpdateBlendState();
+}
+
+void Window::UpdateDepthTestState() const {
+  if (depth_test_enabled_) {
+    glEnable(GL_DEPTH_TEST);
+  } else {
+    glDisable(GL_DEPTH_TEST);
+  }
+}
+
+void Window::UpdateBlendState() const {
+  if (blend_enabled_) {
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  } else {
+    glDisable(GL_BLEND);
   }
 }
 

@@ -11,7 +11,7 @@ AIPlayer::AIPlayer() {}
 AIPlayer::AIPlayer(const Player & player) : Player(player) {}
 
 AIPlayer::AIPlayer(const AIPlayer & other)
-    : Player(other.identity(), other.name(), other.stone_type_in_use()) {}
+    : Player(other.id(), other.name(), other.stone_type()) {}
 
 AIPlayer::AIPlayer(const AIPlayer && other) : Player(other) {}
 

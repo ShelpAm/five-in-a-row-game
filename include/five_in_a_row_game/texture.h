@@ -9,9 +9,11 @@ class Texture2D {
  public:
   Texture2D(const char * file_name);
   ~Texture2D();
-  void Bind(const ShaderProgram & shader_program, const unsigned which) const;
-  void Render(const ShaderProgram & shader_program, const glm::vec3 & position,
-              const glm::vec3 & size, const glm::vec3 & color) const;
+  void Bind(const ShaderProgram & shader_program, const char * name,
+            const unsigned which) const;
+  void Render(const ShaderProgram & shader_program, const Window & window,
+              const glm::vec3 & position, const glm::vec3 & size,
+              const glm::vec3 & color) const;
 
  private:
   unsigned id_;

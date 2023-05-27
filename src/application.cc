@@ -29,10 +29,12 @@
 #include "five_in_a_row_game/vertex_shader.h"
 #include "five_in_a_row_game/window.h"
 #include "glad/glad.h"
+#include "glm/detail/qualifier.hpp"
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/ext/matrix_float4x4.hpp"
 #include "glm/ext/matrix_projection.hpp"
 #include "glm/ext/matrix_transform.hpp"
+#include "glm/ext/vector_float3.hpp"
 #include "glm/fwd.hpp"
 #include "glm/glm.hpp"
 #include "glm/trigonometric.hpp"
@@ -66,6 +68,7 @@ Application::Application(const char * window_title, const int window_width,
       simple_shader_(VertexShader(0, "shader/simple.vert"),
                      FragmentShader(0, "shader/simple.frag")) {
   window_.set_depth_test_enabled(true);
+  // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
 
 Application::~Application() {}
@@ -84,6 +87,7 @@ void Application::CursorPosCallback(double x_pos, double y_pos) {
   float sensitivity = 0.05f;
   camera_.add_yaw(delta_x * sensitivity);
   camera_.add_pitch(delta_y * sensitivity);
+  camera_.set_direction_changed(true);
 }
 
 void Application::KeyCallback(int key, int scancode, int action, int mods) {
@@ -140,7 +144,7 @@ void Application::ScrollCallback(double x_offset, double y_offset) {
 }
 
 void Application::Run() {
-  float vertices[]{
+  constexpr float vertices[]{
       // positions          // normals           // texture coords
       -0.5f, -0.5f, -0.5f, 0.0f,  0.0f,  -1.0f, 0.0f,  0.0f,  0.5f,  -0.5f,
       -0.5f, 0.0f,  0.0f,  -1.0f, 1.0f,  0.0f,  0.5f,  0.5f,  -0.5f, 0.0f,
@@ -171,7 +175,7 @@ void Application::Run() {
       1.0f,  0.0f,  1.0f,  0.0f,  0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
       1.0f,  0.0f,  -0.5f, 0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  0.0f,
       -0.5f, 0.5f,  -0.5f, 0.0f,  1.0f,  0.0f,  0.0f,  1.0f};
-  unsigned int indices[] = {
+  constexpr unsigned int indices[] = {
       0, 1, 2, 0, 2, 3,
   };
   unsigned vao;
@@ -183,10 +187,10 @@ void Application::Run() {
 
   glBindVertexArray(vao);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices,
-               GL_DYNAMIC_DRAW);
+               GL_STATIC_DRAW);
   glEnableVertexAttribArray(0);
   glEnableVertexAttribArray(1);
   glEnableVertexAttribArray(2);
@@ -200,8 +204,36 @@ void Application::Run() {
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-  shader_.SetInt("material.diffuse_sampler", 0);
-  shader_.SetInt("material.specular_sampler", 1);
+  constexpr glm::vec3 ambient(0.4f);
+  constexpr glm::vec3 diffuse(0.4f);
+  constexpr glm::vec3 specular(0.2f);
+  constexpr glm::vec3 kLightDirection(0.0f, -0.3f, -1.0f);
+  constexpr float kConstantAttenuation = 1.0f;
+  constexpr float kLinearAttenuation = 0.09f;
+  constexpr float kQuadraticAttenuation = 0.032f;
+  const float kSpotlightCosPhi = glm::cos(glm::radians(12.5f));
+  const float kSpotlightCosGamma = glm::cos(glm::radians(17.5f));
+  shader_.SetVector3("dir_light.light.ambient", ambient);
+  shader_.SetVector3("dir_light.light.diffuse", diffuse);
+  shader_.SetVector3("dir_light.light.specular", specular);
+  shader_.SetVector3("dir_light.direction", kLightDirection);
+  shader_.SetVector3("point_lights[0].light.ambient", ambient);
+  shader_.SetVector3("point_lights[0].light.diffuse", diffuse);
+  shader_.SetVector3("point_lights[0].light.specular", specular);
+  shader_.SetVector3("point_lights[0].position", glm::vec3(0, 0, -3));
+  shader_.SetFloat("point_lights[0].attenuation.constant",
+                   kConstantAttenuation);
+  shader_.SetFloat("point_lights[0].attenuation.linear", kLinearAttenuation);
+  shader_.SetFloat("point_lights[0].attenuation.quadratic",
+                   kQuadraticAttenuation);
+  shader_.SetVector3("spot_light.light.ambient", ambient);
+  shader_.SetVector3("spot_light.light.diffuse", diffuse);
+  shader_.SetVector3("spot_light.light.specular", specular);
+  shader_.SetFloat("spot_light.attenuation.constant", kConstantAttenuation);
+  shader_.SetFloat("spot_light.attenuation.linear", kLinearAttenuation);
+  shader_.SetFloat("spot_light.attenuation.quadratic", kQuadraticAttenuation);
+  shader_.SetFloat("spot_light.cos_phi", kSpotlightCosPhi);
+  shader_.SetFloat("spot_light.cos_gamma", kSpotlightCosGamma);
   shader_.SetFloat("material.shininess", 64.0f);
 
   Texture2D tex("awesome_face.png");
@@ -222,8 +254,8 @@ void Application::Run() {
     glBindVertexArray(vao);
     shader_.Use();
     Render();
-    tex.Render(simple_shader_, glm::vec3(0, 0, 0), glm::vec3(0.3f),
-               glm::vec3(1.0f));
+    tex.Render(simple_shader_, window_, glm::vec3(0, 0, 0),
+               glm::vec3(0.8, 0.3, 1), glm::vec3(1.0f));
 
     window_.SwapBuffers();
     Window::PollEvents();
@@ -235,40 +267,10 @@ void Application::Update(const float delta_time) {
     game_->Update();
   }
   camera_.Update(delta_time, keys_);
-
-  shader_.SetVector3("camera_pos", camera_.position());
-  constexpr glm::vec3 ambient(0.4f);
-  constexpr glm::vec3 diffuse(0.4f);
-  constexpr glm::vec3 specular(0.2f);
-  glm::vec3 light_dir(0.0f, -0.3f, -1.0f);
-  shader_.SetVector3("dir_light.light.ambient", ambient);
-  shader_.SetVector3("dir_light.light.diffuse", diffuse);
-  shader_.SetVector3("dir_light.light.specular", specular);
-  shader_.SetVector3("dir_light.direction", light_dir);
-  shader_.SetVector3("point_lights[0].light.ambient", ambient);
-  shader_.SetVector3("point_lights[0].light.diffuse", diffuse);
-  shader_.SetVector3("point_lights[0].light.specular", specular);
-  shader_.SetVector3("point_lights[0].position", glm::vec3(0, 0, -3));
-  shader_.SetFloat("point_lights[0].attenuation.constant", 1.0f);
-  shader_.SetFloat("point_lights[0].attenuation.linear", 0.09f);
-  shader_.SetFloat("point_lights[0].attenuation.quadratic", 0.032f);
-  shader_.SetVector3("spot_light.light.ambient", ambient);
-  shader_.SetVector3("spot_light.light.diffuse", diffuse);
-  shader_.SetVector3("spot_light.light.specular", specular);
-  shader_.SetVector3("spot_light.position", camera_.position());
-  shader_.SetVector3("spot_light.direction", camera_.front());
-  shader_.SetFloat("spot_light.attenuation.constant", 1.0f);
-  shader_.SetFloat("spot_light.attenuation.linear", 0.045f);
-  shader_.SetFloat("spot_light.attenuation.quadratic", 0.0075f);
-  shader_.SetFloat("spot_light.cos_phi", glm::cos(glm::radians(12.5f)));
-  shader_.SetFloat("spot_light.cos_gamma", glm::cos(glm::radians(17.5f)));
-
-  shader_.SetMatrix4("model", glm::mat4(1.0f));
-  shader_.SetMatrix4("view", camera_.look_at());
-  glm::mat4 projection{glm::perspective(
-      glm::radians(camera_.fov()), (float)window_.width() / window_.height(),
-      0.1f, 100.0f)};
-  shader_.SetMatrix4("projection", projection);
+  camera_.SetUniforms(shader_, window_);
+  // Because every object has different position, we need to send the model to
+  // the shader later.
+  // shader_.SetMatrix4("model", glm::mat4(1.0f));
 }
 
 void Application::Render() const {

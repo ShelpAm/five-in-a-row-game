@@ -14,12 +14,10 @@ inline namespace five_in_a_row_game {
 Player::Player() {}
 
 Player::Player(int identity, const char * const name, const StoneType st_in_use)
-    : identity_(identity), name_(name), stone_type_in_use_(st_in_use) {}
+    : id_(identity), name_(name), stone_type_(st_in_use) {}
 
 Player::Player(const Player & player)
-    : identity_(player.identity_),
-      name_(player.name_),
-      stone_type_in_use_(player.stone_type_in_use_) {}
+    : id_(player.id_), name_(player.name_), stone_type_(player.stone_type_) {}
 
 Player::~Player() {}
 
@@ -32,12 +30,12 @@ const ::Move Player::Move(Board & board) const {
   const auto & target_board_coordinate{container.at(dist(gen))};
   PlaceAStone(board, target_board_coordinate);
   // constructor
-  return ::Move{target_board_coordinate, stone_type_in_use_};
+  return ::Move{target_board_coordinate, stone_type_};
 }
 
 void Player::PlaceAStone(Board & board,
                          const BoardCoordinate & coordinate) const {
-  board.PlaceAStone(coordinate, stone_type_in_use_);
+  board.PlaceAStone(coordinate, stone_type_);
 }
 
 }  // namespace five_in_a_row_game

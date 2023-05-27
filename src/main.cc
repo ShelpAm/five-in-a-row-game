@@ -3,6 +3,8 @@
 //
 #include "five_in_a_row_game/main.h"
 
+#include <math.h>
+
 #include <exception>
 #include <fstream>
 #include <iostream>

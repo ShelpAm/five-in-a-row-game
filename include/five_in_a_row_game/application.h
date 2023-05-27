@@ -56,11 +56,11 @@ class Application {
   Camera camera_;
   ShaderProgram shader_;
   ShaderProgram simple_shader_;
-  double previous_frame_time_{0}, current_frame_time_{0};
-  std::size_t frame_per_second_{0};
-  std::vector<FiveInARowGame *> history_games_{};
-  FiveInARowGame * game_{nullptr};
-  std::vector<std::shared_ptr<Player>> players_{};
+  double previous_frame_time_ = 0, current_frame_time_ = 0;
+  std::size_t frame_per_second_ = 0;
+  std::vector<FiveInARowGame *> history_games_;
+  FiveInARowGame * game_ = nullptr;
+  std::vector<std::shared_ptr<Player>> players_;
 };
 
 class ApplicationUninitialized : public std::exception {};

@@ -58,7 +58,7 @@ void ShaderProgram::SetInt(const char * name, const int & value1) const {
   glProgramUniform1iv(id_, GetUniformLocation(name), 1, &value1);
 }
 
-void ShaderProgram::SetVector3(const char * name, const glm::vec3 & vec3) {
+void ShaderProgram::SetVector3(const char * name, const glm::vec3 & vec3) const{
   Use();
   glUniform3fv(GetUniformLocation(name), 1, glm::value_ptr(vec3));
 }
@@ -72,13 +72,11 @@ void ShaderProgram::SetMatrix4(const char * name,
 
 void ShaderProgram::Validate() const {
   glValidateProgram(id_);
-  int success;
-  glGetProgramiv(id_, GL_VALIDATE_STATUS, &success);
-  if (!success) {
-    int length;
-    glGetProgramiv(id_, GL_INFO_LOG_LENGTH, &length);
-    std::vector<char> info_log(length);
-    glGetProgramInfoLog(id_, length, NULL, &(info_log[0]));
+  int successful;
+  glGetProgramiv(id_, GL_VALIDATE_STATUS, &successful);
+  if (!successful) {
+    std::vector<char> info_log(GetInfoLogLength());
+    glGetProgramInfoLog(id_, GetInfoLogLength(), NULL, &(info_log[0]));
     std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n";
     std::cerr << &(info_log[0]) << std::endl;
     throw ShaderCompilationError();
@@ -86,8 +84,19 @@ void ShaderProgram::Validate() const {
 }
 
 int ShaderProgram::GetUniformLocation(const char * name) const {
-  const auto uniform_location = glGetUniformLocation(id_, name);
-  return uniform_location;
+  if (name_uniform_location_map_.contains(name)) {
+    return name_uniform_location_map_.at(name);
+  } else {
+    const auto uniform_location = glGetUniformLocation(id_, name);
+    name_uniform_location_map_[name] = uniform_location;
+    return uniform_location;
+  }
+}
+
+int ShaderProgram::GetInfoLogLength() const {
+  int length;
+  glGetProgramiv(id_, GL_INFO_LOG_LENGTH, &length);
+  return length;
 }
 
 void ShaderProgram::CheckErrors() const {
@@ -105,3 +114,4 @@ void ShaderProgram::CheckErrors() const {
 }
 
 unsigned ShaderProgram::being_used_shader_program_id_(-1);
+std::map<std::string, int> ShaderProgram::name_uniform_location_map_{};

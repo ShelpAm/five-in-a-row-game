@@ -6,6 +6,7 @@
 
 #include "GLFW/glfw3.h"
 #include "five_in_a_row_game/application_fwd.h"
+#include "glm/ext/vector_float4.hpp"
 
 class Window {
  public:
@@ -30,6 +31,9 @@ class Window {
   void SwapBuffers() const;
   static void PollEvents();
   void MakeContextCurrent() const;
+  void UpdateGLStates() const;
+  void UpdateDepthTestState() const;
+  void UpdateBlendState() const;
 
   GLFWwindow * window() const { return window_; }
   bool should_close() const { return glfwWindowShouldClose(window_); }
@@ -50,7 +54,9 @@ class Window {
   std::string title_;
   int width_;
   int height_;
-  bool depth_test_enabled_;
+  bool depth_test_enabled_{true};
+  bool blend_enabled_{true};
+  glm::vec4 clear_color_{0.0f, 0.0f, 0.0f, 1.0f};
 };
 
 #endif  // FIVE_IN_IN_ROW_GAME_WINDOW_H_

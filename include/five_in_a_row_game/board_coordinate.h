@@ -17,24 +17,24 @@ class BoardCoordinate {
   BoardCoordinate(const int column, const int row);
   BoardCoordinate(const std::size_t column, const std::size_t row);
 
-  int & operator[](const int index) { return vec2i_[index]; }
-  const int & operator[](const int index) const { return vec2i_[index]; }
+  int & operator[](const int index) { return vector2i_[index]; }
+  const int & operator[](const int index) const { return vector2i_[index]; }
 
-  int column() const { return vec2i_.X(); }
-  void SetColumn(const int column) { vec2i_.SetX(column); }
-  void AddColumn(const int delta) { vec2i_.AddX(delta); }
-  int row() const { return vec2i_.Y(); }
-  void SetRow(const int row) { vec2i_.SetY(row); }
-  void AddRow(const int delta) { vec2i_.AddY(delta); }
-  int X() const { return vec2i_.X(); }
-  void SetX(const int x) { vec2i_.SetX(x); }
-  void AddX(const int delta) { vec2i_.AddX(delta); }
-  int Y() const { return vec2i_.Y(); }
-  void SetY(const int y) { vec2i_.SetY(y); }
-  void AddY(const int delta) { vec2i_.AddY(delta); }
+  int column() const { return vector2i_.x(); }
+  void set_column(const int column) { vector2i_.set_x(column); }
+  void add_column(const int delta) { vector2i_.add_x(delta); }
+  int row() const { return vector2i_.y(); }
+  void set_row(const int row) { vector2i_.set_y(row); }
+  void add_row(const int delta) { vector2i_.add_y(delta); }
+  int x() const { return vector2i_.x(); }
+  void set_x(const int x) { vector2i_.set_x(x); }
+  void add_x(const int delta) { vector2i_.add_x(delta); }
+  int y() const { return vector2i_.y(); }
+  void set_y(const int y) { vector2i_.set_y(y); }
+  void add_y(const int delta) { vector2i_.add_y(delta); }
 
  private:
-  Vector2D<int> vec2i_;  // first column and then row
+  Vector2D<int> vector2i_;  // first column and then row
 };
 
 bool operator==(const BoardCoordinate & lhs, const BoardCoordinate & rhs);

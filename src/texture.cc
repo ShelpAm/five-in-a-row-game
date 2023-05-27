@@ -4,6 +4,7 @@
 #include <iostream>
 #include <sstream>
 
+#include "GLFW/glfw3.h"
 #include "five_in_a_row_game/shader_program.h"
 #include "five_in_a_row_game/window.h"
 #include "glad/glad.h"
@@ -32,28 +33,33 @@ Texture2D::Texture2D(const char * file_name) {
 
 Texture2D::~Texture2D() { glDeleteTextures(1, &id_); }
 
-void Texture2D::Bind(const ShaderProgram & shader_program,
+void Texture2D::Bind(const ShaderProgram & shader_program, const char * name,
                      const unsigned which) const {
   shader_program.Use();
+  shader_program.SetInt(name, which);
   /* glActiveTexture(GL_TEXTURE0 + which);
   glBindTexture(GL_TEXTURE_2D, id_); */
   glBindTextureUnit(which, id_);
 }
 
 void Texture2D::Render(const ShaderProgram & shader_program,
-                       const glm::vec3 & position, const glm::vec3 & size,
-                       const glm::vec3 & color) const {
+                       const Window & window, const glm::vec3 & position,
+                       const glm::vec3 & size, const glm::vec3 & color) const {
   shader_program.Use();
-  glm::mat4 model = glm::translate(glm::mat4(1.0f), position);
+  glDisable(GL_DEPTH_TEST);
+  glm::mat4 model(1.0f);
   model = glm::scale(model, size);
-  glm::mat4 projection = glm::ortho(0.0f, 800.0f, 600.0f, 0.0f, -1.0f, 1.0f);
+  model = glm::translate(model, position);
+  glm::mat4 projection = glm::ortho(0.0f, /*float(window.width()),
+                                    float(window.height()),*/
+                                    4.0f, 3.0f, 0.0f);
   shader_program.SetMatrix4("model", model);
-  shader_program.SetMatrix4("projection", projection);
-  this->Bind(shader_program, 0);
-  shader_program.SetInt("simple_sampler", 0);
+  // shader_program.SetMatrix4("projection", projection);
+  this->Bind(shader_program, "simple_sampler", 0);
+  shader_program.SetFloat("c", 100 * glm::sin(glfwGetTime()));
 
-  float vertices[]{0, 0, 0, 1, 1, 0, 1, 1, 0, -1, 0, 0, 1, -1, 1, 0};
-  int indices[]{0, 1, 2, 1, 2, 3};
+  constexpr float vertices[]{-1, 1, 0, 1, 0, 1, 1, 1, -1, 0, 0, 0, 0, 0, 1, 0};
+  constexpr int indices[]{0, 1, 2, 1, 2, 3};
 
   unsigned vao;
   unsigned vbo;
@@ -83,4 +89,6 @@ void Texture2D::Render(const ShaderProgram & shader_program,
 
   glDeleteVertexArrays(1, &vao);
   glDeleteBuffers(1, &vbo);
+
+  window.UpdateDepthTestState();
 }
