@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <vector>
 
 #include "GLFW/glfw3.h"
 #include "five_in_a_row_game/shader_program.h"
@@ -37,9 +38,10 @@ void Texture2D::Bind(const ShaderProgram & shader_program, const char * name,
                      const unsigned which) const {
   shader_program.Use();
   shader_program.SetInt(name, which);
-  /* glActiveTexture(GL_TEXTURE0 + which);
-  glBindTexture(GL_TEXTURE_2D, id_); */
-  glBindTextureUnit(which, id_);
+  glActiveTexture(GL_TEXTURE0 + which);
+  glBindTexture(GL_TEXTURE_2D, id_);
+  // on Windows platform not working.
+  // glBindTextureUnit(which, id_);
 }
 
 void Texture2D::Render(const ShaderProgram & shader_program,
@@ -50,14 +52,15 @@ void Texture2D::Render(const ShaderProgram & shader_program,
   glm::mat4 model(1.0f);
   model = glm::scale(model, size);
   model = glm::translate(model, position);
-  glm::mat4 projection = glm::ortho(0.0f, /*float(window.width()),
-                                    float(window.height()),*/
-                                    4.0f, 3.0f, 0.0f);
+  const float width = window.width();
+  const float height = window.height();
+  constexpr float z_near = -1.0f;
+  constexpr float z_far = 1.0f;
+  glm::mat4 projection =
+      glm::ortho(-width / 2, width / 2, height / 2, -height / 2, z_near, z_far);
   shader_program.SetMatrix4("model", model);
-  // shader_program.SetMatrix4("projection", projection);
+  shader_program.SetMatrix4("projection", projection);
   this->Bind(shader_program, "simple_sampler", 0);
-  shader_program.SetFloat("c", 100 * glm::sin(glfwGetTime()));
-
   constexpr float vertices[]{-1, 1, 0, 1, 0, 1, 1, 1, -1, 0, 0, 0, 0, 0, 1, 0};
   constexpr int indices[]{0, 1, 2, 1, 2, 3};
 

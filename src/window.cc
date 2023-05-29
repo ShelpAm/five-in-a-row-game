@@ -83,13 +83,17 @@ void Window::ScrollCallback(double x_offset, double yoffset) const {
   }
 }
 
-void Window::Clear() const {
-  glClearColor(clear_color_.x, clear_color_.y, clear_color_.z, clear_color_.w);
-  int used_buffer_bit = GL_COLOR_BUFFER_BIT;
-  if (depth_test_enabled_) {
-    used_buffer_bit |= GL_DEPTH_BUFFER_BIT;
+void Window::Clear() {
+  if (clear_color_changed_) {
+    glClearColor(clear_color_.x, clear_color_.y, clear_color_.z,
+                 clear_color_.w);
+    clear_color_changed_ = false;
   }
-  glClear(used_buffer_bit);
+  int being_used_buffer_bit = GL_COLOR_BUFFER_BIT;
+  if (depth_test_enabled_) {
+    being_used_buffer_bit |= GL_DEPTH_BUFFER_BIT;
+  }
+  glClear(being_used_buffer_bit);
 }
 
 void Window::SwapBuffers() const { glfwSwapBuffers(window_); }

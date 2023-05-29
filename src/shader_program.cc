@@ -16,9 +16,9 @@ ShaderProgram::ShaderProgram(const VertexShader & vertex_shader,
   vertex_shader.AttachTo(*this);
   fragment_shader.AttachTo(*this);
   glLinkProgram(id_);
+  CheckErrors();
   vertex_shader.DetachFrom(*this);
   fragment_shader.DetachFrom(*this);
-  CheckErrors();
 }
 
 ShaderProgram::ShaderProgram(const char * vertex_shader_source,
@@ -33,6 +33,9 @@ void ShaderProgram::Use() const {
     glUseProgram(id_);
     being_used_shader_program_id_ = id_;
   }
+#ifdef DEBUG
+  Validate();
+#endif  // !DEBUG
 }
 
 void ShaderProgram::SetFloat(const char * name, const float value) const {
@@ -55,10 +58,13 @@ void ShaderProgram::Set4Float(const char * name, const float value1,
 
 void ShaderProgram::SetInt(const char * name, const int & value1) const {
   Use();
-  glProgramUniform1iv(id_, GetUniformLocation(name), 1, &value1);
+  // FIXME
+  // glProgramUniform1iv(id_, GetUniformLocation(name), 1, &value1);
+  glUniform1iv(GetUniformLocation(name), 1, &value1);
 }
 
-void ShaderProgram::SetVector3(const char * name, const glm::vec3 & vec3) const{
+void ShaderProgram::SetVector3(const char * name,
+                               const glm::vec3 & vec3) const {
   Use();
   glUniform3fv(GetUniformLocation(name), 1, glm::value_ptr(vec3));
 }
@@ -66,8 +72,13 @@ void ShaderProgram::SetVector3(const char * name, const glm::vec3 & vec3) const{
 void ShaderProgram::SetMatrix4(const char * name,
                                const glm::mat4 & mat4) const {
   Use();
-  glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE,
-                     glm::value_ptr(mat4));
+  glUniformMatrix4fv(GetUniformLocation(name), 1, false, glm::value_ptr(mat4));
+}
+
+void ShaderProgram::SetTransposedMatrix4(const char * name,
+                                         const glm::mat4 & mat4) const {
+  Use();
+  glUniformMatrix4fv(GetUniformLocation(name), 1, true, glm::value_ptr(mat4));
 }
 
 void ShaderProgram::Validate() const {
@@ -75,9 +86,10 @@ void ShaderProgram::Validate() const {
   int successful;
   glGetProgramiv(id_, GL_VALIDATE_STATUS, &successful);
   if (!successful) {
-    std::vector<char> info_log(GetInfoLogLength());
-    glGetProgramInfoLog(id_, GetInfoLogLength(), NULL, &(info_log[0]));
-    std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n";
+    int info_log_length = GetInfoLogLength();
+    std::vector<char> info_log(info_log_length);
+    glGetProgramInfoLog(id_, info_log_length, NULL, &(info_log[0]));
+    std::cout << "ERROR::SHADER::PROGRAM::ValidateFailed ";
     std::cerr << &(info_log[0]) << std::endl;
     throw ShaderCompilationError();
   }

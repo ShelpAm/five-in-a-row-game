@@ -80,6 +80,9 @@ void FiveInARowGame::Render(const ShaderProgram & shader_program) const {
       shader_program.SetMatrix4("model", model);
       shader_program.SetMatrix4("transposed_and_inverse_model",
                                 glm::transpose(glm::inverse(model)));
+      // TODO change to this
+      // shader_program.SetTransposedMatrix4("transposed_and_inverse_model",
+      // glm::inverse(model));
       if (board_.GetStoneTypeInCoordinate(BoardCoordinate(i, j)) ==
           StoneType::kStoneTypeBlack) {
         diffuse_map_black.Bind(shader_program, "material.diffuse_sampler", 0);

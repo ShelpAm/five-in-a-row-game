@@ -47,12 +47,12 @@ class Application {
  private:
   void Update(const float delta_time);
   void Render() const;
+  static void CheckErrors();
 
  private:
-  // TODO: to be added to `Window` class
-  bool keys_[512]{false};
-
+  // Window must be initialized first. So it is placed here the first.
   Window window_;
+  bool keys_[512]{false};  // TODO: to be added to `Window` class
   Camera camera_;
   ShaderProgram shader_;
   ShaderProgram simple_shader_;

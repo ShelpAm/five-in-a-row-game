@@ -38,9 +38,10 @@ void Camera::Update(const float delta_time, const bool keys[256]) {
 }
 
 void Camera::SetUniforms(const ShaderProgram & shader_program,
-                         const Window & window) const {
+                         const Window & window) {
   if (position_changed_) {
     shader_program.SetVector3("camera_pos", position_);
+    position_changed_ = false;
   }
   shader_program.SetVector3("spot_light.position", position_);
   shader_program.SetVector3("spot_light.direction", front_);

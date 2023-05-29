@@ -73,76 +73,6 @@ Application::Application(const char * window_title, const int window_width,
 
 Application::~Application() {}
 
-void Application::CursorPosCallback(double x_pos, double y_pos) {
-  static float prev_x_pos = float(window_.width()) / 2,
-               prev_y_pos = float(window_.height()) / 2;
-  float delta_x = x_pos - prev_x_pos, delta_y = -(y_pos - prev_y_pos);
-  prev_x_pos = x_pos;
-  prev_y_pos = y_pos;
-  if (delta_x || delta_y) {
-    // std::cout << "Cursor position: " << x_pos << ", " << y_pos << " ("
-    // << delta_x << " " << delta_y << ")\n";
-  }
-
-  float sensitivity = 0.05f;
-  camera_.add_yaw(delta_x * sensitivity);
-  camera_.add_pitch(delta_y * sensitivity);
-  camera_.set_direction_changed(true);
-}
-
-void Application::KeyCallback(int key, int scancode, int action, int mods) {
-  if (action == GLFW_PRESS) {
-    std::cout << "Key: " << char(key) << " pressed\n";
-    keys_[key] = true;
-  } else if (action == GLFW_RELEASE) {
-    std::cout << "Key: " << char(key) << " released\n";
-    keys_[key] = false;
-  }
-  if (action == GLFW_PRESS) {
-    switch (key) {
-      case GLFW_KEY_F:
-        if (game_) {
-          std::cout << *game_;
-        }
-        break;
-      case GLFW_KEY_G: {
-        auto human_player = HumanPlayerFactory::Instance().MakePlayer();
-        auto ai_player1 = EasyAIPlayerFactory::Instance().MakePlayer();
-        auto ai_player2 = EasyAIPlayerFactory::Instance().MakePlayer();
-        players_.push_back(human_player);
-        players_.push_back(ai_player1);
-        players_.push_back(ai_player2);
-        human_player->set_name("test_user1");
-        ai_player1->set_name("easy_ai_player1");
-        ai_player2->set_name("easy_ai_player2");
-
-        history_games_.push_back(game_);
-        game_ = new FiveInARowGame(ai_player1.get(), ai_player2.get());
-        game_->Start();
-        break;
-      }
-      case GLFW_KEY_ESCAPE:
-        window_.set_should_close(true);
-        break;
-      case GLFW_KEY_UNKNOWN:
-      default:
-        break;
-    }
-  } else if (action == GLFW_RELEASE) {
-    switch (key) {
-      case GLFW_KEY_UNKNOWN:
-      default:
-        break;
-    }
-  }
-}
-
-void Application::ScrollCallback(double x_offset, double y_offset) {
-  std::cout << "Scrolling: " << x_offset << ", " << y_offset << "\n";
-  y_offset *= 3;
-  camera_.add_fov(-y_offset);
-}
-
 void Application::Run() {
   constexpr float vertices[]{
       // positions          // normals           // texture coords
@@ -259,7 +189,78 @@ void Application::Run() {
 
     window_.SwapBuffers();
     Window::PollEvents();
+    CheckErrors();
   }
+}
+
+void Application::CursorPosCallback(double x_pos, double y_pos) {
+  static float prev_x_pos = float(window_.width()) / 2,
+               prev_y_pos = float(window_.height()) / 2;
+  float delta_x = x_pos - prev_x_pos, delta_y = -(y_pos - prev_y_pos);
+  prev_x_pos = x_pos;
+  prev_y_pos = y_pos;
+  if (delta_x || delta_y) {
+    // std::cout << "Cursor position: " << x_pos << ", " << y_pos << " ("
+    // << delta_x << " " << delta_y << ")\n";
+  }
+
+  float sensitivity = 0.05f;
+  camera_.add_yaw(delta_x * sensitivity);
+  camera_.add_pitch(delta_y * sensitivity);
+  camera_.set_direction_changed(true);
+}
+
+void Application::KeyCallback(int key, int scancode, int action, int mods) {
+  if (action == GLFW_PRESS) {
+    std::cout << "Key: " << char(key) << " pressed\n";
+    keys_[key] = true;
+  } else if (action == GLFW_RELEASE) {
+    std::cout << "Key: " << char(key) << " released\n";
+    keys_[key] = false;
+  }
+  if (action == GLFW_PRESS) {
+    switch (key) {
+      case GLFW_KEY_F:
+        if (game_) {
+          std::cout << *game_;
+        }
+        break;
+      case GLFW_KEY_G: {
+        auto human_player = HumanPlayerFactory::Instance().MakePlayer();
+        auto ai_player1 = EasyAIPlayerFactory::Instance().MakePlayer();
+        auto ai_player2 = EasyAIPlayerFactory::Instance().MakePlayer();
+        players_.push_back(human_player);
+        players_.push_back(ai_player1);
+        players_.push_back(ai_player2);
+        human_player->set_name("test_user1");
+        ai_player1->set_name("easy_ai_player1");
+        ai_player2->set_name("easy_ai_player2");
+
+        history_games_.push_back(game_);
+        game_ = new FiveInARowGame(ai_player1.get(), ai_player2.get());
+        game_->Start();
+        break;
+      }
+      case GLFW_KEY_ESCAPE:
+        window_.set_should_close(true);
+        break;
+      case GLFW_KEY_UNKNOWN:
+      default:
+        break;
+    }
+  } else if (action == GLFW_RELEASE) {
+    switch (key) {
+      case GLFW_KEY_UNKNOWN:
+      default:
+        break;
+    }
+  }
+}
+
+void Application::ScrollCallback(double x_offset, double y_offset) {
+  std::cout << "Scrolling: " << x_offset << ", " << y_offset << "\n";
+  y_offset *= 3;
+  camera_.add_fov(-y_offset);
 }
 
 void Application::Update(const float delta_time) {
@@ -276,5 +277,16 @@ void Application::Update(const float delta_time) {
 void Application::Render() const {
   if (game_) {
     game_->Render(shader_);
+  }
+}
+
+void Application::CheckErrors() {
+  unsigned error_code = glGetError();
+  unsigned index = 0;
+  while (error_code != GL_NO_ERROR) {
+    std::cerr << "Error::OpenGL[" << index << "] error_code = " << error_code
+              << "\n";
+    error_code = glGetError();
+    index++;
   }
 }

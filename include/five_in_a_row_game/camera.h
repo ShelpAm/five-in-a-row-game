@@ -13,7 +13,11 @@ class Camera {
   Camera(const glm::vec3 & pos, const float fov, const float pitch,
          const float yaw);
   void Update(const float delta_time, const bool keys[256]);
-  void SetUniforms(const ShaderProgram & shader_program, const Window &) const;
+
+  /// @brief Sets uniforms.
+  /// This method receives a window object because the uniform variables should
+  /// be set depending on the window.
+  void SetUniforms(const ShaderProgram & shader_program, const Window &);
   float fov() const { return fov_; }
   const glm::vec3 position() const { return position_; }
   const glm::mat4 look_at() const {
@@ -51,8 +55,8 @@ class Camera {
   glm::vec3 front_{0.0f, 0.0f, -1.0f};
   glm::vec3 up_{0.0f, 1.0f, 0.0f};
   glm::vec3 velocity_{};
-  bool position_changed_ = false;
-  bool direction_changed_ = false;
+  bool position_changed_ = true;
+  bool direction_changed_ = true;
 };
 
 #endif  // FIVE_IN_A_ROW_GAME_CAMERA_H_

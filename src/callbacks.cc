@@ -12,8 +12,8 @@ void error_callback(int error, const char * msg) {
   std::cerr << s << std::endl;
 }
 
-void cursor_pos_callback(GLFWwindow * window, double xpos, double ypos) {
-  Window::Get(window)->CursorPosCallback(xpos, ypos);
+void cursor_pos_callback(GLFWwindow * window, double x_pos, double y_pos) {
+  Window::Get(window)->CursorPosCallback(x_pos, y_pos);
 }
 
 void key_callback(GLFWwindow * window, int key, int scancode, int action,
@@ -21,6 +21,6 @@ void key_callback(GLFWwindow * window, int key, int scancode, int action,
   Window::Get(window)->KeyCallback(key, scancode, action, mods);
 }
 
-void scroll_callback(GLFWwindow * window, double xoffset, double yoffset) {
-  Window::Get(window)->ScrollCallback(xoffset, yoffset);
+void scroll_callback(GLFWwindow * window, double x_offset, double y_offset) {
+  Window::Get(window)->ScrollCallback(x_offset, y_offset);
 }

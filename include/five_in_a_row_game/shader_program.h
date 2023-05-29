@@ -14,6 +14,10 @@ class ShaderProgram {
                 const FragmentShader & fragment_shader);
   ShaderProgram(const char * vertex_shader_source,
                 const char * fragment_shader_source);
+  ShaderProgram(ShaderProgram &&) = delete;
+  ShaderProgram(const ShaderProgram &) = delete;
+  ShaderProgram & operator=(ShaderProgram &&) = delete;
+  ShaderProgram & operator=(const ShaderProgram &) = delete;
   ~ShaderProgram();
 
  public:
@@ -27,6 +31,7 @@ class ShaderProgram {
   void SetInt(const char * name, const int &) const;
   void SetVector3(const char * name, const glm::vec3 & vec3) const;
   void SetMatrix4(const char * name, const glm::mat4 & mat4) const;
+  void SetTransposedMatrix4(const char * name, const glm::mat4 & mat4) const;
 
   unsigned id() const { return id_; }
 

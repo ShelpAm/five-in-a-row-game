@@ -27,7 +27,7 @@ class Window {
   void CursorPosCallback(double x_pos, double y_pos) const;
   void KeyCallback(int key, int scancode, int action, int mods) const;
   void ScrollCallback(double x_offset, double y_offset) const;
-  void Clear() const;
+  void Clear();
   void SwapBuffers() const;
   static void PollEvents();
   void MakeContextCurrent() const;
@@ -44,6 +44,10 @@ class Window {
   int height() const { return height_; }
   void set_depth_test_enabled(const bool value) { depth_test_enabled_ = value; }
   bool depth_test_enabled() const { return depth_test_enabled_; }
+  void set_clear_color(const glm::vec4 & value) {
+    clear_color_ = value;
+    clear_color_changed_ = true;
+  }
 
  private:
   static std::map<const GLFWwindow *, const Window *> window_map_;
@@ -57,6 +61,7 @@ class Window {
   bool depth_test_enabled_{true};
   bool blend_enabled_{true};
   glm::vec4 clear_color_{0.0f, 0.0f, 0.0f, 1.0f};
+  bool clear_color_changed_ = true;
 };
 
 #endif  // FIVE_IN_IN_ROW_GAME_WINDOW_H_
