@@ -1,7 +1,5 @@
 #include "five_in_a_row_game/texture.h"
 
-#include <linux/limits.h>
-
 #include <fstream>
 #include <iostream>
 #include <sstream>
