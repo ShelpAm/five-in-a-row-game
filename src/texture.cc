@@ -61,7 +61,6 @@ void Texture2D::Render(const ShaderProgram & shader_program,
       glm::ortho(-width / 2, width / 2, height / 2, -height / 2, z_near, z_far);
   projection = glm::mat4(1.0f);
   shader_program.SetMatrix4("model", model);
-  // FIXME Not rendering anything with using projection matrix.
   shader_program.SetMatrix4("projection", projection);
   this->Bind(shader_program, "simple_sampler", 0);
   constexpr float vertices[]{-1, 1, 0, 1, 0, 1, 1, 1, -1, 0, 0, 0, 0, 0, 1, 0};

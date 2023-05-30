@@ -184,7 +184,7 @@ void Application::Run() {
     glBindVertexArray(vao);
     shader_.Use();
     Render();
-    tex.Render(simple_shader_, window_, glm::vec3(0, 0, 0),
+    tex.Render(simple_shader_, window_, glm::vec3(-0.5f, 0, 0),
                glm::vec3(0.8, 0.3, 1), glm::vec3(1.0f));
 
     window_.SwapBuffers();

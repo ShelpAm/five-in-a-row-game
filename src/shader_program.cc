@@ -112,15 +112,13 @@ int ShaderProgram::GetInfoLogLength() const {
 }
 
 void ShaderProgram::CheckErrors() const {
-  int success;
-  glGetProgramiv(id_, GL_LINK_STATUS, &success);
-  if (!success) {
-    int length;
-    glGetProgramiv(id_, GL_INFO_LOG_LENGTH, &length);
+  int successful;
+  glGetProgramiv(id_, GL_LINK_STATUS, &successful);
+  if (!successful) {
+    auto length = GetInfoLogLength();
     std::vector<char> info_log(length);
     glGetProgramInfoLog(id_, length, NULL, &(info_log[0]));
-    std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n";
-    std::cerr << &(info_log[0]) << std::endl;
+    std::cerr << "Error::ShaderProgram::LinkFailed " << &(info_log[0]) << "\n";
     throw ShaderCompilationError();
   }
 }

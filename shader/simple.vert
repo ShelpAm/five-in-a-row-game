@@ -6,5 +6,5 @@ uniform mat4 model;
 uniform mat4 projection;
 void main() {
   texcoord = vertex_texcoord;
-  gl_Position = projection * model * vec4(vertex_position, -0.5f, 1);
+  gl_Position = projection * model * vec4(vertex_position, 0, 1);
 }
