@@ -42,7 +42,9 @@ class ShaderProgram {
 
  private:
   static unsigned being_used_shader_program_id_;
-  static std::map<std::string, int> name_uniform_location_map_;
+  // Since every shader has different uniform locations, we don't set this to be
+  // static.
+  mutable std::map<std::string, int> name_uniform_location_map_;
   unsigned id_;
 };
 

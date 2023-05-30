@@ -1,5 +1,7 @@
 #include "five_in_a_row_game/texture.h"
 
+#include <linux/limits.h>
+
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -10,10 +12,12 @@
 #include "five_in_a_row_game/window.h"
 #include "glad/glad.h"
 #include "glm/ext/matrix_clip_space.hpp"
+#include "glm/ext/matrix_float4x4.hpp"
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/ext/vector_float2.hpp"
 #include "glm/fwd.hpp"
 #include "glm/glm.hpp"
+#include "glm/gtc/type_ptr.hpp"
 #include "stb/stb_image.h"
 
 Texture2D::Texture2D(const char * file_name) {
@@ -48,7 +52,6 @@ void Texture2D::Render(const ShaderProgram & shader_program,
                        const Window & window, const glm::vec3 & position,
                        const glm::vec3 & size, const glm::vec3 & color) const {
   shader_program.Use();
-  glDisable(GL_DEPTH_TEST);
   glm::mat4 model(1.0f);
   model = glm::scale(model, size);
   model = glm::translate(model, position);
@@ -58,7 +61,9 @@ void Texture2D::Render(const ShaderProgram & shader_program,
   constexpr float z_far = 1.0f;
   glm::mat4 projection =
       glm::ortho(-width / 2, width / 2, height / 2, -height / 2, z_near, z_far);
+  projection = glm::mat4(1.0f);
   shader_program.SetMatrix4("model", model);
+  // FIXME Not rendering anything with using projection matrix.
   shader_program.SetMatrix4("projection", projection);
   this->Bind(shader_program, "simple_sampler", 0);
   constexpr float vertices[]{-1, 1, 0, 1, 0, 1, 1, 1, -1, 0, 0, 0, 0, 0, 1, 0};
@@ -86,12 +91,11 @@ void Texture2D::Render(const ShaderProgram & shader_program,
   // glBindVertexArray(0);
   // glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+  glDisable(GL_DEPTH_TEST);
   glBindVertexArray(vao);
-  // glDrawArrays(GL_TRIANGLES, 0, 6);
   glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+  window.UpdateDepthTestState();
 
   glDeleteVertexArrays(1, &vao);
   glDeleteBuffers(1, &vbo);
-
-  window.UpdateDepthTestState();
 }

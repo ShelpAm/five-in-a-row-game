@@ -126,4 +126,3 @@ void ShaderProgram::CheckErrors() const {
 }
 
 unsigned ShaderProgram::being_used_shader_program_id_(-1);
-std::map<std::string, int> ShaderProgram::name_uniform_location_map_{};
