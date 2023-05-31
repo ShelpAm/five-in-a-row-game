@@ -12,9 +12,9 @@
 #include "five_in_a_row_game/board_fwd.h"
 #include "five_in_a_row_game/move.h"
 #include "five_in_a_row_game/player.h"
+#include "five_in_a_row_game/shader_program.h"
 #include "five_in_a_row_game/state.h"
-#include "five_in_a_row_game/texture.h"
-#include "shader_program.h"
+#include "five_in_a_row_game/texture2d.h"
 
 template <typename T>
 concept PlayerType = std::is_same_v<T, Player>;

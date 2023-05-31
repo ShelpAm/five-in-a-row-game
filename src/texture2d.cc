@@ -1,4 +1,4 @@
-#include "five_in_a_row_game/texture.h"
+#include "five_in_a_row_game/texture2d.h"
 
 #include <fstream>
 #include <iostream>
@@ -13,6 +13,7 @@
 #include "glm/ext/matrix_float4x4.hpp"
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/ext/vector_float2.hpp"
+#include "glm/ext/vector_float4.hpp"
 #include "glm/fwd.hpp"
 #include "glm/glm.hpp"
 #include "glm/gtc/type_ptr.hpp"
@@ -42,30 +43,38 @@ void Texture2D::Bind(const ShaderProgram & shader_program, const char * name,
   shader_program.SetInt(name, which);
   glActiveTexture(GL_TEXTURE0 + which);
   glBindTexture(GL_TEXTURE_2D, id_);
-  // on Windows platform not working.
+  // FIXME On Windows platform this doesn't work.
   // glBindTextureUnit(which, id_);
 }
 
 void Texture2D::Render(const ShaderProgram & shader_program,
                        const Window & window, const glm::vec3 & position,
-                       const glm::vec3 & size, const glm::vec3 & color) const {
-  shader_program.Use();
-  glm::mat4 model(1.0f);
-  model = glm::scale(model, size);
-  model = glm::translate(model, position);
+                       const float rotation, const glm::vec3 & scale,
+                       const glm::vec3 & color) const {
   const float width = window.width();
   const float height = window.height();
   constexpr float z_near = -1.0f;
   constexpr float z_far = 1.0f;
+  glm::mat4 model(1.0f);
+  model = glm::translate(model, position);
+  model = glm::rotate(model, rotation, glm::vec3(0.0f, 0.0f, 1.0f));
+  model = glm::scale(model, scale);
   glm::mat4 projection =
-      glm::ortho(-width / 2, width / 2, height / 2, -height / 2, z_near, z_far);
-  projection = glm::mat4(1.0f);
+      glm::ortho(0.0f, width / 400, height / 300, 0.0f, z_near, z_far);
+  // projection = glm::mat4(1.0f);
+
+  shader_program.Use();
   shader_program.SetMatrix4("model", model);
   shader_program.SetMatrix4("projection", projection);
-  this->Bind(shader_program, "simple_sampler", 0);
-  constexpr float vertices[]{-1, 1, 0, 1, 0, 1, 1, 1, -1, 0, 0, 0, 0, 0, 1, 0};
+  shader_program.BindTexture(*this, "simple_sampler", 0);
+  constexpr float vertices[][2][2]{
+      {{0, 0}, {0, 1}}, {{1, 0}, {1, 1}}, {{0, 1}, {0, 0}}, {{1, 1}, {1, 0}}};
   constexpr int indices[]{0, 1, 2, 1, 2, 3};
-
+  glm::vec4 v1[4];
+  for (size_t i = 0; i < 4; i++) {
+    glm::vec4 v(vertices[i][0][0], vertices[i][0][1], 0, 1);
+    v1[i] = projection * model * v;
+  }
   unsigned vao;
   unsigned vbo;
   unsigned ebo;

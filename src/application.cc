@@ -25,7 +25,7 @@
 #include "five_in_a_row_game/player.h"
 #include "five_in_a_row_game/shader_program.h"
 #include "five_in_a_row_game/state.h"
-#include "five_in_a_row_game/texture.h"
+#include "five_in_a_row_game/texture2d.h"
 #include "five_in_a_row_game/vertex_shader.h"
 #include "five_in_a_row_game/window.h"
 #include "glad/glad.h"
@@ -48,6 +48,8 @@ void Application::Initialize() {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  // FIXME: This should be moved to Debug section.
+  glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
 #ifdef DEBUG
   glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
 #endif  // DEBUG
@@ -108,6 +110,17 @@ void Application::Run() {
   constexpr unsigned int indices[] = {
       0, 1, 2, 0, 2, 3,
   };
+  constexpr glm::vec3 ambient(0.4f);
+  constexpr glm::vec3 diffuse(0.4f);
+  constexpr glm::vec3 specular(0.2f);
+  constexpr glm::vec3 kLightDirection(0.0f, -0.3f, -1.0f);
+  constexpr float kConstantAttenuation = 1.0f;
+  constexpr float kLinearAttenuation = 0.09f;
+  constexpr float kQuadraticAttenuation = 0.032f;
+  const float kSpotlightCosPhi = glm::cos(glm::radians(12.5f));
+  const float kSpotlightCosGamma = glm::cos(glm::radians(17.5f));
+  Texture2D tex("awesome_face.png");
+
   unsigned vao;
   unsigned vbo;
   unsigned ebo;
@@ -134,15 +147,6 @@ void Application::Run() {
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-  constexpr glm::vec3 ambient(0.4f);
-  constexpr glm::vec3 diffuse(0.4f);
-  constexpr glm::vec3 specular(0.2f);
-  constexpr glm::vec3 kLightDirection(0.0f, -0.3f, -1.0f);
-  constexpr float kConstantAttenuation = 1.0f;
-  constexpr float kLinearAttenuation = 0.09f;
-  constexpr float kQuadraticAttenuation = 0.032f;
-  const float kSpotlightCosPhi = glm::cos(glm::radians(12.5f));
-  const float kSpotlightCosGamma = glm::cos(glm::radians(17.5f));
   shader_.SetVector3("dir_light.light.ambient", ambient);
   shader_.SetVector3("dir_light.light.diffuse", diffuse);
   shader_.SetVector3("dir_light.light.specular", specular);
@@ -166,8 +170,6 @@ void Application::Run() {
   shader_.SetFloat("spot_light.cos_gamma", kSpotlightCosGamma);
   shader_.SetFloat("material.shininess", 64.0f);
 
-  Texture2D tex("awesome_face.png");
-
   while (!window_.should_close()) {
     previous_frame_time_ = current_frame_time_;
     current_frame_time_ = glfwGetTime();
@@ -182,10 +184,9 @@ void Application::Run() {
 
     window_.Clear();
     glBindVertexArray(vao);
-    shader_.Use();
     Render();
-    tex.Render(simple_shader_, window_, glm::vec3(-0.5f, 0, 0),
-               glm::vec3(0.8, 0.3, 1), glm::vec3(1.0f));
+    tex.Render(simple_shader_, window_, glm::vec3(0, 0, 0), 0,
+               glm::vec3(1, 1, 1), glm::vec3());
 
     window_.SwapBuffers();
     Window::PollEvents();
@@ -281,12 +282,34 @@ void Application::Render() const {
 }
 
 void Application::CheckErrors() {
-  unsigned error_code = glGetError();
+  unsigned error_code;
+  const char * error;
   unsigned index = 0;
-  while (error_code != GL_NO_ERROR) {
-    std::cerr << "Error::OpenGL[" << index << "] error_code = " << error_code
-              << "\n";
-    error_code = glGetError();
+  while ((error_code = glGetError()) != GL_NO_ERROR) {
+    switch (error_code) {
+      case GL_INVALID_ENUM:
+        error = "INVALID_ENUM";
+        break;
+      case GL_INVALID_VALUE:
+        error = "INVALID_VALUE";
+        break;
+      case GL_INVALID_OPERATION:
+        error = "INVALID_OPERATION";
+        break;
+      case GL_STACK_OVERFLOW:
+        error = "STACK_OVERFLOW";
+        break;
+      case GL_STACK_UNDERFLOW:
+        error = "STACK_UNDERFLOW";
+        break;
+      case GL_OUT_OF_MEMORY:
+        error = "OUT_OF_MEMORY";
+        break;
+      case GL_INVALID_FRAMEBUFFER_OPERATION:
+        error = "INVALID_FRAMEBUFFER_OPERATION";
+        break;
+    }
+    std::cerr << "Error::OpenGL[" << index << "] " << error_code << "\n";
     index++;
   }
 }

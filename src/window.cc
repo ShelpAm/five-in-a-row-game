@@ -41,15 +41,16 @@ Window::Window(Application * parent, const char * title, const int width,
     glfwSetInputMode(window_, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
   }
 
-  glViewport(0, 0, width_, height_);
   UpdateGLStates();
 
+  glDebugMessageCallback(&glDebugOutput, NULL);
+  glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_ERROR,
+                        GL_DEBUG_SEVERITY_HIGH, 0, nullptr, GL_TRUE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
                   GL_LINEAR_MIPMAP_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
   stbi_set_flip_vertically_on_load(true);
 
   RegisterForCallbacks();
@@ -109,6 +110,7 @@ void Window::MakeContextCurrent() const {
 }
 
 void Window::UpdateGLStates() const {
+  glViewport(0, 0, width_, height_);
   UpdateDepthTestState();
   UpdateBlendState();
 }

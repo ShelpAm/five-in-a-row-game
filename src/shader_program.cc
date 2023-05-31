@@ -6,6 +6,7 @@
 
 #include "five_in_a_row_game/fragment_shader.h"
 #include "five_in_a_row_game/shader_errors.h"
+#include "five_in_a_row_game/texture2d.h"
 #include "five_in_a_row_game/vertex_shader.h"
 #include "glad/glad.h"
 #include "glm/gtc/type_ptr.hpp"
@@ -79,6 +80,11 @@ void ShaderProgram::SetTransposedMatrix4(const char * name,
                                          const glm::mat4 & mat4) const {
   Use();
   glUniformMatrix4fv(GetUniformLocation(name), 1, true, glm::value_ptr(mat4));
+}
+
+void ShaderProgram::BindTexture(const Texture2D & texture, const char * name,
+                                const int & slot) const {
+  texture.Bind(*this, name, slot);
 }
 
 void ShaderProgram::Validate() const {

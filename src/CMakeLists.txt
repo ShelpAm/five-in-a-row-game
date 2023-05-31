@@ -15,7 +15,7 @@ add_executable(${PROJECT_NAME}
   main.cc
   player.cc
   shader_program.cc
-  texture.cc
+  texture2d.cc
   vertex_shader.cc
   window.cc
 )

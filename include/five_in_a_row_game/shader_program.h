@@ -5,8 +5,9 @@
 #include <string>
 
 #include "five_in_a_row_game/fragment_shader.h"
+#include "five_in_a_row_game/texture2d_fwd.h"
 #include "five_in_a_row_game/vertex_shader.h"
-#include "glm/fwd.hpp"
+#include "glm/glm.hpp"
 
 class ShaderProgram {
  public:
@@ -23,15 +24,15 @@ class ShaderProgram {
  public:
   void Use() const;
   void Validate() const;
-  void SetFloat(const char * name, const float) const;
-  void Set3Float(const char * name, const float, const float,
+  void SetFloat(const char *, const float) const;
+  void Set3Float(const char *, const float, const float, const float) const;
+  void Set4Float(const char *, const float, const float, const float,
                  const float) const;
-  void Set4Float(const char * name, const float, const float, const float,
-                 const float) const;
-  void SetInt(const char * name, const int &) const;
-  void SetVector3(const char * name, const glm::vec3 & vec3) const;
-  void SetMatrix4(const char * name, const glm::mat4 & mat4) const;
-  void SetTransposedMatrix4(const char * name, const glm::mat4 & mat4) const;
+  void SetInt(const char *, const int &) const;
+  void SetVector3(const char *, const glm::vec3 &) const;
+  void SetMatrix4(const char *, const glm::mat4 &) const;
+  void SetTransposedMatrix4(const char *, const glm::mat4 &) const;
+  void BindTexture(const Texture2D &, const char *, const int &) const;
 
   unsigned id() const { return id_; }
 

@@ -17,7 +17,7 @@
 #include "five_in_a_row_game/player.h"
 #include "five_in_a_row_game/shader_program.h"
 #include "five_in_a_row_game/state.h"
-#include "five_in_a_row_game/texture.h"
+#include "texture2d.h"
 #include "five_in_a_row_game/window.h"
 #include "glm/fwd.hpp"
 #include "glm/glm.hpp"
