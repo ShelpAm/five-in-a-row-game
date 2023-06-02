@@ -119,4 +119,5 @@ void main() {
   }
   frag_color += CalculateSpotLight(spot_light);
   frag_color.w = texture(material.diffuse_sampler, texcoord).w;
+  frag_color=vec4(1);
 }

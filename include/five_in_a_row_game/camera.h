@@ -20,7 +20,7 @@ class Camera {
   void SetUniforms(const ShaderProgram & shader_program, const Window &);
   float fov() const { return fov_; }
   const glm::vec3 position() const { return position_; }
-  const glm::mat4 look_at() const {
+  const glm::mat4 view() const {
     return glm::lookAt(position_, position_ + front_, up_);
   }
   const glm::vec3 front() const { return front_; }

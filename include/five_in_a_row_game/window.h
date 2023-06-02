@@ -25,6 +25,7 @@ class Window {
   void RegisterForCallbacks() const;
   void UnregisterForCallbacks() const;
   void CursorPosCallback(double x_pos, double y_pos) const;
+  void MouseButtonCallback(int button, int action, int mods) const;
   void KeyCallback(int key, int scancode, int action, int mods) const;
   void ScrollCallback(double x_offset, double y_offset) const;
   void Clear();

@@ -10,6 +10,11 @@ class Vector2D {
   using value_type = T;
   Vector2D();
   Vector2D(value_type x, value_type y);
+  Vector2D(Vector2D<T> &&) = default;
+  Vector2D(const Vector2D<T> &) = default;
+  Vector2D<T> & operator=(Vector2D<T> &&) = default;
+  Vector2D & operator=(const Vector2D &) = default;
+  ~Vector2D() {}
 
   Vector2D<T> & operator+=(const Vector2D<T> & rhs);
   Vector2D<T> operator+(const Vector2D<T> & rhs) const;

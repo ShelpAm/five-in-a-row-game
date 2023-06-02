@@ -20,12 +20,14 @@
 #include "five_in_a_row_game/easy_ai_player.h"
 #include "five_in_a_row_game/easy_ai_player_factory.h"
 #include "five_in_a_row_game/fragment_shader.h"
+#include "five_in_a_row_game/game_object.h"
 #include "five_in_a_row_game/human_player_factory.h"
 #include "five_in_a_row_game/main.h"
 #include "five_in_a_row_game/player.h"
 #include "five_in_a_row_game/shader_program.h"
 #include "five_in_a_row_game/state.h"
 #include "five_in_a_row_game/texture2d.h"
+#include "five_in_a_row_game/vector2d.h"
 #include "five_in_a_row_game/vertex_shader.h"
 #include "five_in_a_row_game/window.h"
 #include "glad/glad.h"
@@ -41,6 +43,9 @@
 #include "stb/stb_image.h"
 
 void Application::Initialize() {
+  if (initialized_) {
+    return;
+  }
   glfwSetErrorCallback(&error_callback);
   if (!glfwInit()) {
     throw GlfwUninitialized();
@@ -56,15 +61,22 @@ void Application::Initialize() {
 #ifdef __APPLE__
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
+  initialized_ = true;
 }
 
-void Application::Terminate() { glfwTerminate(); }
+void Application::Terminate() {
+  if (initialized_) {
+    glfwTerminate();
+    initialized_ = false;
+  }
+}
 
 Application::Application() : Application("untitled window", 800, 600) {}
 
 Application::Application(const char * window_title, const int window_width,
                          const int window_height)
     : window_(this, window_title, window_width, window_height),
+      cursor_pos_(0, 0),
       shader_(VertexShader(0, "shader/vertex.vert"),
               FragmentShader(0, "shader/fragment.frag")),
       simple_shader_(VertexShader(0, "shader/simple.vert"),
@@ -119,7 +131,6 @@ void Application::Run() {
   constexpr float kQuadraticAttenuation = 0.032f;
   const float kSpotlightCosPhi = glm::cos(glm::radians(12.5f));
   const float kSpotlightCosGamma = glm::cos(glm::radians(17.5f));
-  Texture2D tex("awesome_face.png");
 
   unsigned vao;
   unsigned vbo;
@@ -185,8 +196,6 @@ void Application::Run() {
     window_.Clear();
     glBindVertexArray(vao);
     Render();
-    tex.Render(simple_shader_, window_, glm::vec3(0, 0, 0), 0,
-               glm::vec3(1, 1, 1), glm::vec3());
 
     window_.SwapBuffers();
     Window::PollEvents();
@@ -194,32 +203,69 @@ void Application::Run() {
   }
 }
 
+void Application::Update(const float delta_time) {
+  if (game_) {
+    game_->Update();
+  }
+  camera_.Update(delta_time, keys_);
+  camera_.SetUniforms(shader_, window_);
+  // Because every object has different position, we need to send the model to
+  // the shader later.
+  // shader_.SetMatrix4("model", glm::mat4(1.0f));
+}
+
+void Application::Render() const {
+  if (game_) {
+    game_->Render(shader_);
+  }
+  texture_.Render(simple_shader_, window_, glm::vec3(0, 0, 0), 0,
+                  glm::vec3(1, 1, 1), glm::vec3());
+}
+
 void Application::CursorPosCallback(double x_pos, double y_pos) {
   static float prev_x_pos = float(window_.width()) / 2,
                prev_y_pos = float(window_.height()) / 2;
-  float delta_x = x_pos - prev_x_pos, delta_y = -(y_pos - prev_y_pos);
+  cursor_pos_.set_x(x_pos);
+  cursor_pos_.set_y(y_pos);
+  delta_cursor_pos_.set_x(x_pos - prev_x_pos);
+  delta_cursor_pos_.set_y(-(y_pos - prev_y_pos));
   prev_x_pos = x_pos;
   prev_y_pos = y_pos;
-  if (delta_x || delta_y) {
-    // std::cout << "Cursor position: " << x_pos << ", " << y_pos << " ("
-    // << delta_x << " " << delta_y << ")\n";
-  }
+  /* if (delta_x || delta_y) {
+   *   DumpCursorPosition();
+  } */
 
   float sensitivity = 0.05f;
-  camera_.add_yaw(delta_x * sensitivity);
-  camera_.add_pitch(delta_y * sensitivity);
+  camera_.add_yaw(delta_cursor_pos_.x() * sensitivity);
+  camera_.add_pitch(delta_cursor_pos_.y() * sensitivity);
   camera_.set_direction_changed(true);
 }
 
-void Application::KeyCallback(int key, int scancode, int action, int mods) {
+void Application::MouseButtonCallback(int button, int action, int mods) {
+  buttons_[button] = !buttons_[button];
+  const char * prompt;
   if (action == GLFW_PRESS) {
-    std::cout << "Key: " << char(key) << " pressed\n";
-    keys_[key] = true;
+    prompt = " pressed";
   } else if (action == GLFW_RELEASE) {
-    std::cout << "Key: " << char(key) << " released\n";
-    keys_[key] = false;
+    prompt = " released";
   }
+  std::cout << "Mouse button: " << button << prompt << "\n";
+  DumpCursorPosition();
+  if (action == GLFW_RELEASE) {
+    if (GameObject * game_object =
+            game_object_selector_.SelectAt(cursor_pos_)) {
+      std::cout << "Selected game object: " << game_object->id() << "\n";
+    } else {
+      std::cout << "No game object selected\n";
+    }
+  }
+}
+
+void Application::KeyCallback(int key, int scancode, int action, int mods) {
+  keys_[key] = !keys_[key];
+  const char * prompt;
   if (action == GLFW_PRESS) {
+    prompt = " pressed";
     switch (key) {
       case GLFW_KEY_F:
         if (game_) {
@@ -250,35 +296,22 @@ void Application::KeyCallback(int key, int scancode, int action, int mods) {
         break;
     }
   } else if (action == GLFW_RELEASE) {
+    prompt = " released";
     switch (key) {
       case GLFW_KEY_UNKNOWN:
       default:
         break;
     }
+  } else if (action == GLFW_REPEAT) {
+    prompt = " repeated";
   }
+  std::cout << "Key: " << char(key) << prompt << "\n";
 }
 
 void Application::ScrollCallback(double x_offset, double y_offset) {
   std::cout << "Scrolling: " << x_offset << ", " << y_offset << "\n";
   y_offset *= 3;
   camera_.add_fov(-y_offset);
-}
-
-void Application::Update(const float delta_time) {
-  if (game_) {
-    game_->Update();
-  }
-  camera_.Update(delta_time, keys_);
-  camera_.SetUniforms(shader_, window_);
-  // Because every object has different position, we need to send the model to
-  // the shader later.
-  // shader_.SetMatrix4("model", glm::mat4(1.0f));
-}
-
-void Application::Render() const {
-  if (game_) {
-    game_->Render(shader_);
-  }
 }
 
 void Application::CheckErrors() {
@@ -313,3 +346,11 @@ void Application::CheckErrors() {
     index++;
   }
 }
+
+void Application::DumpCursorPosition() const {
+  std::cout << "Cursor position: " << cursor_pos_.x() << ", " << cursor_pos_.y()
+            << " (" << delta_cursor_pos_.x() << " " << delta_cursor_pos_.y()
+            << ")\n";
+}
+
+bool Application::initialized_ = false;

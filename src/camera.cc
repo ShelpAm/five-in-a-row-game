@@ -6,6 +6,9 @@
 #include "five_in_a_row_game/shader_program.h"
 #include "five_in_a_row_game/window.h"
 #include "glm/ext/matrix_clip_space.hpp"
+#include "glm/ext/matrix_float4x4.hpp"
+#include "glm/ext/vector_float3.hpp"
+#include "glm/ext/vector_float4.hpp"
 
 Camera::Camera() {}
 
@@ -45,9 +48,10 @@ void Camera::SetUniforms(const ShaderProgram & shader_program,
   }
   shader_program.SetVector3("spot_light.position", position_);
   shader_program.SetVector3("spot_light.direction", front_);
-  shader_program.SetMatrix4("view", look_at());
+  shader_program.SetMatrix4("view", view());
   glm::mat4 projection =
       glm::perspective(glm::radians(fov_),
                        (float)window.width() / window.height(), 0.1f, 100.0f);
   shader_program.SetMatrix4("projection", projection);
+  auto a = projection * glm::vec4(glm::vec3(0, 0, 5), 1);
 }

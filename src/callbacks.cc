@@ -17,6 +17,11 @@ void cursor_pos_callback(GLFWwindow * window, double x_pos, double y_pos) {
   Window::Get(window)->CursorPosCallback(x_pos, y_pos);
 }
 
+void mouse_button_callback(GLFWwindow * window, int button, int action,
+                           int mods) {
+  Window::Get(window)->MouseButtonCallback(button, action, mods);
+}
+
 void key_callback(GLFWwindow * window, int key, int scancode, int action,
                   int mods) {
   Window::Get(window)->KeyCallback(key, scancode, action, mods);

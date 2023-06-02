@@ -60,7 +60,7 @@ void Texture2D::Render(const ShaderProgram & shader_program,
   model = glm::rotate(model, rotation, glm::vec3(0.0f, 0.0f, 1.0f));
   model = glm::scale(model, scale);
   glm::mat4 projection =
-      glm::ortho(0.0f, width / 400, height / 300, 0.0f, z_near, z_far);
+      glm::ortho(0.0f, width / 200, height / 150, 0.0f, z_near, z_far);
   // projection = glm::mat4(1.0f);
 
   shader_program.Use();

@@ -70,13 +70,8 @@ void FiveInARowGame::Update() {
 void FiveInARowGame::Render(const ShaderProgram & shader_program) const {
   for (std::size_t i = 0; i != board_.board_size(); i++) {
     for (std::size_t j = 0; j != board_.board_size(); j++) {
-      glm::mat4 model = glm::translate(
-          glm::mat4(1.0f),
-          glm::vec3(i, j, /* sin(glfwGetTime() + i + j */ 0.0f) - 1.0f);
-      // model = glm::scale(model, glm::vec3(0.5f));
-      // model = glm::rotate(model, float(i + glfwGetTime()),
-      //                     glm::vec3(i + glfwGetTime(), -glfwGetTime() + j,
-      //                               glfwGetTime() + i - j));
+      glm::mat4 model = glm::mat4(1.0f);
+      // model = glm::translate(model, glm::vec3(i - 3, j - 3, 0.0f) - 1.0f);
       shader_program.SetMatrix4("model", model);
       shader_program.SetMatrix4("transposed_and_inverse_model",
                                 glm::transpose(glm::inverse(model)));

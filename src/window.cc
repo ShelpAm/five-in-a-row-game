@@ -31,6 +31,7 @@ Window::Window(Application * parent, const char * title, const int width,
   MakeContextCurrent();
   glfwSwapInterval(1);
   glfwSetCursorPosCallback(window_, &cursor_pos_callback);
+  glfwSetMouseButtonCallback(window_, &mouse_button_callback);
   glfwSetKeyCallback(window_, &key_callback);
   glfwSetScrollCallback(window_, &scroll_callback);
   // `x_pos` and `y_pos` doesn't work properly with `GLFW_CURSOR_DISABLED` (only
@@ -75,6 +76,12 @@ void Window::CursorPosCallback(double x_pos, double y_pos) const {
 void Window::KeyCallback(int key, int scancode, int action, int mods) const {
   if (parent_) {
     parent_->KeyCallback(key, scancode, action, mods);
+  }
+}
+
+void Window::MouseButtonCallback(int button, int action, int mods) const {
+  if (parent_) {
+    parent_->MouseButtonCallback(button, action, mods);
   }
 }
 

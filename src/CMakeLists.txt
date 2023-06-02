@@ -10,6 +10,7 @@ add_executable(${PROJECT_NAME}
   easy_ai_player_factory.cc
   five_in_a_row_game.cc
   fragment_shader.cc
+  game_object_selector.cc
   human_player.cc
   human_player_factory.cc
   main.cc
