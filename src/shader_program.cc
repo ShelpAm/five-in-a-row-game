@@ -8,7 +8,7 @@
 #include "five_in_a_row_game/shader_errors.h"
 #include "five_in_a_row_game/texture2d.h"
 #include "five_in_a_row_game/vertex_shader.h"
-#include "glad/glad.h"
+#include "glad/gl.h"
 #include "glm/gtc/type_ptr.hpp"
 
 ShaderProgram::ShaderProgram(const VertexShader & vertex_shader,

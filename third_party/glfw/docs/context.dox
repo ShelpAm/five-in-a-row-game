@@ -178,14 +178,14 @@ selected context creation API, and glad can call this instead of having to
 implement its own.  There are several other command-line options as well.  See
 the glad documentation for details.
 
-Add the generated `output/src/glad.c`, `output/include/glad/glad.h` and
+Add the generated `output/src/glad.c`, `output/include/glad/gl.h` and
 `output/include/KHR/khrplatform.h` files to your build.  Then you need to
 include the glad header file, which will replace the OpenGL header of your
 development environment.  By including the glad header before the GLFW header,
 it suppresses the development environment's OpenGL or OpenGL ES header.
 
 @code
-#include <glad/glad.h>
+#include <glad/gl.h>
 #include <GLFW/glfw3.h>
 @endcode
 

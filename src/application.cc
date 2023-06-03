@@ -30,7 +30,7 @@
 #include "five_in_a_row_game/vector2d.h"
 #include "five_in_a_row_game/vertex_shader.h"
 #include "five_in_a_row_game/window.h"
-#include "glad/glad.h"
+#include "glad/gl.h"
 #include "glm/detail/qualifier.hpp"
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/ext/matrix_float4x4.hpp"

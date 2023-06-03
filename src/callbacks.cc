@@ -4,7 +4,7 @@
 
 #include "five_in_a_row_game/application.h"
 #include "five_in_a_row_game/window.h"
-#include "glad/glad.h"
+#include "glad/gl.h"
 
 void error_callback(int error, const char * msg) {
   std::string s;

@@ -1,7 +1,7 @@
 #ifndef FIVE_IN_A_ROW_GAME_CALLBACKS_H_
 #define FIVE_IN_A_ROW_GAME_CALLBACKS_H_
 
-#include "glad/glad.h"
+#include "glad/gl.h"
 
 struct GLFWwindow;
 void error_callback(int error, const char * msg);

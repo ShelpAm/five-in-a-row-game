@@ -7,7 +7,7 @@
 #include "five_in_a_row_game/main.h"
 #include "five_in_a_row_game/shader_errors.h"
 #include "five_in_a_row_game/shader_program.h"
-#include "glad/glad.h"
+#include "glad/gl.h"
 
 VertexShader::VertexShader(const char * source)
     : id_(glCreateShader(GL_VERTEX_SHADER)) {

@@ -8,7 +8,7 @@
 #include "GLFW/glfw3.h"
 #include "five_in_a_row_game/shader_program.h"
 #include "five_in_a_row_game/window.h"
-#include "glad/glad.h"
+#include "glad/gl.h"
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/ext/matrix_float4x4.hpp"
 #include "glm/ext/matrix_transform.hpp"

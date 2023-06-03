@@ -4,7 +4,7 @@
 #include "five_in_a_row_game/application.h"
 #include "five_in_a_row_game/callbacks.h"
 #include "five_in_a_row_game/main.h"
-#include "glad/glad.h"
+#include "glad/gl.h"
 #include "stb/stb_image.h"
 
 const Window * Window::Get(GLFWwindow * window) {
@@ -57,7 +57,10 @@ Window::Window(Application * parent, const char * title, const int width,
   RegisterForCallbacks();
 }
 
-Window::~Window() { UnregisterForCallbacks(); }
+Window::~Window() {
+  glfwDestroyWindow(window_);
+  UnregisterForCallbacks();
+}
 
 void Window::RegisterForCallbacks() const { window_map_[window_] = this; }
 
@@ -110,7 +113,7 @@ void Window::PollEvents() { glfwPollEvents(); }
 
 void Window::MakeContextCurrent() const {
   glfwMakeContextCurrent(window_);
-  if (!gladLoadGLLoader(GLADloadproc(glfwGetProcAddress))) {
+  if (!gladLoadGL(glfwGetProcAddress)) {
     glfwTerminate();
     throw GladUninitialized();
   }

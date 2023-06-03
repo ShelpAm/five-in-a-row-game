@@ -14,7 +14,7 @@
 #include "five_in_a_row_game/shader_program.h"
 #include "five_in_a_row_game/state.h"
 #include "five_in_a_row_game/stone_type.h"
-#include "glad/glad.h"
+#include "glad/gl.h"
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/ext/vector_float4.hpp"
 #include "glm/fwd.hpp"
