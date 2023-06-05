@@ -108,12 +108,16 @@ void Window::SwapBuffers() const { glfwSwapBuffers(window_); }
 
 void Window::PollEvents() { glfwPollEvents(); }
 
-void Window::MakeContextCurrent() const {
+Window * Window::MakeContextCurrent() const {
+  static Window * last_used_window;
+  Window * last_used_window_buffer = last_used_window;
   glfwMakeContextCurrent(window_);
   if (!gladLoadGLLoader(GLADloadproc(glfwGetProcAddress))) {
     glfwTerminate();
     throw GladUninitialized();
   }
+  last_used_window = window;
+  return last_used_window_buffer;
 }
 
 void Window::UpdateGLStates() const {
