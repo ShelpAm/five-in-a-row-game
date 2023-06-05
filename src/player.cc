@@ -21,7 +21,7 @@ Player::Player(const Player & player)
 
 Player::~Player() {}
 
-const ::Move Player::Move(Board & board) const {
+const ::Move Player::Move(GameBoard & board) const {
   auto container{Think(board)};
   std::random_device rd;
   std::mt19937 gen{rd()};
@@ -33,7 +33,7 @@ const ::Move Player::Move(Board & board) const {
   return ::Move{target_board_coordinate, stone_type_};
 }
 
-void Player::PlaceAStone(Board & board,
+void Player::PlaceAStone(GameBoard & board,
                          const BoardCoordinate & coordinate) const {
   board.PlaceAStone(coordinate, stone_type_);
 }

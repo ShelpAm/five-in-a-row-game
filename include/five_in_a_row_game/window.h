@@ -10,16 +10,20 @@
 
 class Window {
  public:
+  /// @brief Initializes window system such as glfw library.
+  static void Initialize();
+
+  /// @brief Gets the window by a GLFW window pointer.
   /// @return nullptr if no application found.
-  static const Window * Get(GLFWwindow * window);
+  static const Window * GetByGLFWwindow(GLFWwindow * window);
 
  public:
   Window();
   Window(Application * parent_, const char * title, const int width,
          const int height);
-  Window(Window &&) = default;
+  Window(Window &&) = delete;
   Window(const Window &) = delete;
-  Window & operator=(Window &&) = default;
+  Window & operator=(Window &&) = delete;
   Window & operator=(const Window &) = delete;
   ~Window();
   void RegisterForCallbacks() const;
@@ -43,8 +47,8 @@ class Window {
   }
   int width() const { return width_; }
   int height() const { return height_; }
-  void set_depth_test_enabled(const bool value) { depth_test_enabled_ = value; }
   bool depth_test_enabled() const { return depth_test_enabled_; }
+  void set_depth_test_enabled(const bool value) { depth_test_enabled_ = value; }
   void set_clear_color(const glm::vec4 & value) {
     clear_color_ = value;
     clear_color_changed_ = true;
@@ -52,6 +56,7 @@ class Window {
 
  private:
   static std::map<const GLFWwindow *, const Window *> window_map_;
+  static unsigned & num_of_objects();
 
  private:
   Application * parent_;

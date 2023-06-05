@@ -22,9 +22,11 @@ class EasyAIPlayer : public AIPlayer {
 
   ~EasyAIPlayer() override;
 
-  const std::vector<BoardCoordinate> Think(const Board & board) const override;
+  const std::vector<BoardCoordinate> Think(
+      const GameBoard & board) const override;
 
-  virtual const ScoreMapType CalculateScore(const Board & board) const override;
+  virtual const ScoreMapType CalculateScore(
+      const GameBoard & board) const override;
 };
 
 #endif  // FIVE_IN_A_ROW_GAME_SRC_EASY_AI_PLAYER_H

@@ -30,7 +30,7 @@ void Camera::Update(const float delta_time, const bool keys[256]) {
   velocity_ *= speed;
 
   if (static_cast<int>(glm::length(velocity_)) != 0) {
-    position_changed_ = true;
+    should_set_position_ = true;
   }
   // std::cout << "Camera position: " << position_.x << " " << position_.y << "
   // "
@@ -42,9 +42,9 @@ void Camera::Update(const float delta_time, const bool keys[256]) {
 
 void Camera::SetUniforms(const ShaderProgram & shader_program,
                          const Window & window) {
-  if (position_changed_) {
+  if (should_set_position_) {
     shader_program.SetVector3("camera_pos", position_);
-    position_changed_ = false;
+    should_set_position_ = false;
   }
   shader_program.SetVector3("spot_light.position", position_);
   shader_program.SetVector3("spot_light.direction", front_);
@@ -53,5 +53,6 @@ void Camera::SetUniforms(const ShaderProgram & shader_program,
       glm::perspective(glm::radians(fov_),
                        (float)window.width() / window.height(), 0.1f, 100.0f);
   shader_program.SetMatrix4("projection", projection);
+  // FIXME: 不显示
   auto a = projection * glm::vec4(glm::vec3(0, 0, 5), 1);
 }

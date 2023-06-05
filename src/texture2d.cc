@@ -19,23 +19,31 @@
 #include "glm/gtc/type_ptr.hpp"
 #include "stb/stb_image.h"
 
-Texture2D::Texture2D(const char * file_name) {
-  int width, height, num_channels;
+Texture2D::Texture2D(const char * file_name) : file_name_(file_name) {
+  Generate();
+}
+
+Texture2D::~Texture2D() {}
+
+void Texture2D::Generate() {
+  if (generated_) {
+    return;
+  }
+  int width, height, num_of_channels;
   unsigned char * data =
-      stbi_load(file_name, &width, &height, &num_channels, 0);
+      stbi_load(file_name_.c_str(), &width, &height, &num_of_channels, 0);
   if (!data) {
     throw std::runtime_error("Texture2D::STB failed to load image.");
   }
-  unsigned format = GL_RGBA - 4 + num_channels;
+  unsigned format = GL_RGBA - 4 + num_of_channels;
   glGenTextures(1, &id_);
   glBindTexture(GL_TEXTURE_2D, id_);
   glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format,
                GL_UNSIGNED_BYTE, data);
   glGenerateMipmap(GL_TEXTURE_2D);
   stbi_image_free(data);
+  generated_ = true;
 }
-
-Texture2D::~Texture2D() { glDeleteTextures(1, &id_); }
 
 void Texture2D::Bind(const ShaderProgram & shader_program, const char * name,
                      const unsigned which) const {
@@ -105,3 +113,4 @@ void Texture2D::Render(const ShaderProgram & shader_program,
   glDeleteVertexArrays(1, &vao);
   glDeleteBuffers(1, &vbo);
 }
+void Texture2D::Destroy() { glDeleteTextures(1, &id_); }

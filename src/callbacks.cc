@@ -14,21 +14,21 @@ void error_callback(int error, const char * msg) {
 }
 
 void cursor_pos_callback(GLFWwindow * window, double x_pos, double y_pos) {
-  Window::Get(window)->CursorPosCallback(x_pos, y_pos);
+  Window::GetByGLFWwindow(window)->CursorPosCallback(x_pos, y_pos);
 }
 
 void mouse_button_callback(GLFWwindow * window, int button, int action,
                            int mods) {
-  Window::Get(window)->MouseButtonCallback(button, action, mods);
+  Window::GetByGLFWwindow(window)->MouseButtonCallback(button, action, mods);
 }
 
 void key_callback(GLFWwindow * window, int key, int scancode, int action,
                   int mods) {
-  Window::Get(window)->KeyCallback(key, scancode, action, mods);
+  Window::GetByGLFWwindow(window)->KeyCallback(key, scancode, action, mods);
 }
 
 void scroll_callback(GLFWwindow * window, double x_offset, double y_offset) {
-  Window::Get(window)->ScrollCallback(x_offset, y_offset);
+  Window::GetByGLFWwindow(window)->ScrollCallback(x_offset, y_offset);
 }
 
 void glDebugOutput(GLenum source, GLenum type, GLuint id, GLenum severity,

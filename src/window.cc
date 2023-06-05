@@ -7,7 +7,24 @@
 #include "glad/gl.h"
 #include "stb/stb_image.h"
 
-const Window * Window::Get(GLFWwindow * window) {
+void Window::Initialize() {
+  if (!glfwInit()) {
+    throw GlfwUninitialized();
+  }
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  // FIXME: This should be moved to Debug section.
+  glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+#ifdef DEBUG
+  glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+#endif  // DEBUG
+#ifdef __APPLE__
+  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+#endif
+}
+
+const Window * Window::GetByGLFWwindow(GLFWwindow * window) {
   // std::cout << "INFO::Window::Get invoked." << std::endl;
   if (window_map_.contains(window)) {
     return window_map_.at(window);
@@ -19,11 +36,11 @@ Window::Window() : Window(nullptr, "untitled window", 800, 600) {}
 
 Window::Window(Application * parent, const char * title, const int width,
                const int height)
-    : parent_(parent),
-      window_(glfwCreateWindow(width, height, title, NULL, NULL)),
-      title_(title),
-      width_(width),
-      height_(height) {
+    : parent_(parent), title_(title), width_(width), height_(height) {
+  if (num_of_objects() == 0) {
+    Initialize();
+  }
+  window_ = glfwCreateWindow(width_, height_, title_.c_str(), NULL, NULL);
   if (!window_) {
     glfwTerminate();
     throw GlfwWindowNotCreated();
@@ -55,11 +72,15 @@ Window::Window(Application * parent, const char * title, const int width,
   stbi_set_flip_vertically_on_load(true);
 
   RegisterForCallbacks();
+  ++num_of_objects();
 }
 
 Window::~Window() {
-  glfwDestroyWindow(window_);
   UnregisterForCallbacks();
+  glfwDestroyWindow(window_);
+  if (--num_of_objects() == 0) {
+    glfwTerminate();
+  }
 }
 
 void Window::RegisterForCallbacks() const { window_map_[window_] = this; }
@@ -143,3 +164,7 @@ void Window::UpdateBlendState() const {
 }
 
 std::map<const GLFWwindow *, const Window *> Window::window_map_{};
+unsigned & Window::num_of_objects() {
+  static unsigned num_of_objects = 0;
+  return num_of_objects;
+}

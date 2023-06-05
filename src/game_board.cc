@@ -2,8 +2,9 @@
 // Created by small-sheep on 11/11/22.
 //
 
-#include "five_in_a_row_game/board.h"
+#include "five_in_a_row_game/game_board.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <exception>
 #include <iostream>
@@ -12,38 +13,42 @@
 #include "five_in_a_row_game/board_coordinate.h"
 #include "five_in_a_row_game/move.h"
 
-Board::Board(const std::size_t board_size)
+GameBoard::GameBoard(const std::size_t board_size)
     : board_size_(board_size),
       stone_type_map_(board_size, std::vector<StoneType>(
                                       board_size, StoneType::kStoneTypeEmpty)) {
 }
 
-void Board::PlaceAStone(const BoardCoordinate & c, const StoneType stone_type) {
+void GameBoard::PlaceAStone(const BoardCoordinate & c,
+                            const StoneType stone_type) {
   if (!IsCoordinateInRangeOfBoard(c, *this)) {
     throw CoordinateOutOfRange{};
   }
   stone_type_map_[c.column()][c.row()] = stone_type;
+  // FIXME: this should be commented out.
+  coordinates_of_color(stone_type).push_back(c);
   history_moves_.push_back(Move(c, stone_type));
 }
 
-StoneType Board::GetStoneTypeInCoordinate(const BoardCoordinate & c) const {
+StoneType GameBoard::GetStoneTypeInCoordinate(const BoardCoordinate & c) const {
+  // TODO: replace this with coordinates lists.
   if (!IsCoordinateInRangeOfBoard(c, *this)) {
     throw CoordinateOutOfRange();
   }
-  return stone_type_map_[c.column()][c.row()];
+  return stone_type_map_.at(c.column()).at(c.row());
 }
 
-BoardState Board::GetBoardState() const {
-  if (IsWinning()) {
+BoardState GameBoard::board_state() const {
+  if (is_winning()) {
     return BoardState::kBoardStateWinning;
-  } else if (IsDrawing()) {
+  } else if (is_drawing()) {
     return BoardState::kBoardStateDrawing;
   } else {
     return BoardState::kBoardStateStarted;
   }
 }
 
-bool Board::IsWinning() const {
+bool GameBoard::is_winning() const {
   // This function needs only to check the latest move.
   const Move & last_move{history_moves_.back()};
   const auto & last_move_coordinate = last_move.coordinate;
@@ -73,11 +78,11 @@ bool Board::IsWinning() const {
   return false;
 }
 
-bool Board::IsDrawing() const {
+bool GameBoard::is_drawing() const {
   return history_moves_.size() == board_size_ * board_size_;
 }
 
-std::ostream & operator<<(std::ostream & os, const Board & board) {
+std::ostream & operator<<(std::ostream & os, const GameBoard & board) {
   std::stringstream buf;
   auto PrintLine1 = [board, &buf]() -> void {
     buf << "+  " << ' ';
@@ -112,4 +117,16 @@ std::ostream & operator<<(std::ostream & os, const Board & board) {
   PrintLine1();
   os << buf.str();
   return os;
+}
+
+std::list<BoardCoordinate> & GameBoard::coordinates_of_color(
+    const StoneType stone_type) {
+  static const std::map<StoneType, std::list<BoardCoordinate> &>
+      stone_type_coordinates_map = {
+          {StoneType::kStoneTypeBlack, black_piece_coordinates_},
+          {StoneType::kStoneTypeWhite, white_piece_coordinates_}};
+  return stone_type_coordinates_map.at(stone_type);
+}
+BoardCoordinate GameBoard::center() const {
+  return BoardCoordinate((board_size_ + 1) / 2, (board_size_ + 1) / 2);
 }

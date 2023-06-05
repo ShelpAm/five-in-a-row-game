@@ -17,7 +17,7 @@ HumanPlayer::HumanPlayer(const Player * const player) : Player(*player) {}
 HumanPlayer::~HumanPlayer() {}
 
 const std::vector<BoardCoordinate> HumanPlayer::Think(
-    const Board & board) const {
+    const GameBoard & board) const {
   BoardCoordinate input_coordinate;
   auto TargetMoveIsValid = [board, &input_coordinate]() -> bool {
     return IsCoordinateInRangeOfBoard(input_coordinate, board) &&

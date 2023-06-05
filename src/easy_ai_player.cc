@@ -28,7 +28,7 @@ EasyAIPlayer::EasyAIPlayer(const AIPlayer * const ai_player)
 EasyAIPlayer::~EasyAIPlayer() {}
 
 const std::vector<BoardCoordinate> EasyAIPlayer::Think(
-    const Board & board) const {
+    const GameBoard & board) const {
   auto score_map = CalculateScore(board);
   float current_maximum_score = 0;
   std::vector<BoardCoordinate> coordinates_of_maximum_score;
@@ -50,7 +50,7 @@ const std::vector<BoardCoordinate> EasyAIPlayer::Think(
   return coordinates_of_maximum_score;
 }
 
-const ScoreMapType EasyAIPlayer::CalculateScore(const Board & board) const {
+const ScoreMapType EasyAIPlayer::CalculateScore(const GameBoard & board) const {
   std::vector<float> empty_column(board.board_size(), 0.0f);
   ScoreMapType score_map(board.board_size(), empty_column);
   int end = static_cast<int>(board.board_size());

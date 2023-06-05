@@ -25,17 +25,14 @@ std::string GetFileContents(const char * filename) {
 
 int main() {
   try {
-    Application::Initialize();
-    // The reason why here uses smart pointer rather than create normal
-    // application is that `Application::Terminate()` must be called after the
-    // destructor of Application. Otherwise, the destructor will fail.
-    auto application = std::make_unique<Application>("application", 800, 660);
-    application->Run();
-    application.reset();
-    Application::Terminate();
+    Application application("application", 800, 660);
+    application.Run();
     return 0;
-  } catch (std::exception & e) {
+  } catch (const std::exception & e) {
     std::cout << e.what();
+    throw;
+  } catch (...) {
+    std::cout << "Error::main exception caught." << std::endl;
     throw;
   }
 }

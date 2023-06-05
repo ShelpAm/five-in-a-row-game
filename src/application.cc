@@ -27,6 +27,7 @@
 #include "five_in_a_row_game/shader_program.h"
 #include "five_in_a_row_game/state.h"
 #include "five_in_a_row_game/texture2d.h"
+#include "five_in_a_row_game/time.h"
 #include "five_in_a_row_game/vector2d.h"
 #include "five_in_a_row_game/vertex_shader.h"
 #include "five_in_a_row_game/window.h"
@@ -47,45 +48,31 @@ void Application::Initialize() {
     return;
   }
   glfwSetErrorCallback(&error_callback);
-  if (!glfwInit()) {
-    throw GlfwUninitialized();
-  }
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-  // FIXME: This should be moved to Debug section.
-  glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
-#ifdef DEBUG
-  glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
-#endif  // DEBUG
-#ifdef __APPLE__
-  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#endif
   initialized_ = true;
 }
 
 void Application::Terminate() {
-  if (initialized_) {
-    glfwTerminate();
-    initialized_ = false;
+  if (!initialized_) {
+    return;
   }
+  initialized_ = false;
 }
 
-Application::Application() : Application("untitled window", 800, 600) {}
+Application::Application() : Application("untitled window", 600, 480) {}
 
 Application::Application(const char * window_title, const int window_width,
                          const int window_height)
-    : window_(this, window_title, window_width, window_height),
-      cursor_pos_(0, 0),
-      shader_(VertexShader(0, "shader/vertex.vert"),
-              FragmentShader(0, "shader/fragment.frag")),
-      simple_shader_(VertexShader(0, "shader/simple.vert"),
-                     FragmentShader(0, "shader/simple.frag")) {
+    : window_(this, window_title, window_width, window_height) {
   window_.set_depth_test_enabled(true);
   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  ++num_of_objects();
 }
 
-Application::~Application() {}
+Application::~Application() {
+  if (--num_of_objects() == 0) {
+    Terminate();
+  }
+}
 
 void Application::Run() {
   constexpr float vertices[]{
@@ -182,16 +169,7 @@ void Application::Run() {
   shader_.SetFloat("material.shininess", 64.0f);
 
   while (!window_.should_close()) {
-    previous_frame_time_ = current_frame_time_;
-    current_frame_time_ = glfwGetTime();
-    auto delta_time = current_frame_time_ - previous_frame_time_;
-    frame_per_second_ = 1.0f / delta_time;
-    // std::cout << "Fps:" << frame_per_second_ << "\n";
-    // std::cout << "Curr time, prev time: " << current_frame_time_ << " "
-    //           << previous_frame_time_ << " (" << delta_time << ")\n";
-    // std::cout << "Delta time: " << delta_time << "\n";
-
-    Update(delta_time);
+    Update(Time::delta_time());
 
     window_.Clear();
     glBindVertexArray(vao);
@@ -204,6 +182,7 @@ void Application::Run() {
 }
 
 void Application::Update(const float delta_time) {
+  frame_per_second_ = 1.0f / delta_time;
   if (game_) {
     game_->Update();
   }
@@ -250,7 +229,7 @@ void Application::MouseButtonCallback(int button, int action, int mods) {
     prompt = " released";
   }
   std::cout << "Mouse button: " << button << prompt << "\n";
-  DumpCursorPosition();
+  PrintCursorPosition();
   if (action == GLFW_RELEASE) {
     if (GameObject * game_object =
             game_object_selector_.SelectAt(cursor_pos_)) {
@@ -347,10 +326,12 @@ void Application::CheckErrors() {
   }
 }
 
-void Application::DumpCursorPosition() const {
+void Application::PrintCursorPosition() const {
   std::cout << "Cursor position: " << cursor_pos_.x() << ", " << cursor_pos_.y()
             << " (" << delta_cursor_pos_.x() << " " << delta_cursor_pos_.y()
             << ")\n";
 }
-
-bool Application::initialized_ = false;
+unsigned & Application::num_of_objects() {
+  static unsigned num_of_objects = 0;
+  return num_of_objects;
+}

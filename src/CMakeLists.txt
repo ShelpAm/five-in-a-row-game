@@ -2,7 +2,6 @@ add_executable(${PROJECT_NAME}
   ai_player.cc
   application.cc
   # application_state.cc
-  board.cc
   board_coordinate.cc
   callbacks.cc
   camera.cc
@@ -10,6 +9,7 @@ add_executable(${PROJECT_NAME}
   easy_ai_player_factory.cc
   five_in_a_row_game.cc
   fragment_shader.cc
+  game_board.cc
   game_object_selector.cc
   human_player.cc
   human_player_factory.cc
@@ -17,6 +17,7 @@ add_executable(${PROJECT_NAME}
   player.cc
   shader_program.cc
   texture2d.cc
+  time.cc
   vertex_shader.cc
   window.cc
 )
@@ -30,7 +31,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
-  ${LIB_OPENGL}
+  # ${LIB_OPENGL}
   glad
   glfw
   stb

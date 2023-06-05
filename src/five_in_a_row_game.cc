@@ -8,12 +8,13 @@
 #include <string>
 
 #include "GLFW/glfw3.h"
-#include "five_in_a_row_game/board.h"
 #include "five_in_a_row_game/board_coordinate.h"
+#include "five_in_a_row_game/game_board.h"
 #include "five_in_a_row_game/move.h"
 #include "five_in_a_row_game/shader_program.h"
 #include "five_in_a_row_game/state.h"
 #include "five_in_a_row_game/stone_type.h"
+#include "five_in_a_row_game/texture2d.h"
 #include "glad/gl.h"
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/ext/vector_float4.hpp"
@@ -45,7 +46,7 @@ void FiveInARowGame::Update() {
       break;
     case State::kStateStarted:
       moving_player_->Move(board_);
-      switch (board_.GetBoardState()) {
+      switch (board_.board_state()) {
         case BoardState::kBoardStateWinning:
           winner_ = moving_player_;
           state_ = State::kStateEnded;
@@ -68,48 +69,38 @@ void FiveInARowGame::Update() {
 }
 
 void FiveInARowGame::Render(const ShaderProgram & shader_program) const {
-  for (std::size_t i = 0; i != board_.board_size(); i++) {
-    for (std::size_t j = 0; j != board_.board_size(); j++) {
-      glm::mat4 model = glm::mat4(1.0f);
-      // model = glm::translate(model, glm::vec3(i - 3, j - 3, 0.0f) - 1.0f);
-      shader_program.SetMatrix4("model", model);
-      shader_program.SetMatrix4("transposed_and_inverse_model",
-                                glm::transpose(glm::inverse(model)));
-      // TODO change to this
-      // shader_program.SetTransposedMatrix4("transposed_and_inverse_model",
-      // glm::inverse(model));
-      if (board_.GetStoneTypeInCoordinate(BoardCoordinate(i, j)) ==
-          StoneType::kStoneTypeBlack) {
-        diffuse_map_black.Bind(shader_program, "material.diffuse_sampler", 0);
-        specular_map.Bind(shader_program, "material.specular_sampler", 1);
-        // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-      } else if (board_.GetStoneTypeInCoordinate(BoardCoordinate(i, j)) ==
-                 StoneType::kStoneTypeWhite) {
-        diffuse_map_white.Bind(shader_program, "material.diffuse_sampler", 0);
-        specular_map.Bind(shader_program, "material.specular_sampler", 1);
-        // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-      }
-    }
-  }
+  static auto SetUniforms = [this, &shader_program](const StoneType st) {
+    glm::mat4 model = glm::mat4(1.0f);
+    // model = glm::translate(model, glm::vec3(i - 3, j - 3, 0.0f)
+    // - 1.0f);
+    // TODO change to this
+    // shader_program.SetTransposedMatrix4("transposed_and_inverse_model",
+    // glm::inverse(model));
+    shader_program.SetMatrix4("model", model);
+    shader_program.SetMatrix4("transposed_and_inverse_model",
+                              glm::transpose(glm::inverse(model)));
+    shader_program.BindTexture(GetStoneTextureByStoneType(st),
+                               "material.diffuse_sampler", 0);
+    shader_program.BindTexture(specular_map, "material.specular_sampler", 1);
+  };
   switch (state_) {
     case State::kStateNotStarted:
       break;
-    case State::kStateStarted:
-      // std::cout << "------- The " << board_.num_moves() << " move -------\n"
-      //           << board_;
-      break;
     case State::kStateStoped:
+      // TODO: draw the 'stopped' string.
+    case State::kStateStarted:
+      for (std::size_t i = 0; i != board_.board_size(); i++) {
+        for (std::size_t j = 0; j != board_.board_size(); j++) {
+          if (const StoneType stone_type =
+                  board_.GetStoneTypeInCoordinate(BoardCoordinate(i, j));
+              stone_type != StoneType::kStoneTypeEmpty) {
+            SetUniforms(stone_type);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+          }
+        }
+      }
       break;
     case State::kStateEnded:
-      // std::cout << "------- The " << board_.num_moves() << " move -------\n"
-      //           << board_;
-      // if (winner_) {
-      //   std::cout << "Game over! The winner is " << winner_->name() << '\n';
-      // } else {
-      //   std::cout << "Game draws! No one wins!\n";
-      // }
       break;
   }
 }
@@ -118,11 +109,31 @@ std::ostream & operator<<(std::ostream & os, const FiveInARowGame & game) {
   std::stringstream buf;
   buf << "FiveInARowGame {"
       << "\n  game_state_:" << state_string_map().at(game.state_)
-      << "\n  num_moves_:" << game.board_.num_moves()
+      << "\n  num_moves_:" << game.board_.num_of_moves()
       << "\n  moving_player_:" << game.moving_player_->name()
       << "\n  unmoving_player_:" << game.unmoving_player_->name()
       << "\n  board_:\n"
       << game.board_ << "}\n";
   os << buf.str();
   return os;
+}
+void FiveInARowGame::Start() {
+  state_ = State::kStateStarted;
+  std::cout << "FiveInARowGame::Start Game started.\n";
+}
+
+Texture2D & FiveInARowGame::GetStoneTextureByStoneType(
+    const StoneType stone_type) {
+  static Texture2D stone_textures[2] = {{"black.png"}, {"white.png"}};
+  static std::map<StoneType, Texture2D &> stone_type_to_texture_map_{
+      {StoneType::kStoneTypeBlack, stone_textures[0]},
+      {StoneType::kStoneTypeWhite, stone_textures[1]}};
+  return stone_type_to_texture_map_.at(stone_type);
+}
+
+FiveInARowGame::FiveInARowGame(Player * black_player, Player * white_player) {
+  black_player_ = moving_player_ = black_player;
+  white_player_ = unmoving_player_ = white_player;
+  moving_player_->set_stone_type(StoneType::kStoneTypeBlack);
+  unmoving_player_->set_stone_type(StoneType::kStoneTypeWhite);
 }

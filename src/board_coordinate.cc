@@ -4,7 +4,7 @@
 
 #include "five_in_a_row_game/board_coordinate.h"
 
-#include "five_in_a_row_game/board.h"
+#include "five_in_a_row_game/game_board.h"
 
 BoardCoordinate::BoardCoordinate() : vector2i_() {}
 
@@ -23,7 +23,7 @@ bool operator==(const BoardCoordinate & lhs, const BoardCoordinate & rhs) {
 }
 
 bool IsCoordinateInRangeOfBoard(const BoardCoordinate & c,
-                                const Board & board) {
+                                const GameBoard & board) {
   return c.row() < static_cast<int>(board.board_size()) && c.row() >= 0 &&
          c.column() < static_cast<int>(board.board_size()) && c.column() >= 0;
 }

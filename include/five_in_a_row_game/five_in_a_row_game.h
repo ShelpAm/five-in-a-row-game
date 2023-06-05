@@ -14,6 +14,7 @@
 #include "five_in_a_row_game/player.h"
 #include "five_in_a_row_game/shader_program.h"
 #include "five_in_a_row_game/state.h"
+#include "five_in_a_row_game/stone_type.h"
 #include "five_in_a_row_game/texture2d.h"
 
 template <typename T>
@@ -27,32 +28,28 @@ class FiveInARowGame {
                                    const FiveInARowGame & game);
 
  public:
+  FiveInARowGame() = delete;
   // template <PlayerType T>
-  FiveInARowGame(Player * black_player, Player * white_player) {
-    black_player_ = moving_player_ = black_player;
-    white_player_ = unmoving_player_ = white_player;
-    moving_player_->set_stone_type(StoneType::kStoneTypeBlack);
-    unmoving_player_->set_stone_type(StoneType::kStoneTypeWhite);
-  }
+  FiveInARowGame(Player * black_player, Player * white_player);
+  FiveInARowGame(FiveInARowGame && other);
   FiveInARowGame(const FiveInARowGame & other);
+  FiveInARowGame & operator=(FiveInARowGame && other);
   FiveInARowGame & operator=(const FiveInARowGame & other);
   ~FiveInARowGame();
 
   /// @brief Starts the game.
-  /// @param first_player - The first player
-  /// @param later_player - The second player
-  void Start() {
-    state_ = State::kStateStarted;
-    std::cout << "FiveInARowGame::Start Game started.\n";
-    // Render();
-  }
-  /// @brief Updates processes data
+  void Start();
+
+  /// @brief Updates processes data.
   void Update();
+
+  /// @brief Renders the game.
   void Render(const ShaderProgram &) const;
 
  private:
-  Texture2D diffuse_map_white{"white.png"};
-  Texture2D diffuse_map_black{"black.png"};
+  static Texture2D & GetStoneTextureByStoneType(const StoneType stone_type);
+
+ private:
   Texture2D diffuse_map{"container2.png"};
   Texture2D specular_map{"container2_specular.png"};
   State state_{State::kStateNotStarted};
@@ -61,7 +58,7 @@ class FiveInARowGame {
   Player * black_player_;
   Player * white_player_;
   Player * winner_{nullptr};
-  Board board_{9};
+  GameBoard board_{9};
 };
 
 std::ostream & operator<<(std::ostream & os, const FiveInARowGame & game);

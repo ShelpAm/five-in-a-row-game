@@ -44,6 +44,6 @@ class CoordinateOutOfRange {};
 /// @brief Judges if the board_coordinate is valid in certain board.
 ///         (if board_coordinate.X() < board.size, so as y)
 bool IsCoordinateInRangeOfBoard(const BoardCoordinate & coordinate,
-                                const Board & board);
+                                const GameBoard & board);
 
 #endif  // FIVE_IN_A_ROW_GAME_BOARD_COORDINATE_H

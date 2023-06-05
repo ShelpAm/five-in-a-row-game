@@ -43,10 +43,10 @@ class Camera {
     }
   }
   void add_yaw(const float delta) { yaw_ += delta; }
-  bool position_changed() const { return position_changed_; }
-  void set_position_changed(bool value) { position_changed_ = value; }
-  bool direction_changed() const { return direction_changed_; }
-  void set_direction_changed(const bool value) { direction_changed_ = value; }
+  bool direction_changed() const { return should_set_direction_; }
+  void set_direction_changed(const bool value) {
+    should_set_direction_ = value;
+  }
 
  private:
   float fov_{45.0f};
@@ -55,8 +55,8 @@ class Camera {
   glm::vec3 front_{0.0f, 0.0f, -1.0f};
   glm::vec3 up_{0.0f, 1.0f, 0.0f};
   glm::vec3 velocity_{};
-  bool position_changed_ = true;
-  bool direction_changed_ = true;
+  bool should_set_position_ = true;
+  bool should_set_direction_ = true;
 };
 
 #endif  // FIVE_IN_A_ROW_GAME_CAMERA_H_

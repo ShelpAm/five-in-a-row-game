@@ -2,8 +2,8 @@
 // Created by small-sheep on 11/11/22.
 //
 
-#ifndef FIVE_IN_A_ROW_GAME_BOARD_H
-#define FIVE_IN_A_ROW_GAME_BOARD_H
+#ifndef FIVE_IN_A_ROW_GAME_GAME_BOARD_H
+#define FIVE_IN_A_ROW_GAME_GAME_BOARD_H
 
 #include <cstddef>
 #include <list>
@@ -20,25 +20,26 @@ enum class BoardState : std::size_t {
   kBoardStateDrawing
 };
 
-class Board {
-  friend std::ostream & operator<<(std::ostream & os, const Board & board);
+class GameBoard {
+  friend std::ostream & operator<<(std::ostream & os, const GameBoard & board);
 
  public:
-  explicit Board(const std::size_t board_size);
+  explicit GameBoard(const std::size_t board_size);
 
+  /// @brief Places a stone at the specified coordinate.
   void PlaceAStone(const BoardCoordinate & c, const StoneType stone_type);
 
-  BoardCoordinate center() const {
-    return BoardCoordinate((board_size_ + 1) / 2, (board_size_ + 1) / 2);
-  }
   StoneType GetStoneTypeInCoordinate(const BoardCoordinate & c) const;
+
   std::size_t board_size() const { return board_size_; }
-  std::size_t num_moves() const { return history_moves_.size(); }
-  BoardState GetBoardState() const;
+  std::size_t num_of_moves() const { return history_moves_.size(); }
+  BoardState board_state() const;
+  BoardCoordinate center() const;
 
  private:
-  bool IsWinning() const;
-  bool IsDrawing() const;
+  bool is_winning() const;
+  bool is_drawing() const;
+  std::list<BoardCoordinate> & coordinates_of_color(const StoneType stone_type);
 
   std::size_t board_size_;
   std::list<Move> history_moves_{};
@@ -48,6 +49,6 @@ class Board {
   std::list<BoardCoordinate> white_piece_coordinates_;
 };
 
-std::ostream & operator<<(std::ostream & os, const Board & board);
+std::ostream & operator<<(std::ostream & os, const GameBoard & board);
 
-#endif  // FIVE_IN_A_ROW_GAME_BOARD_H
+#endif  // FIVE_IN_A_ROW_GAME_GAME_BOARD_H

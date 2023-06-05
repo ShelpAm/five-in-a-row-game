@@ -28,10 +28,6 @@
 
 class Application {
  public:
-  static void Initialize();
-  static void Terminate();
-
- public:
   Application();
   Application(const char * window_title, const int window_width,
               const int window_height);
@@ -46,6 +42,9 @@ class Application {
   const Window & window() const { return window_; }
 
  private:
+  static void Initialize();
+  static void Terminate();
+
   void Update(const float delta_time);
   void Render() const;
   static void CheckErrors();
@@ -55,30 +54,33 @@ class Application {
   void KeyCallback(int key, int scancode, int action, int mods);
   void ScrollCallback(double x_offset, double y_offset);
 
-  void DumpCursorPosition() const;
+  void PrintCursorPosition() const;
 
  private:
-  static bool initialized_;
+  static inline bool initialized_ = false;
+  static unsigned & num_of_objects();
   // Window must be initialized first. So it is placed here the first.
   Window window_;
-  Vector2D<float> cursor_pos_;
-  Vector2D<float> delta_cursor_pos_;
-  bool buttons_[64]{false};  // TODO: to be added to `Window` class
-  bool keys_[256]{false};    // TODO: to be added to `Window` class
+  Vector2D<float> cursor_pos_ = {0, 0};
+  Vector2D<float> delta_cursor_pos_ = {0, 0};
+  bool buttons_[64] = {false};  // TODO: to be added to `Window` class
+  bool keys_[256] = {false};    // TODO: to be added to `Window` class
   Camera camera_;
-  ShaderProgram shader_;
-  ShaderProgram simple_shader_;
+  ShaderProgram shader_ = {VertexShader(0, "shader/vertex.vert"),
+                           FragmentShader(0, "shader/fragment.frag")};
+  ShaderProgram simple_shader_ = {VertexShader(0, "shader/simple.vert"),
+                                  FragmentShader(0, "shader/simple.frag")};
   double previous_frame_time_ = 0, current_frame_time_ = 0;
   std::size_t frame_per_second_ = 0;
   std::vector<FiveInARowGame *> history_games_;
   FiveInARowGame * game_ = nullptr;
-  std::vector<std::shared_ptr<Player>> players_;
-  std::list<GameObject *> game_objects_;
+  std::vector<std::shared_ptr<Player>> players_ = {};
+  std::list<GameObject *> game_objects_ = {};
   GameObjectSelector game_object_selector_;
-  Texture2D texture_{"awesome_face.png"};
+  Texture2D texture_ = {"awesome_face.png"};
 };
 
-class ApplicationUninitialized : public std::exception {};
+class ApplicationUninitialized {};
 
 class GladUninitialized : public ApplicationUninitialized {};
 

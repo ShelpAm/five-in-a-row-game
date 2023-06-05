@@ -8,8 +8,8 @@
 #include <string>
 #include <vector>
 
-#include "five_in_a_row_game/board.h"
 #include "five_in_a_row_game/board_coordinate.h"
+#include "five_in_a_row_game/game_board.h"
 #include "five_in_a_row_game/move.h"
 #include "five_in_a_row_game/stone_type.h"
 
@@ -24,7 +24,7 @@ class Player {
   Player(const Player && player);
   virtual ~Player();
 
-  const ::Move Move(Board & board) const;
+  const ::Move Move(GameBoard & board) const;
 
  public:
   int id() const { return id_; }
@@ -36,9 +36,9 @@ class Player {
 
  protected:
   virtual const std::vector<BoardCoordinate> Think(
-      const Board & board) const = 0;
+      const GameBoard & board) const = 0;
 
-  void PlaceAStone(Board & board, const BoardCoordinate & bc) const;
+  void PlaceAStone(GameBoard & board, const BoardCoordinate & bc) const;
 
   int id_{0};
   std::string name_{"default_name"};

@@ -10,6 +10,8 @@ enum class StoneType : int {
   kStoneTypeWhite
 };
 
+// enum class StoneColor : unsigned { kStoneColorBlack, kStoneColorWhite };
+
 inline const auto & stone_type_string_map() {
   static std::map<StoneType, std::string> stone_type_string_map{
       {StoneType::kStoneTypeEmpty, "kStoneTypeEmpty"},

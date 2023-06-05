@@ -20,7 +20,7 @@ class AIPlayer : public Player {
   AIPlayer(const AIPlayer && other);
   virtual ~AIPlayer() override;
 
-  virtual const ScoreMapType CalculateScore(const Board & board) const = 0;
+  virtual const ScoreMapType CalculateScore(const GameBoard & board) const = 0;
 };
 
 #endif  // FIVE_IN_A_ROW_GAME_SRC_AI_PLAYER_H
