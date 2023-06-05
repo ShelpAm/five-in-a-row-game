@@ -117,7 +117,7 @@ Window * Window::MakeContextCurrent() const {
     glfwTerminate();
     throw GladUninitialized();
   }
-  last_used_window = window;
+  last_used_window = window_;
   return last_used_window_buffer;
 }
 
