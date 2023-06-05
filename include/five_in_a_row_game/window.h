@@ -31,7 +31,8 @@ class Window {
   void Clear();
   void SwapBuffers() const;
   static void PollEvents();
-  void MakeContextCurrent() const;
+  /// @return The previously window context.
+  Window * MakeContextCurrent() const;
   void UpdateGLStates() const;
   void UpdateDepthTestState() const;
   void UpdateBlendState() const;
