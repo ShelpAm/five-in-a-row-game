@@ -109,7 +109,7 @@ void Window::SwapBuffers() const { glfwSwapBuffers(window_); }
 
 void Window::PollEvents() { glfwPollEvents(); }
 
-Window * Window::MakeContextCurrent() const {
+Window * Window::MakeContextCurrent() {
   static Window * last_used_window;
   Window * last_used_window_buffer = last_used_window;
   glfwMakeContextCurrent(window_);
