@@ -69,40 +69,50 @@ void FiveInARowGame::Update() {
 }
 
 void FiveInARowGame::Render(const ShaderProgram & shader_program) const {
-  static auto SetUniforms = [this, &shader_program](const StoneType st) {
+  static auto SetUniforms = [this, &shader_program](const auto stone_type,
+                                                    const auto i,
+                                                    const auto j) {
     glm::mat4 model = glm::mat4(1.0f);
-    // model = glm::translate(model, glm::vec3(i - 3, j - 3, 0.0f)
-    // - 1.0f);
+    model = glm::translate(model, glm::vec3(i - 3, j - 3, 0.0f) - 1.0f);
     // TODO change to this
     // shader_program.SetTransposedMatrix4("transposed_and_inverse_model",
     // glm::inverse(model));
     shader_program.SetMatrix4("model", model);
     shader_program.SetMatrix4("transposed_and_inverse_model",
                               glm::transpose(glm::inverse(model)));
-    shader_program.BindTexture(GetStoneTextureByStoneType(st),
+    shader_program.BindTexture(GetStoneTextureByStoneType(stone_type),
                                "material.diffuse_sampler", 0);
     shader_program.BindTexture(specular_map, "material.specular_sampler", 1);
+  };
+  static auto RenderStones = [this]() {
+    for (std::size_t i = 0; i != board_.board_size(); i++) {
+      for (std::size_t j = 0; j != board_.board_size(); j++) {
+        if (const StoneType stone_type =
+                board_.GetStoneTypeInCoordinate(BoardCoordinate(i, j));
+            stone_type != StoneType::kStoneTypeEmpty) {
+          SetUniforms(stone_type, i, j);
+          glDrawArrays(GL_TRIANGLES, 0, 36);
+          std::cout<<"drawarrays"<<i<<j<<"\n";
+        }
+      }
+    }
   };
   switch (state_) {
     case State::kStateNotStarted:
       break;
     case State::kStateStoped:
       // TODO: draw the 'stopped' string.
+      RenderStones();
+      break;
     case State::kStateStarted:
-      for (std::size_t i = 0; i != board_.board_size(); i++) {
-        for (std::size_t j = 0; j != board_.board_size(); j++) {
-          if (const StoneType stone_type =
-                  board_.GetStoneTypeInCoordinate(BoardCoordinate(i, j));
-              stone_type != StoneType::kStoneTypeEmpty) {
-            SetUniforms(stone_type);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-          }
-        }
-      }
+      RenderStones();
       break;
     case State::kStateEnded:
+      RenderStones();
+      printf("FiveInARowGame::Render kStateEnded\n");
       break;
   }
+  printf("FiveInARowGame::Render invoked\n");
 }
 
 std::ostream & operator<<(std::ostream & os, const FiveInARowGame & game) {
