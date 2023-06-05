@@ -45,7 +45,7 @@ Window::Window(Application * parent, const char * title, const int width,
     glfwTerminate();
     throw GlfwWindowNotCreated();
   }
-  MakeContextCurrent();
+  Window * previous = MakeContextCurrent();
   glfwSwapInterval(1);
   glfwSetCursorPosCallback(window_, &cursor_pos_callback);
   glfwSetMouseButtonCallback(window_, &mouse_button_callback);
@@ -72,6 +72,7 @@ Window::Window(Application * parent, const char * title, const int width,
   stbi_set_flip_vertically_on_load(true);
 
   RegisterForCallbacks();
+  previous->MakeContextCurrent();
   ++num_of_objects();
 }
 
@@ -132,12 +133,16 @@ void Window::SwapBuffers() const { glfwSwapBuffers(window_); }
 
 void Window::PollEvents() { glfwPollEvents(); }
 
-void Window::MakeContextCurrent() const {
+Window * Window::MakeContextCurrent() {
+  static Window * last_used_window;
+  Window * last_used_window_buffer = last_used_window;
   glfwMakeContextCurrent(window_);
   if (!gladLoadGL(glfwGetProcAddress)) {
     glfwTerminate();
     throw GladUninitialized();
   }
+  last_used_window = this;
+  return last_used_window_buffer;
 }
 
 void Window::UpdateGLStates() const {
