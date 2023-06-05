@@ -72,7 +72,9 @@ Window::Window(Application * parent, const char * title, const int width,
   stbi_set_flip_vertically_on_load(true);
 
   RegisterForCallbacks();
-  previous->MakeContextCurrent();
+  if (previous) {
+    previous->MakeContextCurrent();
+  }
   ++num_of_objects();
 }
 

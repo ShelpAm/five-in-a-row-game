@@ -59,7 +59,7 @@ void ShaderProgram::Set4Float(const char * name, const float value1,
 
 void ShaderProgram::SetInt(const char * name, const int & value1) const {
   Use();
-  // FIXME
+  // FIXME: on windows, this does not work properly.
   // glProgramUniform1iv(id_, GetUniformLocation(name), 1, &value1);
   glUniform1iv(GetUniformLocation(name), 1, &value1);
 }
