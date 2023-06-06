@@ -7,10 +7,10 @@ class VertexShader {
  public:
   VertexShader(const char * source);
   VertexShader(int _placeholder, const char * file_name);
-  VertexShader(VertexShader &&) = default;
-  VertexShader(const VertexShader &) = default;
-  VertexShader & operator=(VertexShader &&) = default;
-  VertexShader & operator=(const VertexShader &) = default;
+  VertexShader(VertexShader &&) = delete;
+  VertexShader(const VertexShader &) = delete;
+  VertexShader & operator=(VertexShader &&) = delete;
+  VertexShader & operator=(const VertexShader &) = delete;
   ~VertexShader();
 
   void AttachTo(const ShaderProgram & shader_program) const;

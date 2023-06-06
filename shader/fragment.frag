@@ -76,8 +76,8 @@ vec4 CalculateDirectionalLight(DirectionalLight dir_light) {
   vec3 viewer_dir = normalize(camera_pos - frag_pos);
   vec3 result = vec3(0);
   result += ambient(material, dir_light.light);
-  // result += diffuse(material, dir_light.light, light_dir);
-  // result += specular(material, dir_light.light, viewer_dir, light_dir);
+  result += diffuse(material, dir_light.light, light_dir);
+  result += specular(material, dir_light.light, viewer_dir, light_dir);
   return vec4(result, 1.0f);
 }
 
@@ -119,5 +119,4 @@ void main() {
   }
   frag_color += CalculateSpotLight(spot_light);
   frag_color.w = texture(material.diffuse_sampler, texcoord).w;
-  frag_color=vec4(1);
 }

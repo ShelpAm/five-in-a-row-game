@@ -12,7 +12,7 @@
 
 Camera::Camera() {}
 
-void Camera::Update(const float delta_time, const bool keys[256]) {
+void Camera::Update(const float delta_time, const bool keys[512]) {
   front_.x = cos(glm::radians(pitch_)) * cos(glm::radians(yaw_));
   front_.y = sin(glm::radians(pitch_));
   front_.z = cos(glm::radians(pitch_)) * sin(glm::radians(yaw_));
@@ -21,12 +21,24 @@ void Camera::Update(const float delta_time, const bool keys[256]) {
   position_ += velocity_ * delta_time;
   velocity_ = glm::vec3(0);
   constexpr float speed{5.0f};
-  if (keys[GLFW_KEY_W]) velocity_ += front_;
-  if (keys[GLFW_KEY_S]) velocity_ -= front_;
-  if (keys[GLFW_KEY_A]) velocity_ -= right();
-  if (keys[GLFW_KEY_D]) velocity_ += right();
-  if (keys[GLFW_KEY_LEFT_CONTROL]) velocity_ -= up_;
-  if (keys[GLFW_KEY_SPACE]) velocity_ += up_;
+  if (keys[GLFW_KEY_W]) {
+    velocity_ += ortho_front();
+  }
+  if (keys[GLFW_KEY_S]) {
+    velocity_ -= ortho_front();
+  }
+  if (keys[GLFW_KEY_A]) {
+    velocity_ -= right();
+  }
+  if (keys[GLFW_KEY_D]) {
+    velocity_ += right();
+  }
+  if (keys[GLFW_KEY_LEFT_CONTROL]) {
+    velocity_ -= up_;
+  }
+  if (keys[GLFW_KEY_SPACE]) {
+    velocity_ += up_;
+  }
   velocity_ *= speed;
 
   if (static_cast<int>(glm::length(velocity_)) != 0) {
@@ -34,7 +46,7 @@ void Camera::Update(const float delta_time, const bool keys[256]) {
   }
   // std::cout << "Camera position: " << position_.x << " " << position_.y << "
   // "
-  // << position_.z << "\n";
+  //           << position_.z << "\n";
   // std::cout << "Camera velocity: " << velocity_.x << " " << velocity_.y << "
   // "
   //           << velocity_.z << "\n";

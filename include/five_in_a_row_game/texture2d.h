@@ -11,7 +11,7 @@
 class Texture2D {
  public:
   Texture2D() = delete;
-  Texture2D(const char * file_name);
+  explicit Texture2D(const char * file_name);
   Texture2D(Texture2D &&) = default;
   Texture2D(const Texture2D &) = delete;
   Texture2D & operator=(Texture2D &&) = delete;

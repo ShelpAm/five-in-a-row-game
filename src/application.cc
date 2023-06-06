@@ -19,6 +19,7 @@
 #include "five_in_a_row_game/callbacks.h"
 #include "five_in_a_row_game/easy_ai_player.h"
 #include "five_in_a_row_game/easy_ai_player_factory.h"
+#include "five_in_a_row_game/five_in_a_row_game.h"
 #include "five_in_a_row_game/fragment_shader.h"
 #include "five_in_a_row_game/game_object.h"
 #include "five_in_a_row_game/human_player_factory.h"
@@ -241,10 +242,10 @@ void Application::MouseButtonCallback(int button, int action, int mods) {
 }
 
 void Application::KeyCallback(int key, int scancode, int action, int mods) {
-  keys_[key] = !keys_[key];
   const char * prompt;
   if (action == GLFW_PRESS) {
     prompt = " pressed";
+    keys_[key] = !keys_[key];
     switch (key) {
       case GLFW_KEY_F:
         if (game_) {
@@ -275,6 +276,7 @@ void Application::KeyCallback(int key, int scancode, int action, int mods) {
         break;
     }
   } else if (action == GLFW_RELEASE) {
+    keys_[key] = !keys_[key];
     prompt = " released";
     switch (key) {
       case GLFW_KEY_UNKNOWN:
@@ -284,7 +286,7 @@ void Application::KeyCallback(int key, int scancode, int action, int mods) {
   } else if (action == GLFW_REPEAT) {
     prompt = " repeated";
   }
-  std::cout << "Key: " << char(key) << prompt << "\n";
+  std::cout << "Key: " << KeyToString(key) << prompt << "\n";
 }
 
 void Application::ScrollCallback(double x_offset, double y_offset) {

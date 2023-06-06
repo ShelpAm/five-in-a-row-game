@@ -22,21 +22,21 @@
 #include "glm/glm.hpp"
 #include "glm/matrix.hpp"
 
-FiveInARowGame::FiveInARowGame(const FiveInARowGame & other)
-    : state_(other.state_),
-      moving_player_(other.moving_player_),
-      unmoving_player_(other.unmoving_player_),
-      winner_(other.winner_),
-      board_(other.board_) {}
+// FiveInARowGame::FiveInARowGame(const FiveInARowGame & other)
+//     : state_(other.state_),
+//       moving_player_(other.moving_player_),
+//       unmoving_player_(other.unmoving_player_),
+//       winner_(other.winner_),
+//       board_(other.board_) {}
 
-FiveInARowGame & FiveInARowGame::operator=(const FiveInARowGame & other) {
-  state_ = other.state_;
-  moving_player_ = other.moving_player_;
-  unmoving_player_ = other.unmoving_player_;
-  winner_ = other.winner_;
-  board_ = other.board_;
-  return *this;
-}
+// FiveInARowGame & FiveInARowGame::operator=(const FiveInARowGame & other) {
+//   state_ = other.state_;
+//   moving_player_ = other.moving_player_;
+//   unmoving_player_ = other.unmoving_player_;
+//   winner_ = other.winner_;
+//   board_ = other.board_;
+//   return *this;
+// }
 
 FiveInARowGame::~FiveInARowGame() {}
 
@@ -92,7 +92,6 @@ void FiveInARowGame::Render(const ShaderProgram & shader_program) const {
             stone_type != StoneType::kStoneTypeEmpty) {
           SetUniforms(stone_type, i, j);
           glDrawArrays(GL_TRIANGLES, 0, 36);
-          std::cout<<"drawarrays"<<i<<j<<"\n";
         }
       }
     }
@@ -101,7 +100,8 @@ void FiveInARowGame::Render(const ShaderProgram & shader_program) const {
     case State::kStateNotStarted:
       break;
     case State::kStateStoped:
-      // TODO: draw the 'stopped' string.
+      // TODO: draw the `stopping` string.
+      // SomeCodeDrawingStoppingString();
       RenderStones();
       break;
     case State::kStateStarted:
@@ -109,10 +109,9 @@ void FiveInARowGame::Render(const ShaderProgram & shader_program) const {
       break;
     case State::kStateEnded:
       RenderStones();
-      printf("FiveInARowGame::Render kStateEnded\n");
       break;
   }
-  printf("FiveInARowGame::Render invoked\n");
+  // printf("FiveInARowGame::Render invoked\n");
 }
 
 std::ostream & operator<<(std::ostream & os, const FiveInARowGame & game) {
@@ -134,7 +133,8 @@ void FiveInARowGame::Start() {
 
 Texture2D & FiveInARowGame::GetStoneTextureByStoneType(
     const StoneType stone_type) {
-  static Texture2D stone_textures[2] = {{"black.png"}, {"white.png"}};
+  static Texture2D stone_textures[2]{Texture2D("black.png"),
+                                     Texture2D{"white.png"}};
   static std::map<StoneType, Texture2D &> stone_type_to_texture_map_{
       {StoneType::kStoneTypeBlack, stone_textures[0]},
       {StoneType::kStoneTypeWhite, stone_textures[1]}};

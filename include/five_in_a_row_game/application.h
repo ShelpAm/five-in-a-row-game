@@ -61,23 +61,23 @@ class Application {
   static unsigned & num_of_objects();
   // Window must be initialized first. So it is placed here the first.
   Window window_;
-  Vector2D<float> cursor_pos_ = {0, 0};
-  Vector2D<float> delta_cursor_pos_ = {0, 0};
-  bool buttons_[64] = {false};  // TODO: to be added to `Window` class
-  bool keys_[256] = {false};    // TODO: to be added to `Window` class
+  Vector2D<float> cursor_pos_{0, 0};
+  Vector2D<float> delta_cursor_pos_{0, 0};
+  bool buttons_[64]{false};  // TODO: to be added to `Window` class
+  bool keys_[512]{false};    // TODO: to be added to `Window` class
   Camera camera_;
-  ShaderProgram shader_ = {VertexShader(0, "shader/vertex.vert"),
-                           FragmentShader(0, "shader/fragment.frag")};
-  ShaderProgram simple_shader_ = {VertexShader(0, "shader/simple.vert"),
-                                  FragmentShader(0, "shader/simple.frag")};
+  ShaderProgram shader_{VertexShader(0, "shader/vertex.vert"),
+                        FragmentShader(0, "shader/fragment.frag")};
+  ShaderProgram simple_shader_{VertexShader(0, "shader/simple.vert"),
+                               FragmentShader(0, "shader/simple.frag")};
   double previous_frame_time_ = 0, current_frame_time_ = 0;
   std::size_t frame_per_second_ = 0;
   std::vector<FiveInARowGame *> history_games_;
   FiveInARowGame * game_ = nullptr;
-  std::vector<std::shared_ptr<Player>> players_ = {};
-  std::list<GameObject *> game_objects_ = {};
+  std::vector<std::shared_ptr<Player>> players_{};
+  std::list<GameObject *> game_objects_{};
   GameObjectSelector game_object_selector_;
-  Texture2D texture_ = {"awesome_face.png"};
+  Texture2D texture_{"awesome_face.png"};
 };
 
 class ApplicationUninitialized {};

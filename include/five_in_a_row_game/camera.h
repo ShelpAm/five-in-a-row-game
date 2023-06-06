@@ -3,6 +3,8 @@
 
 #include "five_in_a_row_game/window.h"
 #include "glm/ext/matrix_transform.hpp"
+#include "glm/ext/quaternion_geometric.hpp"
+#include "glm/ext/vector_float3.hpp"
 #include "glm/fwd.hpp"
 #include "glm/glm.hpp"
 #include "shader_program.h"
@@ -12,7 +14,7 @@ class Camera {
   Camera();
   Camera(const glm::vec3 & pos, const float fov, const float pitch,
          const float yaw);
-  void Update(const float delta_time, const bool keys[256]);
+  void Update(const float delta_time, const bool keys[512]);
 
   /// @brief Sets uniforms.
   /// This method receives a window object because the uniform variables should
@@ -24,6 +26,10 @@ class Camera {
     return glm::lookAt(position_, position_ + front_, up_);
   }
   const glm::vec3 front() const { return front_; }
+  // FIXME: alter to a formal name.
+  const glm::vec3 ortho_front() const {
+    return glm::normalize(glm::vec3(front_.x, front_.y, 0));
+  }
   const glm::vec3 up() const { return up_; }
   const glm::vec3 right() const {
     return glm::normalize(glm::cross(front_, up_));

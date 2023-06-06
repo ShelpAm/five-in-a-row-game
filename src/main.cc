@@ -36,3 +36,18 @@ int main() {
     throw;
   }
 }
+std::string KeyToString(const int key) {
+  static std::map<int, std::string> key_to_string_map{
+      {GLFW_KEY_A, "a"},
+      {GLFW_KEY_D, "d"},
+      {GLFW_KEY_S, "s"},
+      {GLFW_KEY_W, "w"},
+      {GLFW_KEY_LEFT_CONTROL, "control"},
+      {GLFW_KEY_SPACE, "space"}};
+  if (key_to_string_map.contains(key)) {
+    return key_to_string_map.at(key);
+  } else {
+    // TODO: Implement the keys.
+    return "unimplemented key";
+  }
+}

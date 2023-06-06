@@ -29,12 +29,11 @@ class FiveInARowGame {
 
  public:
   FiveInARowGame() = delete;
-  // template <PlayerType T>
   FiveInARowGame(Player * black_player, Player * white_player);
-  FiveInARowGame(FiveInARowGame && other);
-  FiveInARowGame(const FiveInARowGame & other);
-  FiveInARowGame & operator=(FiveInARowGame && other);
-  FiveInARowGame & operator=(const FiveInARowGame & other);
+  FiveInARowGame(FiveInARowGame && other) = delete;
+  FiveInARowGame(const FiveInARowGame & other) = delete;
+  FiveInARowGame & operator=(FiveInARowGame && other) = delete;
+  FiveInARowGame & operator=(const FiveInARowGame & other) = delete;
   ~FiveInARowGame();
 
   /// @brief Starts the game.
@@ -52,12 +51,12 @@ class FiveInARowGame {
  private:
   Texture2D diffuse_map{"container2.png"};
   Texture2D specular_map{"container2_specular.png"};
-  State state_{State::kStateNotStarted};
+  State state_ = State::kStateNotStarted;
   Player * moving_player_;
   Player * unmoving_player_;
-  Player * black_player_;
-  Player * white_player_;
-  Player * winner_{nullptr};
+  Player * black_player_ = nullptr;
+  Player * white_player_ = nullptr;
+  Player * winner_ = nullptr;
   GameBoard board_{9};
 };
 
