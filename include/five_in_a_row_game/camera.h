@@ -15,44 +15,28 @@ class Camera {
   Camera(const glm::vec3 & pos, const float fov, const float pitch,
          const float yaw);
   void Update(const float delta_time, const bool keys[512]);
+  void UpdateDirections(const float delta_time);
+  void UpdatePosition(const float delta_time);
+  void UpdateVelocity(const float delta_time, const bool keys[512]);
+  void UpdateCaches(const float delta_time, const bool keys[512]);
 
   /// @brief Sets uniforms.
   /// This method receives a window object because the uniform variables should
   /// be set depending on the window.
   void SetUniforms(const ShaderProgram & shader_program, const Window &);
-  float fov() const { return fov_; }
-  const glm::vec3 position() const { return position_; }
-  const glm::mat4 view() const {
-    return glm::lookAt(position_, position_ + front_, up_);
-  }
-  const glm::vec3 front() const { return front_; }
+  float fov() const;
+  const glm::vec3 position() const;
+  const glm::mat4 view() const;
+  const glm::vec3 front() const;
   // FIXME: alter to a formal name.
-  const glm::vec3 ortho_front() const {
-    return glm::normalize(glm::vec3(front_.x, front_.y, 0));
-  }
-  const glm::vec3 up() const { return up_; }
-  const glm::vec3 right() const {
-    return glm::normalize(glm::cross(front_, up_));
-  }
-  void add_fov(const float delta) {
-    if (fov_ >= 1.0f && fov_ <= 45.0f) fov_ += delta;
-    if (fov_ <= 1.0f) fov_ = 1.0f;
-    if (fov_ >= 45.0f) fov_ = 45.0f;
-  }
-  void add_pitch(const float delta) {
-    pitch_ += delta;
-    if (pitch_ > 89.0f) {
-      pitch_ = 89.0f;
-    }
-    if (pitch_ < -89.0f) {
-      pitch_ = -89.0f;
-    }
-  }
-  void add_yaw(const float delta) { yaw_ += delta; }
-  bool direction_changed() const { return should_set_direction_; }
-  void set_direction_changed(const bool value) {
-    should_set_direction_ = value;
-  }
+  const glm::vec3 ortho_front() const;
+  const glm::vec3 up() const;
+  const glm::vec3 right() const;
+  void add_fov(const float delta);
+  void add_pitch(const float delta);
+  void add_yaw(const float delta);
+  bool direction_changed() const;
+  void set_direction_changed(const bool value);
 
  private:
   float fov_{45.0f};

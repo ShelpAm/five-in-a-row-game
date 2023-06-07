@@ -189,9 +189,6 @@ void Application::Update(const float delta_time) {
   }
   camera_.Update(delta_time, keys_);
   camera_.SetUniforms(shader_, window_);
-  // Because every object has different position, we need to send the model to
-  // the shader later.
-  // shader_.SetMatrix4("model", glm::mat4(1.0f));
 }
 
 void Application::Render() const {
