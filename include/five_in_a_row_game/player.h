@@ -15,6 +15,8 @@
 
 inline namespace five_in_a_row_game {
 
+using BoardCoordinateContainer = std::list<BoardCoordinate>;
+
 class Player {
  public:
   Player();
@@ -26,23 +28,22 @@ class Player {
 
   const ::Move Move(GameBoard & board) const;
 
- public:
-  int id() const { return id_; }
-  void set_id(const int id) { id_ = id; }
-  const char * name() const { return name_.c_str(); }
-  void set_name(const char * const name) { name_ = name; }
-  StoneType stone_type() const { return stone_type_; }
-  void set_stone_type(const StoneType st) { stone_type_ = st; }
+  int id() const;
+  void set_id(const int id);
+  const char * name() const;
+  void set_name(const char * const name);
+  StoneType stone_type() const;
+  void set_stone_type(const StoneType st);
 
  protected:
-  virtual const std::vector<BoardCoordinate> Think(
+  virtual const BoardCoordinateContainer Think(
       const GameBoard & board) const = 0;
 
   void PlaceAStone(GameBoard & board, const BoardCoordinate & bc) const;
 
-  int id_{0};
+  int id_ = 0;
   std::string name_{"default_name"};
-  StoneType stone_type_{StoneType::kStoneTypeEmpty};
+  StoneType stone_type_ = StoneType::kStoneTypeEmpty;
 };
 
 }  // namespace five_in_a_row_game

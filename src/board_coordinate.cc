@@ -4,26 +4,32 @@
 
 #include "five_in_a_row_game/board_coordinate.h"
 
-#include "five_in_a_row_game/game_board.h"
+#include "five_in_a_row_game/vector2d.h"
 
 BoardCoordinate::BoardCoordinate() : vector2i_() {}
 
 BoardCoordinate::BoardCoordinate(const Vector2D<int> & vec2i)
     : vector2i_(vec2i) {}
 
-BoardCoordinate::BoardCoordinate(int column, int row)
-    : vector2i_(column, row) {}
+BoardCoordinate::BoardCoordinate(int x, int y) : vector2i_(x, y) {}
 
-BoardCoordinate::BoardCoordinate(const std::size_t column,
-                                 const std::size_t row)
-    : vector2i_(static_cast<int>(column), static_cast<int>(row)) {}
-
-bool operator==(const BoardCoordinate & lhs, const BoardCoordinate & rhs) {
-  return lhs.column() == rhs.column() && lhs.row() == rhs.row();
+bool BoardCoordinate::operator<(const BoardCoordinate & rhs) const {
+  if (vector2i_.x() < rhs.x()) {
+    return true;
+  } else if (vector2i_.x() == rhs.x()) {
+    if (vector2i_.y() < rhs.y()) {
+      return true;
+    } else {
+      return false;
+    }
+  } else {
+    return false;
+  }
 }
-
-bool IsCoordinateInRangeOfBoard(const BoardCoordinate & c,
-                                const GameBoard & board) {
-  return c.row() < static_cast<int>(board.board_size()) && c.row() >= 0 &&
-         c.column() < static_cast<int>(board.board_size()) && c.column() >= 0;
+bool BoardCoordinate::operator==(const BoardCoordinate & rhs) const {
+  return vector2i_ == rhs.vector2i_;
 }
+bool BoardCoordinate::operator!=(const BoardCoordinate & rhs) const {
+  return vector2i_ != rhs.vector2i_;
+}
+BoardCoordinate::operator Vector2D<int>() const { return vector2i_; }

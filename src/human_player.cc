@@ -16,12 +16,12 @@ HumanPlayer::HumanPlayer(const Player * const player) : Player(*player) {}
 
 HumanPlayer::~HumanPlayer() {}
 
-const std::vector<BoardCoordinate> HumanPlayer::Think(
+const BoardCoordinateContainer HumanPlayer::Think(
     const GameBoard & board) const {
   BoardCoordinate input_coordinate;
-  auto TargetMoveIsValid = [board, &input_coordinate]() -> bool {
-    return IsCoordinateInRangeOfBoard(input_coordinate, board) &&
-           board.GetStoneTypeInCoordinate(input_coordinate) ==
+  auto is_target_move_valid = [board, &input_coordinate]() {
+    return board.contains(input_coordinate) &&
+           board.stone_type_by_coordinate(input_coordinate) ==
                StoneType::kStoneTypeEmpty;
   };
 
@@ -31,12 +31,12 @@ const std::vector<BoardCoordinate> HumanPlayer::Think(
                "       3.the minimum of column and row is zero):\n";
   while (true) {
     std::cin >> input_coordinate[0] >> input_coordinate[1];
-    if (TargetMoveIsValid()) {
+    if (is_target_move_valid()) {
       break;
     }
     // The move is invalid.
     std::cout
         << "The input coordinate is invalid, please choose another one!\n";
   }
-  return std::vector<BoardCoordinate>{input_coordinate};
+  return BoardCoordinateContainer{input_coordinate};
 }

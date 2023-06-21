@@ -4,9 +4,9 @@
 #include <iostream>
 #include <vector>
 
-#include "five_in_a_row_game/main.h"
 #include "five_in_a_row_game/shader_errors.h"
 #include "five_in_a_row_game/shader_program.h"
+#include "five_in_a_row_game/utility.h"
 #include "glad/gl.h"
 
 FragmentShader::FragmentShader(const char * source)

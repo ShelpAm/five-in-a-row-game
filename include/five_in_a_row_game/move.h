@@ -9,21 +9,18 @@
 
 class Move {
  public:
-  Move(const BoardCoordinate & c, const StoneType st) {
-    coordinate = c;
-    stone_type = st;
-  }
+  Move(const BoardCoordinate & c, const StoneType st)
+      : coordinate(c), stone_type(st) {}
   BoardCoordinate coordinate;
   StoneType stone_type;
 };
 
 inline std::ostream & operator<<(std::ostream & os, const Move & move) {
   std::stringstream buf;
-  buf << "Move {"
-      << "\n  board_coordinate column & row:" << move.coordinate.column()
-      << ", " << move.coordinate.row()
+  buf << " { board_coordinate column & row:" << move.coordinate.column() << ", "
+      << move.coordinate.row()
       << "\n  stone_type:" << stone_type_string_map().at(move.stone_type)
-      << "\n}\n";
+      << " }\n";
   os << buf.str();
   return os;
 }

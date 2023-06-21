@@ -23,12 +23,13 @@
 #include "five_in_a_row_game/fragment_shader.h"
 #include "five_in_a_row_game/game_object.h"
 #include "five_in_a_row_game/human_player_factory.h"
-#include "five_in_a_row_game/main.h"
+#include "five_in_a_row_game/logger.h"
 #include "five_in_a_row_game/player.h"
 #include "five_in_a_row_game/shader_program.h"
 #include "five_in_a_row_game/state.h"
 #include "five_in_a_row_game/texture2d.h"
 #include "five_in_a_row_game/time.h"
+#include "five_in_a_row_game/utility.h"
 #include "five_in_a_row_game/vector2d.h"
 #include "five_in_a_row_game/vertex_shader.h"
 #include "five_in_a_row_game/window.h"
@@ -45,6 +46,7 @@
 #include "stb/stb_image.h"
 
 void Application::Initialize() {
+  Logger::instance().Log("Initializing Application");
   if (initialized_) {
     return;
   }
@@ -76,6 +78,8 @@ Application::~Application() {
 }
 
 void Application::Run() {
+  Logger::instance().Log("Running application");
+  Logger::instance().Log("Loading resources");
   constexpr float vertices[]{
       // positions          // normals           // texture coords
       -0.5f, -0.5f, -0.5f, 0.0f,  0.0f,  -1.0f, 0.0f,  0.0f,  0.5f,  -0.5f,
@@ -169,6 +173,7 @@ void Application::Run() {
   shader_.SetFloat("spot_light.cos_gamma", kSpotlightCosGamma);
   shader_.SetFloat("material.shininess", 64.0f);
 
+  Logger::instance().Log("Starting loop...");
   while (!window_.should_close()) {
     Update(Time::delta_time());
 

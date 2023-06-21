@@ -3,11 +3,14 @@
 #include "GLFW/glfw3.h"
 #include "five_in_a_row_game/application.h"
 #include "five_in_a_row_game/callbacks.h"
-#include "five_in_a_row_game/main.h"
+#include "five_in_a_row_game/logger.h"
+#include "five_in_a_row_game/utility.h"
 #include "glad/gl.h"
 #include "stb/stb_image.h"
 
 void Window::Initialize() {
+  Logger::instance().Log("Initializing Window");
+  Logger::instance().Log("Initializing GLFW");
   if (!glfwInit()) {
     throw GlfwUninitialized();
   }

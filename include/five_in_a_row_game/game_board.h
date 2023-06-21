@@ -8,45 +8,49 @@
 #include <cstddef>
 #include <list>
 #include <ostream>
+#include <string>
 #include <vector>
 
 #include "five_in_a_row_game/board_coordinate.h"
 #include "five_in_a_row_game/move.h"
 #include "five_in_a_row_game/stone_type.h"
+#include "five_in_a_row_game/vector2d.h"
 
-enum class BoardState : std::size_t {
+enum class BoardState : int {
   kBoardStateStarted,
   kBoardStateWinning,
   kBoardStateDrawing
 };
 
+const std::string & string_by_board_state(const BoardState board_state);
+
 class GameBoard {
   friend std::ostream & operator<<(std::ostream & os, const GameBoard & board);
 
  public:
-  explicit GameBoard(const std::size_t board_size);
+  explicit GameBoard(const int board_size);
 
   /// @brief Places a stone at the specified coordinate.
-  void PlaceAStone(const BoardCoordinate & c, const StoneType stone_type);
+  void PlaceAStone(const BoardCoordinate & coordinate,
+                   const StoneType stone_type);
 
-  StoneType GetStoneTypeInCoordinate(const BoardCoordinate & c) const;
-
-  std::size_t board_size() const { return board_size_; }
-  std::size_t num_of_moves() const { return history_moves_.size(); }
+  StoneType stone_type_by_coordinate(const BoardCoordinate & c) const;
+  int board_size() const;
+  const std::list<::Move> & history_moves() const;
   BoardState board_state() const;
   BoardCoordinate center() const;
+  // bool contains(const BoardCoordinate & board_coordinate) const;
+  bool contains(const Vector2D<int> & board_coordinate) const;
 
  private:
   bool is_winning() const;
   bool is_drawing() const;
-  std::list<BoardCoordinate> & coordinates_of_color(const StoneType stone_type);
 
-  std::size_t board_size_;
-  std::list<Move> history_moves_{};
-  // TODO: remove this.
-  std::vector<std::vector<StoneType>> stone_type_map_{};
-  std::list<BoardCoordinate> black_piece_coordinates_;
-  std::list<BoardCoordinate> white_piece_coordinates_;
+  int board_size_;
+  std::list<::Move> history_moves_;
+  // TODO: to be added.
+  // std::list<::BoardCoordinate> unmoved_coordinates_;
+  std::map<BoardCoordinate, StoneType> stone_type_by_coordinate_;
 };
 
 std::ostream & operator<<(std::ostream & os, const GameBoard & board);

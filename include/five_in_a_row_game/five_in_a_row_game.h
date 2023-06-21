@@ -46,7 +46,11 @@ class FiveInARowGame {
   void Render(const ShaderProgram &) const;
 
  private:
-  static Texture2D & GetStoneTextureByStoneType(const StoneType stone_type);
+  static Texture2D & stone_texture_by_stone_type(const StoneType stone_type);
+  void SetUniformsForAMove(const ShaderProgram & shader_program,
+                           const ::Move & move) const;
+  void RenderPieces(const ShaderProgram & shader_program) const;
+  void OnGameStartedUpdate();
 
  private:
   Texture2D diffuse_map{"container2.png"};
