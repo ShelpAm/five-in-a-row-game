@@ -1,30 +1,33 @@
 #include "five_in_a_row_game/window.h"
 
+#include <string>
+
 #include "GLFW/glfw3.h"
 #include "five_in_a_row_game/application.h"
 #include "five_in_a_row_game/callbacks.h"
 #include "five_in_a_row_game/logger.h"
+#include "five_in_a_row_game/timer.h"
 #include "five_in_a_row_game/utility.h"
 #include "glad/gl.h"
 #include "stb/stb_image.h"
 
 void Window::Initialize() {
-  Logger::instance().Log("Initializing Window");
-  Logger::instance().Log("Initializing GLFW");
-  if (!glfwInit()) {
+  Logger::instance().Info("Initializing Window");
+  Logger::instance().Info("Initializing GLFW");
+  if (const auto result = glfwInit(); result == GLFW_FALSE) {
+    Logger::instance().Error("Failed to initialize GLFW");
     throw GlfwUninitialized();
   }
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-  // FIXME: This should be moved to Debug section.
-  glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
-#ifdef DEBUG
-  glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
-#endif  // DEBUG
 #ifdef __APPLE__
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
+  // FIXME: We should enable Debug mode. But the following codes are wrong.
+#ifdef DEBUG
+  glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+#endif  // DEBUG
 }
 
 const Window * Window::GetByGLFWwindow(GLFWwindow * window) {
@@ -40,9 +43,12 @@ Window::Window() : Window(nullptr, "untitled window", 800, 600) {}
 Window::Window(Application * parent, const char * title, const int width,
                const int height)
     : parent_(parent), title_(title), width_(width), height_(height) {
+  Timer timer("Window creation");
   if (num_of_objects() == 0) {
     Initialize();
   }
+  Logger::instance().Info("Creating window: width=" + std::to_string(width) +
+                          ", height=" + std::to_string(height));
   window_ = glfwCreateWindow(width_, height_, title_.c_str(), NULL, NULL);
   if (!window_) {
     glfwTerminate();
@@ -62,7 +68,7 @@ Window::Window(Application * parent, const char * title, const int width,
     glfwSetInputMode(window_, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
   }
 
-  UpdateGLStates();
+  UpdateGLSettings();
 
   glDebugMessageCallback(&glDebugOutput, NULL);
   glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_ERROR,
@@ -150,13 +156,13 @@ Window * Window::MakeContextCurrent() {
   return last_used_window_buffer;
 }
 
-void Window::UpdateGLStates() const {
+void Window::UpdateGLSettings() const {
   glViewport(0, 0, width_, height_);
-  UpdateDepthTestState();
-  UpdateBlendState();
+  UpdateDepthTestSetting();
+  UpdateBlendSetting();
 }
 
-void Window::UpdateDepthTestState() const {
+void Window::UpdateDepthTestSetting() const {
   if (depth_test_enabled_) {
     glEnable(GL_DEPTH_TEST);
   } else {
@@ -164,7 +170,7 @@ void Window::UpdateDepthTestState() const {
   }
 }
 
-void Window::UpdateBlendState() const {
+void Window::UpdateBlendSetting() const {
   if (blend_enabled_) {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

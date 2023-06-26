@@ -3,14 +3,12 @@
 #include <iostream>
 
 #include "five_in_a_row_game/application.h"
+#include "five_in_a_row_game/logger.h"
 #include "five_in_a_row_game/window.h"
 #include "glad/gl.h"
 
 void error_callback(int error, const char * msg) {
-  std::string s;
-  s = " ERROR::error_callback [GLFW " + std::to_string(error) + "] " + msg +
-      '\n';
-  std::cerr << s << std::endl;
+  Logger::instance().Error("GLFW error_code" + std::to_string(error) + msg);
 }
 
 void cursor_pos_callback(GLFWwindow * window, double x_pos, double y_pos) {

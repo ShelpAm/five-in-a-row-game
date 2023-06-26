@@ -8,3 +8,4 @@ build/
 main
 core
 .vscode/
+log/latest.log

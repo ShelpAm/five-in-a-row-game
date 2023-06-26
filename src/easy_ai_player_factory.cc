@@ -13,6 +13,10 @@ EasyAIPlayerFactory::EasyAIPlayerFactory() {}
 
 EasyAIPlayerFactory::~EasyAIPlayerFactory() {}
 
-std::shared_ptr<EasyAIPlayer> EasyAIPlayerFactory::MakePlayer() const {
-  return std::make_shared<EasyAIPlayer>();
+std::shared_ptr<EasyAIPlayer> EasyAIPlayerFactory::MakePlayer(
+    const int id, const char * name) const {
+  auto ptr = std::make_shared<EasyAIPlayer>();
+  ptr->set_name(name);
+  ptr->set_id(id);
+  return ptr;
 }

@@ -37,9 +37,9 @@ class Window {
   static void PollEvents();
   /// @return The previously window context.
   Window * MakeContextCurrent();
-  void UpdateGLStates() const;
-  void UpdateDepthTestState() const;
-  void UpdateBlendState() const;
+  void UpdateGLSettings() const;
+  void UpdateDepthTestSetting() const;
+  void UpdateBlendSetting() const;
 
   GLFWwindow * window() const { return window_; }
   bool should_close() const { return glfwWindowShouldClose(window_); }
@@ -49,7 +49,8 @@ class Window {
   int width() const { return width_; }
   int height() const { return height_; }
   bool depth_test_enabled() const { return depth_test_enabled_; }
-  void set_depth_test_enabled(const bool value) { depth_test_enabled_ = value; }
+  void EnableDepthTest() { depth_test_enabled_ = true; }
+  void DisableDepthTest() { depth_test_enabled_ = false; }
   void set_clear_color(const glm::vec4 & value) {
     clear_color_ = value;
     clear_color_changed_ = true;

@@ -22,8 +22,10 @@ class Player {
   Player();
   Player(const int identity, const char * const name,
          const StoneType stone_type_in_use);
-  Player(const Player & player);
-  Player(const Player && player);
+  Player(const Player & player) = default;
+  Player(Player && other) = default;
+  Player & operator=(const Player & other) = default;
+  Player & operator=(Player && other) = default;
   virtual ~Player();
 
   const ::Move Move(GameBoard & board) const;

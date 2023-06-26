@@ -3,6 +3,8 @@
 //
 #include "five_in_a_row_game/application.h"
 
+#include <bits/ranges_util.h>
+
 #include <cctype>
 #include <cmath>
 #include <cstddef>
@@ -46,7 +48,7 @@
 #include "stb/stb_image.h"
 
 void Application::Initialize() {
-  Logger::instance().Log("Initializing Application");
+  Logger::instance().Info("Initializing Application");
   if (initialized_) {
     return;
   }
@@ -66,7 +68,9 @@ Application::Application() : Application("untitled window", 600, 480) {}
 Application::Application(const char * window_title, const int window_width,
                          const int window_height)
     : window_(this, window_title, window_width, window_height) {
-  window_.set_depth_test_enabled(true);
+  window_.EnableDepthTest();
+  player_list_.Insert(std::make_shared<EasyAIPlayer>(0, "player0"));
+  player_list_.Insert(std::make_shared<EasyAIPlayer>(1, "player1"));
   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
   ++num_of_objects();
 }
@@ -78,8 +82,8 @@ Application::~Application() {
 }
 
 void Application::Run() {
-  Logger::instance().Log("Running application");
-  Logger::instance().Log("Loading resources");
+  Logger::instance().Info("Running application");
+  Logger::instance().Info("Loading resources");
   constexpr float vertices[]{
       // positions          // normals           // texture coords
       -0.5f, -0.5f, -0.5f, 0.0f,  0.0f,  -1.0f, 0.0f,  0.0f,  0.5f,  -0.5f,
@@ -173,7 +177,7 @@ void Application::Run() {
   shader_.SetFloat("spot_light.cos_gamma", kSpotlightCosGamma);
   shader_.SetFloat("material.shininess", 64.0f);
 
-  Logger::instance().Log("Starting loop...");
+  Logger::instance().Info("Starting loop...");
   while (!window_.should_close()) {
     Update(Time::delta_time());
 
@@ -189,16 +193,17 @@ void Application::Run() {
 
 void Application::Update(const float delta_time) {
   frame_per_second_ = 1.0f / delta_time;
-  if (game_) {
-    game_->Update();
+  Logger::instance().Debug("fps=" + std::to_string(frame_per_second_));
+  if (!history_games_.empty()) {
+    history_games_.back().Update();
   }
-  camera_.Update(delta_time, keys_);
+  camera_.Update(delta_time, keys_.cbegin());
   camera_.SetUniforms(shader_, window_);
 }
 
 void Application::Render() const {
-  if (game_) {
-    game_->Render(shader_);
+  if (!history_games_.empty()) {
+    history_games_.back().Render(shader_);
   }
   texture_.Render(simple_shader_, window_, glm::vec3(0, 0, 0), 0,
                   glm::vec3(1, 1, 1), glm::vec3());
@@ -250,11 +255,10 @@ void Application::KeyCallback(int key, int scancode, int action, int mods) {
     keys_[key] = !keys_[key];
     switch (key) {
       case GLFW_KEY_F:
-        if (game_) {
-          std::cout << *game_;
-        }
         break;
       case GLFW_KEY_G: {
+        // TODO: FactoryMethod is overused here.
+        /*
         auto human_player = HumanPlayerFactory::Instance().MakePlayer();
         auto ai_player1 = EasyAIPlayerFactory::Instance().MakePlayer();
         auto ai_player2 = EasyAIPlayerFactory::Instance().MakePlayer();
@@ -264,12 +268,19 @@ void Application::KeyCallback(int key, int scancode, int action, int mods) {
         human_player->set_name("test_user1");
         ai_player1->set_name("easy_ai_player1");
         ai_player2->set_name("easy_ai_player2");
-
-        history_games_.push_back(game_);
-        game_ = new FiveInARowGame(ai_player1.get(), ai_player2.get());
-        game_->Start();
+        */
+        history_games_.push_back(FiveInARowGame(player_list_.GetById(0).get(),
+                                                player_list_.GetById(1).get()));
+        history_games_.emplace_back(player_list_.GetById(0).get(),
+                                    player_list_.GetById(1).get());
+        history_games_.back().Start();
         break;
       }
+      case GLFW_KEY_U:
+        if (!history_games_.empty()) {
+          history_games_.back().RevertMoves(1);
+        }
+        break;
       case GLFW_KEY_ESCAPE:
         window_.set_should_close(true);
         break;
@@ -288,7 +299,7 @@ void Application::KeyCallback(int key, int scancode, int action, int mods) {
   } else if (action == GLFW_REPEAT) {
     prompt = " repeated";
   }
-  std::cout << "Key: " << KeyToString(key) << prompt << "\n";
+  Logger::instance().Debug("Key: " + KeyToString(key) + prompt);
 }
 
 void Application::ScrollCallback(double x_offset, double y_offset) {
@@ -325,15 +336,18 @@ void Application::CheckErrors() {
         error = "INVALID_FRAMEBUFFER_OPERATION";
         break;
     }
-    std::cerr << "Error::OpenGL[" << index << "] " << error_code << "\n";
-    index++;
+    ++index;
+    Logger::instance().Error("OpenGL[" + std::to_string(index) + "] " +
+                             std::to_string(error_code));
   }
 }
 
 void Application::PrintCursorPosition() const {
-  std::cout << "Cursor position: " << cursor_pos_.x() << ", " << cursor_pos_.y()
-            << " (" << delta_cursor_pos_.x() << " " << delta_cursor_pos_.y()
-            << ")\n";
+  Logger::instance().Debug(
+      "Cursor position: " + std::to_string(cursor_pos_.x()) + ", " +
+      std::to_string(cursor_pos_.y()) +
+      " (delta: " + std::to_string(delta_cursor_pos_.x()) + " " +
+      std::to_string(delta_cursor_pos_.y()) + ")");
 }
 unsigned & Application::num_of_objects() {
   static unsigned num_of_objects = 0;

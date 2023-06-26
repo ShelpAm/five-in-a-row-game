@@ -14,10 +14,12 @@ add_library(${LIB_NAME}
   human_player.cc
   human_player_factory.cc
   logger.cc
+  log_level.cc
   player.cc
   shader_program.cc
   texture2d.cc
   time.cc
+  timer.cc
   utility.cc
   vertex_shader.cc
   window.cc

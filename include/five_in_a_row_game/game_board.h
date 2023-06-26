@@ -9,6 +9,7 @@
 #include <list>
 #include <ostream>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 #include "five_in_a_row_game/board_coordinate.h"
@@ -34,6 +35,13 @@ class GameBoard {
   void PlaceAStone(const BoardCoordinate & coordinate,
                    const StoneType stone_type);
 
+  // TODO: Implement this method
+  void RevertMoves(const int count) {
+    for (int i = 0; i != count; ++i) {
+      history_moves_.pop_back();
+    }
+  }
+
   StoneType stone_type_by_coordinate(const BoardCoordinate & c) const;
   int board_size() const;
   const std::list<::Move> & history_moves() const;
@@ -49,7 +57,7 @@ class GameBoard {
   int board_size_;
   std::list<::Move> history_moves_;
   // TODO: to be added.
-  // std::list<::BoardCoordinate> unmoved_coordinates_;
+  // std::list<BoardCoordinate> unmoved_coordinates_;
   std::map<BoardCoordinate, StoneType> stone_type_by_coordinate_;
 };
 

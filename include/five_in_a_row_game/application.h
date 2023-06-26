@@ -5,26 +5,59 @@
 #ifndef FIVE_IN_A_ROW_GAME_APPLICATION_H
 #define FIVE_IN_A_ROW_GAME_APPLICATION_H
 
+#include <GLFW/glfw3.h>
+#include <five_in_a_row_game/camera.h>
+#include <five_in_a_row_game/five_in_a_row_game.h>
+#include <five_in_a_row_game/game_object.h>
+#include <five_in_a_row_game/game_object_selector.h>
+#include <five_in_a_row_game/player.h>
+#include <five_in_a_row_game/shader_program.h>
+#include <five_in_a_row_game/state.h>
+#include <five_in_a_row_game/texture2d.h>
+#include <five_in_a_row_game/vector2d.h>
+#include <five_in_a_row_game/window.h>
+
+#include <array>
 #include <cstddef>
 #include <exception>
 #include <list>
 #include <map>
 #include <memory>
+#include <set>
+#include <utility>
 #include <vector>
 
-#include "GLFW/glfw3.h"
-#include "five_in_a_row_game/camera.h"
-#include "five_in_a_row_game/five_in_a_row_game.h"
-#include "five_in_a_row_game/game_object.h"
-#include "five_in_a_row_game/game_object_selector.h"
-#include "five_in_a_row_game/player.h"
-#include "five_in_a_row_game/shader_program.h"
-#include "five_in_a_row_game/state.h"
-#include "five_in_a_row_game/vector2d.h"
-#include "five_in_a_row_game/window.h"
 #include "glm/fwd.hpp"
 #include "glm/glm.hpp"
-#include "texture2d.h"
+
+class PlayerList {
+ public:
+  PlayerList() = default;
+  PlayerList(const PlayerList & other) = default;
+  PlayerList(PlayerList && other) = default;
+  PlayerList & operator=(const PlayerList & other) = default;
+  PlayerList & operator=(PlayerList && other) = default;
+  ~PlayerList() = default;
+
+  std::shared_ptr<Player> & GetById(const int id) { return players_[id]; }
+
+  void Insert(std::shared_ptr<Player> && player) {
+    players_.insert(std::make_pair(player->id(), player));
+  }
+
+  /// @brief Ensures the id won't appear in the list.
+  void Remove(const int id) { players_.erase(id); }
+
+  template <typename Function>
+  void ForEach(const Function & function) {
+    for (auto & player : players_) {
+      function(player.second);
+    }
+  }
+
+ private:
+  std::map<int, std::shared_ptr<Player>> players_;
+};
 
 class Application {
  public:
@@ -63,18 +96,17 @@ class Application {
   Window window_;
   Vector2D<float> cursor_pos_{0, 0};
   Vector2D<float> delta_cursor_pos_{0, 0};
-  bool buttons_[64]{false};  // TODO: to be added to `Window` class
-  bool keys_[512]{false};    // TODO: to be added to `Window` class
+  std::array<bool, 64> buttons_{false};  // TODO: to be added to `Window` class
+  std::array<bool, 512> keys_{false};    // TODO: to be added to `Window` class
   Camera camera_;
   ShaderProgram shader_{VertexShader(0, "shader/vertex.vert"),
                         FragmentShader(0, "shader/fragment.frag")};
   ShaderProgram simple_shader_{VertexShader(0, "shader/simple.vert"),
                                FragmentShader(0, "shader/simple.frag")};
   double previous_frame_time_ = 0, current_frame_time_ = 0;
-  std::size_t frame_per_second_ = 0;
-  std::vector<FiveInARowGame *> history_games_;
-  FiveInARowGame * game_ = nullptr;
-  std::vector<std::shared_ptr<Player>> players_{};
+  int frame_per_second_ = 0;
+  std::list<FiveInARowGame> history_games_;
+  PlayerList player_list_;
   std::list<GameObject *> game_objects_{};
   GameObjectSelector game_object_selector_;
   Texture2D texture_{"awesome_face.png"};

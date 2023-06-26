@@ -19,9 +19,6 @@ Player::Player() {}
 Player::Player(int identity, const char * const name, const StoneType st_in_use)
     : id_(identity), name_(name), stone_type_(st_in_use) {}
 
-Player::Player(const Player & player)
-    : id_(player.id_), name_(player.name_), stone_type_(player.stone_type_) {}
-
 Player::~Player() {}
 
 const ::Move Player::Move(GameBoard & board) const {

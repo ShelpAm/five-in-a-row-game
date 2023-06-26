@@ -30,7 +30,7 @@ class FiveInARowGame {
  public:
   FiveInARowGame() = delete;
   FiveInARowGame(Player * black_player, Player * white_player);
-  FiveInARowGame(FiveInARowGame && other) = delete;
+  FiveInARowGame(FiveInARowGame && other) = default;
   FiveInARowGame(const FiveInARowGame & other) = delete;
   FiveInARowGame & operator=(FiveInARowGame && other) = delete;
   FiveInARowGame & operator=(const FiveInARowGame & other) = delete;
@@ -45,6 +45,8 @@ class FiveInARowGame {
   /// @brief Renders the game.
   void Render(const ShaderProgram &) const;
 
+  void RevertMoves(const int count);
+
  private:
   static Texture2D & stone_texture_by_stone_type(const StoneType stone_type);
   void SetUniformsForAMove(const ShaderProgram & shader_program,
@@ -55,7 +57,7 @@ class FiveInARowGame {
  private:
   Texture2D diffuse_map{"container2.png"};
   Texture2D specular_map{"container2_specular.png"};
-  State state_ = State::kStateNotStarted;
+  State state_ = StateType::kStateNotStarted;
   Player * moving_player_;
   Player * unmoving_player_;
   Player * black_player_ = nullptr;

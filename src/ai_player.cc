@@ -9,7 +9,7 @@
 AIPlayer::~AIPlayer() {}
 
 const BoardCoordinateContainer AIPlayer::Think(const GameBoard & board) const {
-  const auto score_map = CalculateScores(board);
+  const auto score_map = CalculateScoreMap(board);
   const auto max_score_coordinates = SelectMaxScoreCoordinatesFrom(score_map);
   return max_score_coordinates;
 }

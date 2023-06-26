@@ -14,6 +14,7 @@
 #include "five_in_a_row_game/board_coordinate.h"
 #include "five_in_a_row_game/move.h"
 #include "five_in_a_row_game/stone_type.h"
+#include "five_in_a_row_game/vector2d.h"
 
 GameBoard::GameBoard(const int board_size) : board_size_(board_size) {}
 
@@ -26,7 +27,6 @@ void GameBoard::PlaceAStone(const BoardCoordinate & coordinate,
   stone_type_by_coordinate_[coordinate] = stone_type;
   const ::Move result_move(coordinate, stone_type);
   history_moves_.push_back(result_move);
-  std::cout << "Debug::GameBoard::PlaceAStone move: " << result_move << "\n";
 }
 
 StoneType GameBoard::stone_type_by_coordinate(const BoardCoordinate & c) const {
@@ -53,22 +53,21 @@ BoardState GameBoard::board_state() const {
 bool GameBoard::is_winning() const {
   // This function needs only to check the latest move.
   const Move & last_move{history_moves_.back()};
-  const auto & last_move_coordinate = last_move.coordinate;
-  int directions[4][2] = {{1, 0}, {-1, 1}, {0, 1}, {1, 1}};
-  for (auto direction : directions) {
-    int horizontal = direction[0];
-    int vertical = direction[1];
-    for (int offset = -4; offset != 1; ++offset) {
+  Vector2D<int> directions[4] = {{1, 0}, {-1, 1}, {0, 1}, {1, 1}};
+  for (const auto & direction : directions) {
+    for (int start_point_offset = -4; start_point_offset != 1;
+         ++start_point_offset) {
       int i = 0;
       // for every stone in the group
       for (; i != 5; ++i) {
-        BoardCoordinate coord{
-            last_move_coordinate.column() + horizontal * (offset + i),
-            last_move_coordinate.row() + vertical * (offset + i)};
+        BoardCoordinate coord(last_move.coordinate.column() +
+                                  direction.x() * (start_point_offset + i),
+                              last_move.coordinate.row() +
+                                  direction.y() * (start_point_offset + i));
         if (!this->contains(coord)) {
           break;
         }
-        if (stone_type_by_coordinate(coord) != last_move.stone_type) {
+        if (this->stone_type_by_coordinate(coord) != last_move.stone_type) {
           break;
         }
       }

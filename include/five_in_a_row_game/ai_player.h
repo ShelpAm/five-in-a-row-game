@@ -24,7 +24,7 @@ class AIPlayer : public Player {
   virtual const BoardCoordinateContainer Think(
       const GameBoard & board) const override;
 
-  virtual const ScoreMap CalculateScores(const GameBoard & board) const = 0;
+  virtual const ScoreMap CalculateScoreMap(const GameBoard & board) const = 0;
 
  private:
   const BoardCoordinateContainer SelectMaxScoreCoordinatesFrom(

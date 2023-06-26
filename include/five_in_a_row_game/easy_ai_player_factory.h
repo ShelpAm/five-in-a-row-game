@@ -16,7 +16,8 @@ class EasyAIPlayerFactory {
     return instance;
   }
 
-  std::shared_ptr<EasyAIPlayer> MakePlayer() const;
+  std::shared_ptr<EasyAIPlayer> MakePlayer(const int id,
+                                           const char * name) const;
 
  private:
   EasyAIPlayerFactory();

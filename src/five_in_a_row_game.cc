@@ -12,6 +12,7 @@
 #include "GLFW/glfw3.h"
 #include "five_in_a_row_game/board_coordinate.h"
 #include "five_in_a_row_game/game_board.h"
+#include "five_in_a_row_game/logger.h"
 #include "five_in_a_row_game/move.h"
 #include "five_in_a_row_game/shader_program.h"
 #include "five_in_a_row_game/state.h"
@@ -44,27 +45,27 @@ FiveInARowGame::~FiveInARowGame() {}
 
 void FiveInARowGame::Update() {
   switch (state_) {
-    case State::kStateNotStarted:
-      break;
-    case State::kStateStarted:
+    case StateType::kStateNotStarted:
+      return;
+    case StateType::kStateStarted:
       OnGameStartedUpdate();
-      break;
-    case State::kStateStoped:
-      break;
-    case State::kStateEnded:
-      break;
+      return;
+    case StateType::kStateStoped:
+      return;
+    case StateType::kStateEnded:
+      return;
   }
 }
 
 void FiveInARowGame::Render(const ShaderProgram & shader_program) const {
   switch (state_) {
-    case State::kStateNotStarted:
+    case StateType::kStateNotStarted:
       break;
-    case State::kStateStoped:
+    case StateType::kStateStoped:
       // TODO: draw the `stopping` string.
       // SomeCodeDrawingStoppingString();
-    case State::kStateStarted:
-    case State::kStateEnded:
+    case StateType::kStateStarted:
+    case StateType::kStateEnded:
       RenderPieces(shader_program);
       break;
   }
@@ -74,7 +75,7 @@ void FiveInARowGame::Render(const ShaderProgram & shader_program) const {
 std::ostream & operator<<(std::ostream & os, const FiveInARowGame & game) {
   std::stringstream buf;
   buf << "FiveInARowGame {"
-      << "\n  game_state_:" << state_string_map().at(game.state_)
+      << "\n  game_state_:" << std::string(game.state_)
       << "\n  num_moves_:" << game.board_.history_moves().size()
       << "\n  moving_player_:" << game.moving_player_->name()
       << "\n  unmoving_player_:" << game.unmoving_player_->name()
@@ -84,8 +85,8 @@ std::ostream & operator<<(std::ostream & os, const FiveInARowGame & game) {
   return os;
 }
 void FiveInARowGame::Start() {
-  state_ = State::kStateStarted;
-  std::cout << "FiveInARowGame::Start Game started.\n";
+  Logger::instance().Info("Starting game...");
+  state_ = StateType::kStateStarted;
 }
 
 Texture2D & FiveInARowGame::stone_texture_by_stone_type(
@@ -109,18 +110,16 @@ void FiveInARowGame::OnGameStartedUpdate() {
   switch (board_.board_state()) {
     case BoardState::kBoardStateWinning:
       winner_ = moving_player_;
-      state_ = State::kStateEnded;
+      state_ = StateType::kStateEnded;
       break;
     case BoardState::kBoardStateDrawing:
       winner_ = nullptr;
-      state_ = State::kStateEnded;
+      state_ = StateType::kStateEnded;
       break;
     case BoardState::kBoardStateStarted:
-      state_ = State::kStateStarted;
+      state_ = StateType::kStateStarted;
       break;
   }
-  std::cout << "board state: " << string_by_board_state(board_.board_state())
-            << std::endl;
   std::swap(moving_player_, unmoving_player_);
 }
 void FiveInARowGame::RenderPieces(const ShaderProgram & shader_program) const {
@@ -147,4 +146,12 @@ void FiveInARowGame::SetUniformsForAMove(const ShaderProgram & shader_program,
   shader_program.BindTexture(stone_texture_by_stone_type(stone_type),
                              "material.diffuse_sampler", 0);
   shader_program.BindTexture(specular_map, "material.specular_sampler", 1);
+}
+void FiveInARowGame::RevertMoves(const int count) {
+  board_.RevertMoves(count);
+  if (count % 2 == 1) {
+    std::swap(moving_player_, unmoving_player_);
+  } else {
+    // do nothing
+  }
 }
